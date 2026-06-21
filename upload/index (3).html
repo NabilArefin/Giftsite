@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A little birthday wish — crafted with love.">
+  <meta name="theme-color" content="#7b61ff">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Happy Birthday, Dear">
+  <meta property="og:description" content="A little wish for you — crafted with love.">
+  <meta property="og:type" content="website">
+
+  <title>Happy Birthday, Dear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;1,700&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="sparkle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Floating decorative stars (CSS-driven) -->
+  <div class="stars-layer" aria-hidden="true">
+    <span class="star star--1"></span>
+    <span class="star star--2"></span>
+    <span class="star star--3"></span>
+    <span class="star star--4"></span>
+    <span class="star star--5"></span>
+    <span class="star star--6"></span>
+    <span class="star star--7"></span>
+    <span class="star star--8"></span>
+  </div>
+
+  <main class="page-shell">
+    <button class="open-button" id="openWishButton" type="button">
+      <span class="button-shimmer"></span>
+      <span class="button-text">Tap here, Dear</span>
+    </button>
+  </main>
+
+  <section class="wish-popup" id="wishPopup" aria-label="Birthday wish" aria-hidden="true">
+    <div class="popup-card" role="dialog" aria-modal="true" aria-labelledby="wishTitle">
+      <button class="close-button" id="closeWishButton" type="button" aria-label="Close birthday wish">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+        </svg>
+      </button>
+
+      <div class="cake-scene" aria-hidden="true">
+        <div class="moon"></div>
+        <div class="moon-glow"></div>
+        <div class="balloon balloon-one"></div>
+        <div class="balloon balloon-two"></div>
+        <div class="balloon balloon-three"></div>
+        <div class="cake">
+          <div class="candles">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="cake-top"></div>
+          <div class="cake-mid"></div>
+          <div class="cake-bottom"></div>
+          <div class="plate"></div>
+        </div>
+        <div class="confetti-burst" id="confettiBurst" aria-hidden="true"></div>
+      </div>
+
+      <div class="wish-copy">
+        <p class="eyebrow reveal reveal--1">A little wish for you</p>
+        <h1 id="wishTitle" class="reveal reveal--2">Happy Birthday,<br>Dear</h1>
+        <p class="lead reveal reveal--3">
+          I hope your day feels as beautiful as the way you make my world feel.
+          You are my favorite smile, my soft place, and my sweetest reason to believe in magic.
+        </p>
+        <p class="wish-note reveal reveal--4">
+          May this new year bring you peace, confidence, beautiful surprises, and everything
+          your heart has been quietly wishing for. I will keep cheering for you, choosing you,
+          and loving you in every little way I can.
+        </p>
+        <p class="signature reveal reveal--5">Forever your biggest fan&thinsp;&hearts;</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
