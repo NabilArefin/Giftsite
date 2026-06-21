@@ -29,7 +29,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Happy Birthday, Dear",
+  title: "Happy Birthday, Nuha",
   description: "A little wish for you \u2014 crafted with love.",
   keywords: ["birthday", "gift", "wish", "greeting", "celebration"],
   authors: [{ name: "With love" }],
@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     apple: [{ url: "/gift-box.svg", type: "image/svg+xml" }],
   },
   openGraph: {
-    title: "Happy Birthday, Dear",
+    title: "Happy Birthday, Nuha",
     description: "A little wish for you \u2014 crafted with love.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Happy Birthday, Dear",
+    title: "Happy Birthday, Nuha",
     description: "A little wish for you \u2014 crafted with love.",
   },
 };

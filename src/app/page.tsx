@@ -396,7 +396,7 @@ export default function GiftPage() {
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               Happy Birthday,
               <br />
-              Dear
+              Nuha
             </h1>
             <p className="lead reveal reveal--3">
               I hope your day feels as beautiful as the way you make my world feel.
