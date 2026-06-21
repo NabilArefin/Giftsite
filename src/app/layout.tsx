@@ -34,7 +34,8 @@ export const metadata: Metadata = {
   keywords: ["birthday", "gift", "wish", "greeting", "celebration"],
   authors: [{ name: "With love" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: [{ url: "/gift-box.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/gift-box.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     title: "Happy Birthday, Dear",

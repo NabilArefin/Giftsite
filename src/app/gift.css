@@ -588,7 +588,8 @@
   width: 48px;
   height: 64px;
   background: var(--gold);
-  animation-delay: -2.8s;
+  /* Gentle bob so it never rises into the overflow-hidden top edge */
+  animation: floatGentle 4.6s ease-in-out -2.8s infinite;
   opacity: 0.7;
 }
 
@@ -745,6 +746,18 @@
   }
   50% {
     transform: translateY(-22px) rotate(3deg);
+  }
+}
+
+/* Gentler bob for balloons positioned near the top of the cake-scene
+   so they stay clear of its overflow-hidden top edge. */
+@keyframes floatGentle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
   }
 }
 

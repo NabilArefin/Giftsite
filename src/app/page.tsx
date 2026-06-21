@@ -331,7 +331,7 @@ export default function GiftPage() {
           aria-controls="wishPopup"
         >
           <span className="button-shimmer" />
-          <span className="button-text">Tap here, Dear</span>
+          <span className="button-text">Tap here</span>
         </button>
       </main>
 
