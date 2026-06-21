@@ -1,7 +1,7 @@
-/* ===========================================================
-   Gift — a little birthday wish
-   Pastel, dreamy, full-screen experience.
-   =========================================================== */
+/* ================================================================
+   Gift — Birthday Wish Page
+   Polished edition
+   ================================================================ */
 
 .gift-root {
   --ink: #2a1b29;
@@ -11,11 +11,18 @@
   --gold: #f5c85b;
   --mint: #9ed7c1;
   --violet: #7b61ff;
-  --surface: rgba(255, 251, 254, 0.9);
+  --surface: rgba(255, 251, 254, 0.92);
   --surface-high: rgba(255, 255, 255, 0.96);
-  --outline: rgba(88, 64, 84, 0.16);
+  --outline: rgba(88, 64, 84, 0.14);
   --shadow: 0 24px 70px rgba(62, 32, 48, 0.2);
   --ease-expressive: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Fonts (set by next/font in layout.tsx) with graceful fallbacks */
+  --font-display: var(--font-display), "Playfair Display", Georgia,
+    "Times New Roman", serif;
+  --font-body: var(--font-body), "Inter", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
 
   position: fixed;
   inset: 0;
@@ -24,11 +31,12 @@
   flex-direction: column;
   overflow: hidden;
   color: var(--ink);
-  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body);
   background:
-    radial-gradient(circle at 12% 18%, rgba(123, 97, 255, 0.24), transparent 26%),
-    radial-gradient(circle at 80% 12%, rgba(245, 200, 91, 0.36), transparent 26%),
-    radial-gradient(circle at 86% 82%, rgba(158, 215, 193, 0.44), transparent 24%),
+    radial-gradient(circle at 12% 18%, rgba(123, 97, 255, 0.22), transparent 26%),
+    radial-gradient(circle at 80% 12%, rgba(245, 200, 91, 0.34), transparent 26%),
+    radial-gradient(circle at 86% 82%, rgba(158, 215, 193, 0.4), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(227, 79, 111, 0.06), transparent 60%),
     linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
 }
 
@@ -36,7 +44,8 @@
   overflow: hidden;
 }
 
-/* ---------- Sparkle canvas ---------- */
+/* ── Sparkle Canvas ───────────────────────────────────────────── */
+
 .sparkle-canvas {
   position: fixed;
   inset: 0;
@@ -46,63 +55,147 @@
   z-index: 4;
 }
 
-/* ---------- Page shell / intro ---------- */
+/* ── Floating Stars ───────────────────────────────────────────── */
+
+.stars-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: twinkleStar var(--dur, 4s) var(--delay, 0s) var(--ease-expressive)
+    infinite;
+  box-shadow: 0 0 6px rgba(245, 200, 91, 0.6);
+}
+
+.star::before,
+.star::after {
+  content: "";
+  position: absolute;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
+.star::before {
+  width: 100%;
+  height: 100%;
+}
+
+.star::after {
+  width: 14px;
+  height: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 4px rgba(245, 200, 91, 0.4);
+}
+
+.star--1 {
+  top: 8%;
+  left: 15%;
+  --dur: 3.5s;
+  --delay: 0s;
+}
+.star--2 {
+  top: 14%;
+  left: 72%;
+  --dur: 5s;
+  --delay: 1.2s;
+  width: 4px;
+  height: 4px;
+}
+.star--3 {
+  top: 34%;
+  left: 88%;
+  --dur: 4.2s;
+  --delay: 0.6s;
+}
+.star--4 {
+  top: 62%;
+  left: 6%;
+  --dur: 3.8s;
+  --delay: 2s;
+  width: 5px;
+  height: 5px;
+}
+.star--5 {
+  top: 78%;
+  left: 55%;
+  --dur: 4.6s;
+  --delay: 0.8s;
+  width: 3px;
+  height: 3px;
+}
+.star--6 {
+  top: 22%;
+  left: 42%;
+  --dur: 5.5s;
+  --delay: 1.8s;
+  width: 4px;
+  height: 4px;
+}
+.star--7 {
+  top: 52%;
+  left: 28%;
+  --dur: 3.2s;
+  --delay: 2.5s;
+}
+.star--8 {
+  top: 88%;
+  left: 80%;
+  --dur: 4.8s;
+  --delay: 0.4s;
+  width: 5px;
+  height: 5px;
+}
+
+@keyframes twinkleStar {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  20% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.3;
+    transform: scale(0.7);
+  }
+  60% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  80% {
+    opacity: 0.1;
+    transform: scale(0.6);
+  }
+}
+
+/* ── Page Shell & Open Button ────────────────────────────────── */
+
 .page-shell {
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
+  min-height: 0;
   display: grid;
   place-items: center;
   padding: 1rem;
-  text-align: center;
 }
 
-.intro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.6rem;
-  animation: introRise 0.9s var(--ease-expressive) both;
-}
-
-@keyframes introRise {
-  from {
-    opacity: 0;
-    transform: translateY(22px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.intro-eyebrow {
-  margin: 0;
-  padding: 0.5rem 0.9rem;
-  color: #6d2338;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(227, 79, 111, 0.24);
-  border-radius: 18px;
-  backdrop-filter: blur(6px);
-}
-
-.intro-title {
-  margin: 0;
-  color: #3a1733;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.4rem, 8vw, 5rem);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 0.95;
-  text-shadow: 0 14px 40px rgba(227, 79, 111, 0.22);
-}
-
-/* ---------- Open button ---------- */
 .open-button {
+  position: relative;
   min-width: min(320px, 86vw);
   min-height: 5rem;
   padding: 0 2rem;
@@ -115,12 +208,14 @@
     linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 34%),
     linear-gradient(135deg, var(--violet), var(--rose) 48%, var(--coral));
   border: 0;
-  border-radius: 28px 56px 28px 56px;
+  border-radius: 48px;
   box-shadow:
     0 20px 52px rgba(123, 97, 255, 0.26),
-    0 14px 36px rgba(227, 79, 111, 0.26);
+    0 14px 36px rgba(227, 79, 111, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transform: translateY(0);
+  overflow: hidden;
   transition:
     border-radius 0.35s var(--ease-expressive),
     transform 0.35s var(--ease-expressive),
@@ -129,10 +224,11 @@
 }
 
 .open-button:hover {
-  border-radius: 56px 28px 56px 28px;
+  border-radius: 48px;
   box-shadow:
     0 24px 64px rgba(123, 97, 255, 0.32),
-    0 18px 44px rgba(227, 79, 111, 0.3);
+    0 18px 44px rgba(227, 79, 111, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .open-button:active {
@@ -145,7 +241,42 @@
   outline-offset: 4px;
 }
 
-/* ---------- Wish popup ---------- */
+/* Shimmer sweep on the button */
+.button-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.18) 55%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: shimmerSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.button-text {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  40% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ── Wish Popup ───────────────────────────────────────────────── */
+
 .wish-popup {
   position: fixed;
   inset: 0;
@@ -155,7 +286,8 @@
   padding: clamp(0.75rem, 3vw, 2rem);
   background:
     radial-gradient(circle at 18% 20%, rgba(123, 97, 255, 0.18), transparent 28%),
-    rgba(42, 27, 41, 0.34);
+    radial-gradient(circle at 82% 78%, rgba(227, 79, 111, 0.1), transparent 28%),
+    rgba(42, 27, 41, 0.4);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.38s var(--ease-expressive);
@@ -166,23 +298,29 @@
   pointer-events: auto;
 }
 
+/* ── Popup Card ───────────────────────────────────────────────── */
+
 .popup-card {
   position: relative;
   width: min(980px, 100%);
   max-height: calc(100vh - 1.5rem);
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: grid;
   grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(1rem, 4vw, 3rem);
   padding: clamp(1rem, 4vw, 2.8rem);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 252, 0.92)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 252, 0.94)),
     var(--surface);
   border: 1px solid var(--outline);
   border-radius: 32px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transform: translateY(28px) scale(0.92);
   transition: transform 0.42s var(--ease-expressive);
 }
@@ -191,7 +329,8 @@
   transform: translateY(0) scale(1);
 }
 
-/* ---------- Close button ---------- */
+/* ── Close Button ─────────────────────────────────────────────── */
+
 .close-button {
   position: absolute;
   top: 0.75rem;
@@ -202,25 +341,64 @@
   place-items: center;
   color: #71324a;
   font: inherit;
-  font-size: 1.7rem;
-  line-height: 1;
-  background: #ffe8ef;
+  background: rgba(255, 232, 239, 0.85);
   border: 1px solid rgba(227, 79, 111, 0.2);
   border-radius: 50%;
   cursor: pointer;
   transition:
     transform 0.25s var(--ease-expressive),
     background 0.25s var(--ease-expressive);
+  z-index: 10;
 }
 
 .close-button:hover {
   background: #ffd7e2;
-  transform: rotate(8deg) scale(1.06);
+  transform: rotate(90deg) scale(1.08);
 }
 
-/* ---------- Wish copy ---------- */
+.close-button svg {
+  pointer-events: none;
+}
+
+/* ── Wish Text (with staggered reveal) ────────────────────────── */
+
 .wish-copy {
   padding-right: 0.5rem;
+}
+
+/* Reveal animation — elements start invisible and fade in with slide */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s var(--ease-expressive),
+    transform 0.6s var(--ease-expressive);
+}
+
+.wish-popup.open .reveal--1 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+.wish-popup.open .reveal--2 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.35s;
+}
+.wish-popup.open .reveal--3 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+.wish-popup.open .reveal--4 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.65s;
+}
+.wish-popup.open .reveal--5 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
 }
 
 .eyebrow {
@@ -232,57 +410,88 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  background: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(227, 79, 111, 0.24);
   border-radius: 18px;
 }
 
+.display-title,
+.wish-copy p {
+  margin-top: 0;
+}
+
 .display-title {
   margin: 0 0 0.6rem;
-  color: #3a1733;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(2.7rem, 7vw, 6rem);
   font-style: italic;
   font-weight: 400;
-  line-height: 0.9;
+  line-height: 0.92;
+  background: linear-gradient(
+    135deg,
+    #3a1733 20%,
+    var(--rose) 50%,
+    var(--violet) 80%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .lead,
 .wish-note {
-  margin: 0;
   color: var(--muted);
   font-size: clamp(0.88rem, 1.55vw, 1rem);
   line-height: 1.5;
 }
 
 .lead {
-  margin-bottom: 0.7rem;
+  margin: 0 0 0.7rem;
 }
 
 .wish-note {
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem;
   padding: 0.75rem 0.85rem;
   color: #4d3143;
-  background: #fff2f5;
-  border: 1px solid rgba(227, 79, 111, 0.18);
-  border-left: 6px solid rgba(227, 79, 111, 0.54);
-  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 242, 245, 0.8),
+    rgba(255, 247, 242, 0.6)
+  );
+  border: 1px solid rgba(227, 79, 111, 0.16);
+  border-left: 4px solid var(--rose);
+  border-radius: 16px;
 }
 
 .signature {
   margin: 0;
   color: var(--rose);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 3.4vw, 2rem);
   font-style: italic;
+  -webkit-text-fill-color: var(--rose);
+  animation: gentlePulse 3s var(--ease-expressive) infinite;
 }
 
-/* ---------- Cake scene ---------- */
+@keyframes gentlePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+/* ── Cake Scene ───────────────────────────────────────────────── */
+
 .cake-scene {
   position: relative;
   min-height: 430px;
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 
 .moon {
@@ -299,15 +508,38 @@
   );
   box-shadow: 0 20px 54px rgba(62, 32, 48, 0.16);
   animation: morphMoon 8s var(--ease-expressive) infinite;
+  z-index: 0;
+}
+
+/* Soft glow behind the moon */
+.moon-glow {
+  position: absolute;
+  width: min(360px, 78vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 200, 91, 0.18), transparent 70%);
+  z-index: 0;
+  animation: breatheGlow 4s ease-in-out infinite;
+}
+
+@keyframes breatheGlow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
 }
 
 .balloon {
   position: absolute;
-  width: 62px;
-  height: 80px;
   border-radius: 48% 48% 48% 48% / 58% 58% 42% 42%;
   box-shadow: inset -14px -18px 22px rgba(42, 27, 41, 0.12);
   animation: float 4.6s ease-in-out infinite;
+  z-index: 1;
 }
 
 .balloon::after {
@@ -317,20 +549,47 @@
   top: 96%;
   width: 1px;
   height: 92px;
-  background: rgba(42, 27, 41, 0.28);
+  background: rgba(42, 27, 41, 0.22);
+}
+
+/* Highlight reflection on balloons */
+.balloon::before {
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: 22%;
+  width: 30%;
+  height: 22%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  filter: blur(2px);
 }
 
 .balloon-one {
   top: 24px;
   left: 6%;
+  width: 62px;
+  height: 80px;
   background: var(--rose);
 }
 
 .balloon-two {
   top: 62px;
   right: 3%;
+  width: 62px;
+  height: 80px;
   background: var(--mint);
   animation-delay: -1.4s;
+}
+
+.balloon-three {
+  top: 8px;
+  left: 40%;
+  width: 48px;
+  height: 64px;
+  background: var(--gold);
+  animation-delay: -2.8s;
+  opacity: 0.7;
 }
 
 .cake {
@@ -338,6 +597,7 @@
   width: min(300px, 70vw);
   height: 260px;
   margin-top: 92px;
+  z-index: 2;
 }
 
 .cake-top,
@@ -380,6 +640,7 @@
   height: 26px;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 20px 36px rgba(62, 32, 48, 0.18);
+  border-radius: 50%;
 }
 
 .candles {
@@ -416,9 +677,20 @@
   );
   transform: translateX(-50%);
   animation: flame 1.2s ease-in-out infinite alternate;
+  box-shadow: 0 0 12px rgba(255, 191, 55, 0.5);
 }
 
-/* ---------- Footer ---------- */
+/* ── Confetti Burst (canvas-driven; container reserved) ───────── */
+
+.confetti-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+
 .gift-footer {
   position: relative;
   z-index: 2;
@@ -444,7 +716,8 @@
   color: var(--rose);
 }
 
-/* ---------- Keyframes ---------- */
+/* ── Keyframes ────────────────────────────────────────────────── */
+
 @keyframes pulseButton {
   0%,
   100% {
@@ -484,7 +757,8 @@
   }
 }
 
-/* ---------- Responsive ---------- */
+/* ── Responsive ────────────────────────────────────────────────── */
+
 @media (max-width: 760px) {
   .gift-root {
     overflow-y: auto;
@@ -518,6 +792,11 @@
     height: 70px;
   }
 
+  .balloon-three {
+    width: 38px;
+    height: 50px;
+  }
+
   .wish-copy {
     padding-right: 0;
   }
@@ -539,7 +818,7 @@
   .lead,
   .wish-note {
     font-size: 0.84rem;
-    line-height: 1.4;
+    line-height: 1.36;
   }
 
   .wish-note {
@@ -549,14 +828,29 @@
   .signature {
     font-size: 1.45rem;
   }
+
+  .star {
+    display: none;
+  }
 }
 
+/* ── Reduced Motion ───────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
-  .open-button,
-  .moon,
-  .balloon,
-  .candles span::before,
-  .intro {
-    animation: none;
+  .gift-root *,
+  .gift-root *::before,
+  .gift-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .button-shimmer {
+    display: none;
   }
 }

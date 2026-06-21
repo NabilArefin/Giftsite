@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -13,10 +13,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const inter = Inter({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "600", "800", "900"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Happy Birthday, Dear \u00b7 A Little Gift",
-  description:
-    "A little birthday wish, wrapped in sparkles, cake, and a whole lot of love. Tap to open your gift.",
+  title: "Happy Birthday, Dear",
+  description: "A little wish for you \u2014 crafted with love.",
   keywords: ["birthday", "gift", "wish", "greeting", "celebration"],
   authors: [{ name: "With love" }],
   icons: {
@@ -24,15 +38,18 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Happy Birthday, Dear",
-    description: "A little birthday wish, just for you.",
-    siteName: "A Little Gift",
+    description: "A little wish for you \u2014 crafted with love.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Happy Birthday, Dear",
-    description: "A little birthday wish, just for you.",
+    description: "A little wish for you \u2014 crafted with love.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7b61ff",
 };
 
 export default function RootLayout({
@@ -43,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />
