@@ -52,3 +52,24 @@ Work Log:
 Stage Summary:
 - Two wish paragraphs merged into one bordered wish-note card: "I hope your day feels as beautiful as the way you make my world feel. You are my favorite smile, my soft place, and my sweetest reason to believe in magic. May this new year bring you peace, confidence, beautiful surprises, and everything your heart has been quietly wishing for. I will keep cheering for you, choosing you, and loving you in every little way I can."
 - Artifact: src/app/page.tsx (.wish-copy section)
+
+---
+Task ID: 3
+Agent: main (Z.ai Code)
+Task: Remove the circle (moon) behind the cake; add 1 extra blue balloon right beside the golden balloon
+
+Work Log:
+- src/app/page.tsx: removed <div className="moon-glow" /> and <div className="moon" /> from the cake-scene; added <div className="balloon balloon-four" /> right after balloon-three
+- src/app/gift.css:
+  - Removed .moon rule, .moon-glow rule, @keyframes breatheGlow, and @keyframes morphMoon (all only used by the moon, now dead code)
+  - Added .balloon-four: top:26px, left:53% (right beside golden balloon-three which is at left:40% width:48px), width:44px height:58px, background #5bb6e8 (sky blue), floatGentle animation with -1.2s delay, opacity 0.85
+  - Added mobile override in @media (max-width:760px): .balloon-four { width:34px; height:46px; } to match the scaled-down balloon-three
+- Verified via Agent Browser + VLM:
+  - DOM: .moon and .moon-glow no longer exist; .balloon-four exists; gap between golden (balloon-three) and blue (balloon-four) is only 4px (right beside each other); balloon-four backgroundColor = rgb(91, 182, 232) = sky blue
+  - VLM: "area behind the cake is clear (no moon)"; "4 balloons total: red, yellow, blue, green"; "blue balloon is positioned right beside a golden/yellow balloon... to the right"
+  - Lint passes; dev server compiles cleanly
+
+Stage Summary:
+- Moon + moon-glow removed from the cake scene (cleaner backdrop behind the cake)
+- New blue (sky blue #5bb6e8) balloon added immediately to the right of the golden balloon, with a gentle bob animation offset for visual variety; scales down on mobile
+- Artifacts: src/app/page.tsx (cake-scene div), src/app/gift.css (.balloon-four rule, removed moon rules/keyframes, mobile override)

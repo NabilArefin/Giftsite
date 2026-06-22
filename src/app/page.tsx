@@ -471,11 +471,10 @@ export default function GiftPage() {
           </button>
 
           <div className="cake-scene" aria-hidden="true">
-            <div className="moon-glow" />
-            <div className="moon" />
             <div className="balloon balloon-one" />
             <div className="balloon balloon-two" />
             <div className="balloon balloon-three" />
+            <div className="balloon balloon-four" />
             <div className="cake">
               <div className="candles">
                 <span />

@@ -505,46 +505,6 @@
   overflow: hidden;
 }
 
-.moon {
-  position: absolute;
-  width: min(300px, 68vw);
-  aspect-ratio: 1;
-  border-radius: 42% 58% 48% 52%;
-  background: radial-gradient(
-    circle at 36% 28%,
-    #fffdf6 0 22%,
-    #ffe4a6 42%,
-    #ffc4cb 72%,
-    #d9d0ff 100%
-  );
-  box-shadow: 0 20px 54px rgba(62, 32, 48, 0.16);
-  animation: morphMoon 8s var(--ease-expressive) infinite;
-  z-index: 0;
-}
-
-/* Soft glow behind the moon */
-.moon-glow {
-  position: absolute;
-  width: min(360px, 78vw);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 200, 91, 0.18), transparent 70%);
-  z-index: 0;
-  animation: breatheGlow 4s ease-in-out infinite;
-}
-
-@keyframes breatheGlow {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.12);
-    opacity: 1;
-  }
-}
-
 .balloon {
   position: absolute;
   border-radius: 48% 48% 48% 48% / 58% 58% 42% 42%;
@@ -602,6 +562,17 @@
   /* Gentle bob so it never rises into the overflow-hidden top edge */
   animation: floatGentle 4.6s ease-in-out -2.8s infinite;
   opacity: 0.7;
+}
+
+/* Blue balloon — sits right beside the golden balloon */
+.balloon-four {
+  top: 26px;
+  left: 53%;
+  width: 44px;
+  height: 58px;
+  background: #5bb6e8;
+  animation: floatGentle 4.6s ease-in-out -1.2s infinite;
+  opacity: 0.85;
 }
 
 .cake {
@@ -740,16 +711,6 @@
   }
 }
 
-@keyframes morphMoon {
-  0%,
-  100% {
-    border-radius: 42% 58% 48% 52%;
-  }
-  50% {
-    border-radius: 58% 42% 54% 46%;
-  }
-}
-
 @keyframes float {
   0%,
   100% {
@@ -819,6 +780,11 @@
   .balloon-three {
     width: 38px;
     height: 50px;
+  }
+
+  .balloon-four {
+    width: 34px;
+    height: 46px;
   }
 
   .wish-copy {
