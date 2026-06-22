@@ -497,16 +497,13 @@ export default function GiftPage() {
               <br />
               Nuha
             </h1>
-            <p className="lead reveal reveal--3">
+            <p className="wish-note reveal reveal--3">
               I hope your day feels as beautiful as the way you make my world feel.
               You are my favorite smile, my soft place, and my sweetest reason to
-              believe in magic.
-            </p>
-            <p className="wish-note reveal reveal--4">
-              May this new year bring you peace, confidence, beautiful surprises,
-              and everything your heart has been quietly wishing for. I will keep
-              cheering for you, choosing you, and loving you in every little way I
-              can.
+              believe in magic. May this new year bring you peace, confidence,
+              beautiful surprises, and everything your heart has been quietly
+              wishing for. I will keep cheering for you, choosing you, and loving
+              you in every little way I can.
             </p>
             <p className="signature reveal reveal--5">
               Forever your biggest fan&thinsp;&hearts;
