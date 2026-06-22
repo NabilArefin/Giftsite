@@ -190,6 +190,7 @@ export default function GiftPage() {
   const sizeRef = useRef({ w: 0, h: 0 });
   const mouseRef = useRef({ x: -100, y: -100, last: 0 });
   const reducedRef = useRef(false);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -306,8 +307,106 @@ export default function GiftPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeWish]);
 
+  // Magical wand cursor — smooth follow with easing, tilt on hover/press.
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+      cursor.style.display = "none";
+      return;
+    }
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const target = { x: -200, y: -200 };
+    const current = { x: -200, y: -200 };
+    let hasMoved = false;
+    let raf = 0;
+
+    const onMove = (e: MouseEvent) => {
+      target.x = e.clientX;
+      target.y = e.clientY;
+      if (!hasMoved) {
+        hasMoved = true;
+        current.x = e.clientX;
+        current.y = e.clientY;
+        cursor.classList.remove("is-hidden");
+      }
+      const el = e.target as HTMLElement | null;
+      if (el && el.closest("button, a, [role='button']")) {
+        cursor.classList.add("is-active");
+      } else {
+        cursor.classList.remove("is-active");
+      }
+    };
+    const onDown = () => cursor.classList.add("is-pressed");
+    const onUp = () => cursor.classList.remove("is-pressed");
+    const onLeave = () => cursor.classList.add("is-hidden");
+    const onEnter = () => {
+      if (hasMoved) cursor.classList.remove("is-hidden");
+    };
+
+    const tick = () => {
+      if (reduced) {
+        current.x = target.x;
+        current.y = target.y;
+      } else {
+        current.x += (target.x - current.x) * 0.32;
+        current.y += (target.y - current.y) * 0.32;
+      }
+      cursor.style.transform = `translate3d(${current.x - 10}px, ${
+        current.y - 10
+      }px, 0)`;
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("mouseup", onUp);
+    document.addEventListener("mouseleave", onLeave);
+    document.addEventListener("mouseenter", onEnter);
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mouseup", onUp);
+      document.removeEventListener("mouseleave", onLeave);
+      document.removeEventListener("mouseenter", onEnter);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <div className={`gift-root ${isOpen ? "wish-is-open" : ""}`}>
+      <div ref={cursorRef} className="magic-cursor is-hidden" aria-hidden="true">
+        <svg className="magic-wand" width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <defs>
+            <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#a06bd6" />
+              <stop offset="55%" stopColor="#5a3d7d" />
+              <stop offset="100%" stopColor="#2a1b29" />
+            </linearGradient>
+            <radialGradient id="wandTip" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="25%" stopColor="#fff7ad" />
+              <stop offset="55%" stopColor="#f5c85b" />
+              <stop offset="100%" stopColor="#ff8c72" />
+            </radialGradient>
+          </defs>
+          <circle className="wand-halo" cx="10" cy="10" r="9" fill="url(#wandTip)" />
+          <line x1="12" y1="12" x2="44" y2="44" stroke="url(#wandShaft)" strokeWidth="4" strokeLinecap="round" />
+          <line x1="38" y1="38" x2="50" y2="50" stroke="#2a1b29" strokeWidth="7" strokeLinecap="round" />
+          <line x1="40" y1="40" x2="42" y2="42" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
+          <line x1="44" y1="44" x2="46" y2="46" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
+          <path
+            className="wand-star"
+            d="M 10,2 L 11.88,7.41 L 17.61,7.53 L 13.04,10.99 L 14.70,16.47 L 10,13.2 L 5.30,16.47 L 6.96,10.99 L 2.39,7.53 L 8.12,7.41 Z"
+            fill="url(#wandTip)"
+          />
+        </svg>
+      </div>
+
       <canvas ref={canvasRef} className="sparkle-canvas" aria-hidden="true" />
 
       <div className="stars-layer" aria-hidden="true">

@@ -919,6 +919,107 @@
   }
 }
 
+/* ── Magical Wand Cursor ──────────────────────────────────────── */
+
+/* Hide the native cursor only on devices that have a precise pointer */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body,
+  .gift-root,
+  .gift-root *,
+  .gift-root a,
+  .gift-root button {
+    cursor: none !important;
+  }
+}
+
+.magic-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 56px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate3d(-200px, -200px, 0);
+  will-change: transform;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Never render on touch / coarse-pointer devices */
+@media (hover: none), (pointer: coarse) {
+  .magic-cursor {
+    display: none;
+  }
+}
+
+.magic-cursor.is-hidden {
+  opacity: 0;
+}
+
+.magic-wand {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 10px 10px;
+  transform: rotate(-8deg);
+  transition: transform 0.18s var(--ease-spring);
+  filter: drop-shadow(0 3px 6px rgba(42, 27, 41, 0.28));
+}
+
+/* Tilt + grow when hovering interactive elements */
+.magic-cursor.is-active .magic-wand {
+  transform: rotate(-22deg) scale(1.12);
+}
+
+/* Slight "tap" when pressing */
+.magic-cursor.is-pressed .magic-wand {
+  transform: rotate(-2deg) scale(0.94);
+}
+
+.magic-cursor.is-active.is-pressed .magic-wand {
+  transform: rotate(-12deg) scale(1.04);
+}
+
+.wand-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wandHalo 2.4s ease-in-out infinite;
+}
+
+.wand-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wandTip 1.8s ease-in-out infinite;
+}
+
+@keyframes wandHalo {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes wandTip {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px rgba(245, 200, 91, 0.8))
+      drop-shadow(0 0 6px rgba(255, 140, 114, 0.45));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(245, 200, 91, 1))
+      drop-shadow(0 0 12px rgba(255, 140, 114, 0.75));
+    transform: scale(1.08);
+  }
+}
+
 /* ── Reduced Motion ───────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
