@@ -73,3 +73,21 @@ Stage Summary:
 - Moon + moon-glow removed from the cake scene (cleaner backdrop behind the cake)
 - New blue (sky blue #5bb6e8) balloon added immediately to the right of the golden balloon, with a gentle bob animation offset for visual variety; scales down on mobile
 - Artifacts: src/app/page.tsx (cake-scene div), src/app/gift.css (.balloon-four rule, removed moon rules/keyframes, mobile override)
+
+---
+Task ID: 4
+Agent: main (Z.ai Code)
+Task: Fix the magic wand cursor glow being clipped/cut off
+
+Work Log:
+- Diagnosed root cause: the wand SVG has viewBox="0 0 56 56" with default overflow:hidden. The star tip + halo sit near the top-left corner (star at (10,2), halo circle r=9 at (10,10)). During the glow animation (wandHalo scales halo to 1.2 -> extends to negative coords; wandTip adds drop-shadows up to ~6px beyond the star), the glow exceeded the viewBox bounds and got clipped.
+- Fix: added `overflow: visible;` to `.magic-wand` in src/app/gift.css. This lets the SVG paint its halo, star, and drop-shadows outside the viewBox. The .magic-cursor div already has default overflow:visible (no clipping), so the glow now renders freely in all directions.
+- No changes needed to wand size, position, transform-origin (still 10px 10px = star tip hotspot), or the JS cursor offset (still x-10, y-10) — the hotspot alignment is preserved.
+- Verified via Agent Browser + VLM:
+  - DOM: getComputedStyle(.magic-wand).overflow === "visible"
+  - VLM at glow peak: "glowing halo around the star tip appears fully round and complete, with no visible clipping... extends freely in all directions... no truncation... full circle/halo, smooth, unbroken shape"
+  - No page errors; lint passes; dev server compiles cleanly
+
+Stage Summary:
+- One-line CSS fix (`overflow: visible` on `.magic-wand`) resolves the glow clipping; the star tip's halo and drop-shadows now render fully in all directions without being cut off by the SVG viewBox.
+- Artifact: src/app/gift.css (.magic-wand rule)
