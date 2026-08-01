@@ -565,7 +565,7 @@ export default function GiftPage() {
               you in every little way I can.
             </p>
             <p className="signature reveal reveal--5">
-              Forever your biggest fan&thinsp;&hearts;
+              I&thinsp;&hearts;&thinsp;U
             </p>
           </div>
         </div>
