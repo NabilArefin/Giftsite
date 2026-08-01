@@ -91,3 +91,32 @@ Work Log:
 Stage Summary:
 - One-line CSS fix (`overflow: visible` on `.magic-wand`) resolves the glow clipping; the star tip's halo and drop-shadows now render fully in all directions without being cut off by the SVG viewBox.
 - Artifact: src/app/gift.css (.magic-wand rule)
+
+---
+Task ID: 5
+Agent: main (Z.ai Code)
+Task: Polish the website more (no text changes)
+
+Work Log:
+- Added 12 visual polish improvements across CSS and JSX:
+  1. Background ambient light orb — slow-drifting purple radial gradient on .gift-root::before (16s animation)
+  2. Button pulsing glow — outer glow ring added to @keyframes pulseButton via box-shadow (0→28px→56px spread)
+  3. Candle warm glow — .candles::after radial gradient emanating from candle flames (2s animation)
+  4. Cake scene ambient glow — .cake-scene::before soft warm radial glow behind cake (4s animation)
+  5. Title shimmer — .display-title expanded gradient with background-size:200% and titleShimmer 6s animation
+  6. Signature gradient shimmer — .signature now has rose→coral→gold→coral→rose gradient with signatureShimmer 4s animation
+  7. Footer heart beat — .heart-dot heartbeat animation (1.2s, double-beat pattern)
+  8. Close button glow — box-shadow on hover
+  9. Popup card entrance glow — .wish-popup.open .popup-card gets outer glow box-shadow + inner glow on base card
+  10. 4 more stars — star--9 through star--12 added to JSX and CSS
+  11. Wish-note inner glow — subtle inset box-shadow on .wish-note
+  12. Popup card inner glow — inset box-shadow on .popup-card base
+- Verified via Agent Browser + VLM:
+  - Landing: button has outer glow/halo, ambient background atmosphere, twinkling stars, polished magical feel
+  - Popup: title has gradient shimmer, candle warm glow visible, ambient glow behind cake, signature gradient, wish-note inner glow, popup outer glow
+  - No page errors; lint passes; dev server compiles cleanly
+
+Stage Summary:
+- 12 visual polish improvements applied (all CSS/JSX, no text changes)
+- Key additions: ambient light orb, button glow ring, candle glow, cake glow, title shimmer, signature shimmer, heartbeat, close button glow, card entrance glow, 4 more stars, wish-note glow, card inner glow
+- Artifacts: src/app/gift.css (extensive additions), src/app/page.tsx (4 more star elements)

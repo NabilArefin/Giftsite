@@ -40,6 +40,24 @@
     linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
 }
 
+/* Slow-drifting ambient light orb */
+.gift-root::before {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  top: -20%;
+  left: -20%;
+  background: radial-gradient(
+    circle,
+    rgba(123, 97, 255, 0.06),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientOrb 16s ease-in-out infinite;
+}
+
 .gift-root.wish-is-open {
   overflow: hidden;
   /* Safety net: never render a scrollbar anywhere on the gift page */
@@ -163,6 +181,38 @@
   width: 5px;
   height: 5px;
 }
+.star--9 {
+  top: 4%;
+  left: 52%;
+  --dur: 4.4s;
+  --delay: 1.5s;
+  width: 3px;
+  height: 3px;
+}
+.star--10 {
+  top: 44%;
+  left: 94%;
+  --dur: 3.6s;
+  --delay: 0.3s;
+  width: 4px;
+  height: 4px;
+}
+.star--11 {
+  top: 70%;
+  left: 38%;
+  --dur: 5.2s;
+  --delay: 2.2s;
+  width: 5px;
+  height: 5px;
+}
+.star--12 {
+  top: 16%;
+  left: 82%;
+  --dur: 4s;
+  --delay: 1s;
+  width: 3px;
+  height: 3px;
+}
 
 @keyframes twinkleStar {
   0%,
@@ -218,6 +268,7 @@
   box-shadow:
     0 20px 52px rgba(123, 97, 255, 0.26),
     0 14px 36px rgba(227, 79, 111, 0.26),
+    0 0 0 0 rgba(123, 97, 255, 0),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transform: translateY(0);
@@ -230,11 +281,7 @@
 }
 
 .open-button:hover {
-  border-radius: 48px;
-  box-shadow:
-    0 24px 64px rgba(123, 97, 255, 0.32),
-    0 18px 44px rgba(227, 79, 111, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  filter: brightness(1.08);
 }
 
 .open-button:active {
@@ -323,11 +370,12 @@
   border-radius: 32px;
   box-shadow:
     var(--shadow),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+    0 0 24px rgba(123, 97, 255, 0.04) inset;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   transform: translateY(28px) scale(0.92);
-  transition: transform 0.42s var(--ease-expressive);
+  transition: transform 0.42s var(--ease-expressive), box-shadow 0.5s var(--ease-expressive);
   /* Never show a scrollbar on the card — content is sized to fit */
   scrollbar-width: none;
 }
@@ -338,6 +386,11 @@
 
 .wish-popup.open .popup-card {
   transform: translateY(0) scale(1);
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+    0 0 40px rgba(123, 97, 255, 0.08),
+    0 0 80px rgba(227, 79, 111, 0.05);
 }
 
 /* ── Close Button ─────────────────────────────────────────────── */
@@ -365,6 +418,7 @@
 .close-button:hover {
   background: #ffd7e2;
   transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 12px rgba(227, 79, 111, 0.25);
 }
 
 .close-button svg {
@@ -441,14 +495,18 @@
   text-align: center;
   background: linear-gradient(
     135deg,
-    #3a1733 20%,
-    var(--rose) 50%,
-    var(--violet) 80%
+    #3a1733 15%,
+    var(--rose) 40%,
+    var(--violet) 60%,
+    var(--rose) 85%,
+    #3a1733 100%
   );
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  animation: titleShimmer 6s ease-in-out infinite;
 }
 
 .lead,
@@ -474,16 +532,29 @@
   border: 1px solid rgba(227, 79, 111, 0.16);
   border-left: 4px solid var(--rose);
   border-radius: 16px;
+  box-shadow: inset 0 0 12px rgba(227, 79, 111, 0.04);
 }
 
 .signature {
   margin: 0;
-  color: var(--rose);
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 3.4vw, 2rem);
   font-style: italic;
-  -webkit-text-fill-color: var(--rose);
-  animation: gentlePulse 3s var(--ease-expressive) infinite;
+  background: linear-gradient(
+    135deg,
+    var(--rose) 0%,
+    var(--coral) 40%,
+    var(--gold) 50%,
+    var(--coral) 60%,
+    var(--rose) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gentlePulse 3s var(--ease-expressive) infinite,
+    signatureShimmer 4s ease-in-out infinite;
 }
 
 @keyframes gentlePulse {
@@ -504,6 +575,24 @@
   display: grid;
   place-items: center;
   overflow: hidden;
+}
+
+/* Soft ambient glow behind the cake */
+.cake-scene::before {
+  content: "";
+  position: absolute;
+  width: min(280px, 60vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 191, 55, 0.08) 0%,
+    rgba(227, 79, 111, 0.04) 40%,
+    transparent 70%
+  );
+  z-index: 0;
+  animation: cakeGlow 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .balloon {
@@ -664,6 +753,26 @@
   box-shadow: 0 0 12px rgba(255, 191, 55, 0.5);
 }
 
+/* Warm ambient glow from the candles */
+.candles::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -60px;
+  width: 140px;
+  height: 100px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at 50% 80%,
+    rgba(255, 191, 55, 0.25) 0%,
+    rgba(255, 140, 55, 0.1) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: candleGlow 2s ease-in-out infinite alternate;
+}
+
 /* ── Confetti Burst (canvas-driven; container reserved) ───────── */
 
 .confetti-burst {
@@ -698,6 +807,8 @@
 
 .gift-footer .heart-dot {
   color: var(--rose);
+  display: inline-block;
+  animation: heartbeat 1.2s ease-in-out infinite;
 }
 
 /* ── Keyframes ────────────────────────────────────────────────── */
@@ -706,9 +817,20 @@
   0%,
   100% {
     transform: translateY(0) scale(1);
+    box-shadow:
+      0 20px 52px rgba(123, 97, 255, 0.26),
+      0 14px 36px rgba(227, 79, 111, 0.26),
+      0 0 0 0 rgba(123, 97, 255, 0),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   50% {
     transform: translateY(-5px) scale(1.03);
+    box-shadow:
+      0 20px 52px rgba(123, 97, 255, 0.26),
+      0 14px 36px rgba(227, 79, 111, 0.26),
+      0 0 28px rgba(123, 97, 255, 0.2),
+      0 0 56px rgba(227, 79, 111, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -740,6 +862,81 @@
   }
   to {
     transform: translateX(-50%) scale(1.08) rotate(5deg);
+  }
+}
+
+@keyframes ambientOrb {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(40vw, 30vh);
+  }
+  66% {
+    transform: translate(-10vw, 50vh);
+  }
+}
+
+@keyframes candleGlow {
+  from {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@keyframes cakeGlow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.25);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.2);
+  }
+  56% {
+    transform: scale(1);
+  }
+}
+
+@keyframes titleShimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes signatureShimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 

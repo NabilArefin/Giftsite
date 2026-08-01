@@ -418,6 +418,10 @@ export default function GiftPage() {
         <span className="star star--6" />
         <span className="star star--7" />
         <span className="star star--8" />
+        <span className="star star--9" />
+        <span className="star star--10" />
+        <span className="star star--11" />
+        <span className="star star--12" />
       </div>
 
       <main className="page-shell">
