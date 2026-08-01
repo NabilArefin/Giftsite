@@ -490,7 +490,6 @@ export default function GiftPage() {
           </div>
 
           <div className="wish-copy">
-            <p className="eyebrow reveal reveal--1">A little wish for you</p>
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               Happy Birthday,
               <br />
