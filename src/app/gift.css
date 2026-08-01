@@ -547,7 +547,7 @@
   margin: 0;
   font-family: "Amsterline", var(--font-display);
   font-size: clamp(1.5rem, 4.2vw, 2.6rem);
-  font-style: normal;
+  font-style: italic;
   text-align: center;
   background: linear-gradient(
     135deg,
