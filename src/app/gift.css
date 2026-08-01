@@ -545,9 +545,9 @@
 
 .signature {
   margin: 0;
-  font-family: "Amsterline", var(--font-display);
+  font-family: "Lavishly Yours", var(--font-display), cursive;
   font-size: clamp(1.5rem, 4.2vw, 2.6rem);
-  font-style: italic;
+  font-style: normal;
   text-align: center;
   background: linear-gradient(
     135deg,
