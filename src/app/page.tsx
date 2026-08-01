@@ -307,7 +307,7 @@ export default function GiftPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeWish]);
 
-  // Magical wand cursor — smooth follow with easing, tilt on hover/press.
+  // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
   useEffect(() => {
     const cursor = cursorRef.current;
     if (!cursor) return;
@@ -320,6 +320,7 @@ export default function GiftPage() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const target = { x: -200, y: -200 };
     const current = { x: -200, y: -200 };
+    const velocity = { x: 0, y: 0 };
     let hasMoved = false;
     let raf = 0;
 
@@ -339,7 +340,17 @@ export default function GiftPage() {
         cursor.classList.remove("is-active");
       }
     };
-    const onDown = () => cursor.classList.add("is-pressed");
+    const onDown = () => {
+      cursor.classList.add("is-pressed");
+      // Emit sparkle burst on click from wand tip position
+      if (!reduced) {
+        const tipX = current.x;
+        const tipY = current.y;
+        for (let i = 0; i < 6; i++) {
+          particlesRef.current.push(createParticle(tipX, tipY, { trail: true }));
+        }
+      }
+    };
     const onUp = () => cursor.classList.remove("is-pressed");
     const onLeave = () => cursor.classList.add("is-hidden");
     const onEnter = () => {
@@ -351,12 +362,28 @@ export default function GiftPage() {
         current.x = target.x;
         current.y = target.y;
       } else {
-        current.x += (target.x - current.x) * 0.32;
-        current.y += (target.y - current.y) * 0.32;
+        const prevX = current.x;
+        const prevY = current.y;
+        current.x += (target.x - current.x) * 0.28;
+        current.y += (target.y - current.y) * 0.28;
+        velocity.x = current.x - prevX;
+        velocity.y = current.y - prevY;
+      }
+
+      // Velocity-based tilt: wand leans in direction of movement
+      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+      let tiltAngle = -8; // default rest angle
+      if (speed > 1.5) {
+        const moveAngle = Math.atan2(velocity.y, velocity.x) * (180 / Math.PI);
+        // Map movement direction to wand tilt (subtle lean)
+        tiltAngle = -8 + velocity.x * 0.8;
+        tiltAngle = Math.max(-30, Math.min(20, tiltAngle));
       }
       cursor.style.transform = `translate3d(${current.x - 10}px, ${
         current.y - 10
       }px, 0)`;
+      // Apply velocity tilt via CSS custom property
+      cursor.style.setProperty("--wand-tilt", `${tiltAngle}deg`);
       raf = requestAnimationFrame(tick);
     };
 
@@ -383,27 +410,57 @@ export default function GiftPage() {
         <svg className="magic-wand" width="56" height="56" viewBox="0 0 56 56" fill="none">
           <defs>
             <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#a06bd6" />
-              <stop offset="55%" stopColor="#5a3d7d" />
+              <stop offset="0%" stopColor="#c9a0f0" />
+              <stop offset="30%" stopColor="#a06bd6" />
+              <stop offset="65%" stopColor="#5a3d7d" />
               <stop offset="100%" stopColor="#2a1b29" />
             </linearGradient>
             <radialGradient id="wandTip" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="25%" stopColor="#fff7ad" />
-              <stop offset="55%" stopColor="#f5c85b" />
+              <stop offset="20%" stopColor="#fff7e0" />
+              <stop offset="45%" stopColor="#fff7ad" />
+              <stop offset="70%" stopColor="#f5c85b" />
               <stop offset="100%" stopColor="#ff8c72" />
             </radialGradient>
+            <radialGradient id="wandOuterGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(245,200,91,0.35)" />
+              <stop offset="50%" stopColor="rgba(255,140,114,0.15)" />
+              <stop offset="100%" stopColor="rgba(255,140,114,0)" />
+            </radialGradient>
+            <filter id="wandGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
+          {/* Soft outer glow aura */}
+          <circle className="wand-aura" cx="10" cy="10" r="18" fill="url(#wandOuterGlow)" />
+          {/* Inner halo */}
           <circle className="wand-halo" cx="10" cy="10" r="9" fill="url(#wandTip)" />
+          {/* Tiny sparkle dots around the star */}
+          <circle className="sparkle-dot sd-1" cx="2" cy="6" r="0.8" fill="#fff7ad" />
+          <circle className="sparkle-dot sd-2" cx="18" cy="5" r="0.6" fill="#ffffff" />
+          <circle className="sparkle-dot sd-3" cx="4" cy="16" r="0.7" fill="#ff8c72" />
+          <circle className="sparkle-dot sd-4" cx="16" cy="15" r="0.5" fill="#f5c85b" />
+          <circle className="sparkle-dot sd-5" cx="10" cy="0" r="0.6" fill="#ffffff" />
+          {/* Shaft with gradient */}
           <line x1="12" y1="12" x2="44" y2="44" stroke="url(#wandShaft)" strokeWidth="4" strokeLinecap="round" />
+          {/* Handle base */}
           <line x1="38" y1="38" x2="50" y2="50" stroke="#2a1b29" strokeWidth="7" strokeLinecap="round" />
+          {/* Gold grip rings */}
           <line x1="40" y1="40" x2="42" y2="42" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
           <line x1="44" y1="44" x2="46" y2="46" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
+          {/* Star tip with glow filter */}
           <path
             className="wand-star"
             d="M 10,2 L 11.88,7.41 L 17.61,7.53 L 13.04,10.99 L 14.70,16.47 L 10,13.2 L 5.30,16.47 L 6.96,10.99 L 2.39,7.53 L 8.12,7.41 Z"
             fill="url(#wandTip)"
+            filter="url(#wandGlow)"
           />
+          {/* Hover ring (shown when is-active) */}
+          <circle className="hover-ring" cx="10" cy="10" r="14" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
         </svg>
       </div>
 
