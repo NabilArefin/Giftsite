@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -25,6 +25,27 @@ const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "600", "800", "900"],
+  display: "swap",
+});
+
+const germaniaOne = Germania_One({
+  variable: "--font-germania",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+const sacramento = Sacramento({
+  variable: "--font-sacramento",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+const updock = Updock({
+  variable: "--font-updock",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -69,7 +90,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />

@@ -191,6 +191,8 @@ export default function GiftPage() {
   const mouseRef = useRef({ x: -100, y: -100, last: 0 });
   const reducedRef = useRef(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonTextRef = useRef<HTMLSpanElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -306,6 +308,122 @@ export default function GiftPage() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeWish]);
+
+  // Dynamically compute button text color based on actual rendered background luminance.
+  // This ensures perfect sync regardless of animation state (hover, etc.)
+  useEffect(() => {
+    const btn = buttonRef.current;
+    const txt = buttonTextRef.current;
+    if (!btn || !txt) return;
+
+    let raf = 0;
+    let lastUpdate = 0;
+    const THROTTLE_MS = 50; // ~20fps sampling — smooth enough, low cost
+
+    // Smoothed luminance to avoid flicker
+    let smoothLum = 0.45;
+
+    // Gradient color stops: violet → rose → coral → gold → mint
+    const stops = [
+      { t: 0,    r: 123, g: 97,  b: 255 }, // violet
+      { t: 0.25, r: 227, g: 79,  b: 111 }, // rose
+      { t: 0.50, r: 255, g: 140, b: 114 }, // coral
+      { t: 0.75, r: 245, g: 200, b: 91  }, // gold
+      { t: 1.00, r: 158, g: 215, b: 193 }, // mint
+    ];
+
+    const tick = (now: number) => {
+      if (now - lastUpdate >= THROTTLE_MS) {
+        lastUpdate = now;
+
+        const rect = btn.getBoundingClientRect();
+        if (rect.width < 1 || rect.height < 1) {
+          raf = requestAnimationFrame(tick);
+          return;
+        }
+
+        // Read the current animated background-position
+        const style = getComputedStyle(btn);
+        const bgPos = style.backgroundPosition;
+
+        // Parse background-position — may be in % or px
+        const parts = bgPos.split(/\s+/);
+        let posX = 0;
+        let posY = 0;
+        if (parts.length >= 2) {
+          const xVal = parseFloat(parts[0]);
+          const yVal = parseFloat(parts[1]);
+          // If the value has a % sign, treat as percentage (0-100)
+          // If px, convert to percentage based on background-size (300%)
+          if (parts[0].includes("%")) {
+            posX = xVal; // 0-100
+          } else {
+            // px value: posX% = xPx / (rect.width * 2) * 100
+            posX = (xVal / (rect.width * 2)) * 100;
+          }
+          if (parts[1].includes("%")) {
+            posY = yVal;
+          } else {
+            posY = (yVal / (rect.height * 2)) * 100;
+          }
+        }
+
+        // For background-size: 300% 300% with 135deg gradient:
+        // The visible center in background fractional coords:
+        // fracX = (posX/100 * 2 + 0.5) / 3
+        // fracY = (posY/100 * 2 + 0.5) / 3
+        // gradientT along 135deg diagonal = (fracX + fracY) / 2
+        const fracX = (posX / 100 * 2 + 0.5) / 3;
+        const fracY = (posY / 100 * 2 + 0.5) / 3;
+        const gradientT = Math.min(1, Math.max(0, (fracX + fracY) / 2));
+
+        // Interpolate color at gradientT
+        let r = stops[0].r, g = stops[0].g, b = stops[0].b;
+        for (let i = 0; i < stops.length - 1; i++) {
+          if (gradientT >= stops[i].t && gradientT <= stops[i + 1].t) {
+            const localT = (gradientT - stops[i].t) / (stops[i + 1].t - stops[i].t);
+            r = stops[i].r + (stops[i + 1].r - stops[i].r) * localT;
+            g = stops[i].g + (stops[i + 1].g - stops[i].g) * localT;
+            b = stops[i].b + (stops[i + 1].b - stops[i].b) * localT;
+            break;
+          }
+        }
+
+        // Perceived luminance (ITU-R BT.709)
+        const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+        // Smooth the luminance to avoid jitter
+        smoothLum += (lum - smoothLum) * 0.25;
+
+        // Map luminance to text color:
+        // Luminance range is ~0.44 (violet/rose) to ~0.79 (gold/mint)
+        // threshold=0.58, transitionWidth=0.13 gives:
+        //   <0.45: white, 0.45-0.71: gray transition, >0.71: black
+        const threshold = 0.58;
+        const transitionWidth = 0.13;
+
+        let textColor: string;
+        if (smoothLum < threshold - transitionWidth) {
+          textColor = "rgb(255, 255, 255)"; // white on dark bg
+        } else if (smoothLum > threshold + transitionWidth) {
+          textColor = "rgb(17, 17, 17)"; // near-black on bright bg
+        } else {
+          // Smooth interpolation through gray shades
+          const t = (smoothLum - (threshold - transitionWidth)) / (2 * transitionWidth);
+          const gray = Math.round(255 - t * 238); // 255 → 17
+          textColor = `rgb(${gray}, ${gray}, ${gray})`;
+        }
+
+        txt.style.color = textColor;
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
   useEffect(() => {
@@ -464,6 +582,13 @@ export default function GiftPage() {
         </svg>
       </div>
 
+      {/* Frost blobs */}
+      <div className="frost-blob frost-blob-1" aria-hidden="true" />
+      <div className="frost-blob frost-blob-2" aria-hidden="true" />
+      <div className="frost-blob frost-blob-3" aria-hidden="true" />
+      <div className="frost-blob frost-blob-4" aria-hidden="true" />
+      <div className="frost-blob frost-blob-5" aria-hidden="true" />
+
       <canvas ref={canvasRef} className="sparkle-canvas" aria-hidden="true" />
 
       <div className="stars-layer" aria-hidden="true">
@@ -485,13 +610,18 @@ export default function GiftPage() {
         <button
           type="button"
           className="open-button"
+          ref={buttonRef}
           onClick={openWish}
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-controls="wishPopup"
         >
-          <span className="button-shimmer" />
-          <span className="button-text">Tap here</span>
+          <span className="button-glass" />
+          <span className="button-light-orb orb-1" />
+          <span className="button-light-orb orb-2" />
+          <span className="button-light-orb orb-3" />
+          <span className="button-glow-ring" />
+          <span className="button-text" ref={buttonTextRef}>Tap Here</span>
         </button>
       </main>
 
@@ -554,7 +684,7 @@ export default function GiftPage() {
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               Happy Birthday
               <br />
-              Nuha
+              <span className="name-accent">Nuha</span>
             </h1>
             <p className="wish-note reveal reveal--3">
               I hope your day feels as beautiful as the way you make my world feel.
@@ -572,9 +702,11 @@ export default function GiftPage() {
       </section>
 
       <footer className="gift-footer">
-        <span>
-          Made with <span className="heart-dot">&hearts;</span> just for you
-        </span>
+        <div className="footer-box">
+          <span className="footer-ornament">✦</span>
+          <span>Made with <span className="heart-dot">&hearts;</span> just for you</span>
+          <span className="footer-ornament footer-ornament--right">✦</span>
+        </div>
       </footer>
     </div>
   );

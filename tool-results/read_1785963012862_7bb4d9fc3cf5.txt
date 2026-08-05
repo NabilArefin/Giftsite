@@ -1,0 +1,1468 @@
+     1→/* ================================================================
+     2→   Gift — Birthday Wish Page
+     3→   Polished edition
+     4→   ================================================================ */
+     5→
+     6→@property --glow-angle {
+     7→  syntax: "<angle>";
+     8→  initial-value: 0deg;
+     9→  inherits: false;
+    10→}
+    11→
+    12→@font-face {
+    13→  font-family: "Amsterline";
+    14→  src: url("/fonts/amsterline.ttf") format("truetype");
+    15→  font-weight: normal;
+    16→  font-style: normal;
+    17→  font-display: swap;
+    18→}
+    19→
+    20→.gift-root {
+    21→  --ink: #2a1b29;
+    22→  --muted: #705c68;
+    23→  --rose: #e34f6f;
+    24→  --coral: #ff8c72;
+    25→  --gold: #f5c85b;
+    26→  --mint: #9ed7c1;
+    27→  --violet: #7b61ff;
+    28→  --surface: rgba(255, 251, 254, 0.92);
+    29→  --surface-high: rgba(255, 255, 255, 0.96);
+    30→  --outline: rgba(88, 64, 84, 0.14);
+    31→  --shadow: 0 24px 70px rgba(62, 32, 48, 0.2);
+    32→  --ease-expressive: cubic-bezier(0.2, 0, 0, 1);
+    33→  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    34→
+    35→  /* Fonts (set by next/font in layout.tsx) with graceful fallbacks */
+    36→  --font-display: var(--font-display), "Playfair Display", Georgia,
+    37→    "Times New Roman", serif;
+    38→  --font-body: var(--font-body), "Inter", "Segoe UI", system-ui, -apple-system,
+    39→    BlinkMacSystemFont, sans-serif;
+    40→
+    41→  position: fixed;
+    42→  inset: 0;
+    43→  min-height: 100vh;
+    44→  display: flex;
+    45→  flex-direction: column;
+    46→  overflow: hidden;
+    47→  color: var(--ink);
+    48→  font-family: var(--font-body);
+    49→  background:
+    50→    radial-gradient(circle at 12% 18%, rgba(123, 97, 255, 0.22), transparent 26%),
+    51→    radial-gradient(circle at 80% 12%, rgba(245, 200, 91, 0.34), transparent 26%),
+    52→    radial-gradient(circle at 86% 82%, rgba(158, 215, 193, 0.4), transparent 24%),
+    53→    radial-gradient(circle at 50% 50%, rgba(227, 79, 111, 0.06), transparent 60%),
+    54→    linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
+    55→}
+    56→
+    57→/* Slow-drifting ambient light orb */
+    58→.gift-root::before {
+    59→  content: "";
+    60→  position: absolute;
+    61→  width: 60vmax;
+    62→  height: 60vmax;
+    63→  top: -20%;
+    64→  left: -20%;
+    65→  background: radial-gradient(
+    66→    circle,
+    67→    rgba(123, 97, 255, 0.06),
+    68→    transparent 60%
+    69→  );
+    70→  pointer-events: none;
+    71→  z-index: 0;
+    72→  animation: ambientOrb 16s ease-in-out infinite;
+    73→}
+    74→
+    75→.gift-root.wish-is-open {
+    76→  overflow: hidden;
+    77→  /* Safety net: never render a scrollbar anywhere on the gift page */
+    78→  scrollbar-width: none;
+    79→}
+    80→
+    81→.gift-root::-webkit-scrollbar {
+    82→  display: none;
+    83→}
+    84→
+    85→/* ── Sparkle Canvas ───────────────────────────────────────────── */
+    86→
+    87→.sparkle-canvas {
+    88→  position: fixed;
+    89→  inset: 0;
+    90→  width: 100%;
+    91→  height: 100%;
+    92→  pointer-events: none;
+    93→  z-index: 4;
+    94→}
+    95→
+    96→/* ── Floating Stars ───────────────────────────────────────────── */
+    97→
+    98→.stars-layer {
+    99→  position: fixed;
+   100→  inset: 0;
+   101→  pointer-events: none;
+   102→  z-index: 0;
+   103→  overflow: hidden;
+   104→}
+   105→
+   106→.star {
+   107→  position: absolute;
+   108→  width: 6px;
+   109→  height: 6px;
+   110→  background: var(--gold);
+   111→  border-radius: 50%;
+   112→  opacity: 0;
+   113→  animation: twinkleStar var(--dur, 4s) var(--delay, 0s) var(--ease-expressive)
+   114→    infinite;
+   115→  box-shadow: 0 0 6px rgba(245, 200, 91, 0.6);
+   116→}
+   117→
+   118→.star::before,
+   119→.star::after {
+   120→  content: "";
+   121→  position: absolute;
+   122→  background: var(--gold);
+   123→  border-radius: 50%;
+   124→}
+   125→
+   126→.star::before {
+   127→  width: 100%;
+   128→  height: 100%;
+   129→}
+   130→
+   131→.star::after {
+   132→  width: 14px;
+   133→  height: 2px;
+   134→  top: 50%;
+   135→  left: 50%;
+   136→  transform: translate(-50%, -50%) rotate(45deg);
+   137→  box-shadow: 0 0 4px rgba(245, 200, 91, 0.4);
+   138→}
+   139→
+   140→.star--1 {
+   141→  top: 8%;
+   142→  left: 15%;
+   143→  --dur: 3.5s;
+   144→  --delay: 0s;
+   145→}
+   146→.star--2 {
+   147→  top: 14%;
+   148→  left: 72%;
+   149→  --dur: 5s;
+   150→  --delay: 1.2s;
+   151→  width: 4px;
+   152→  height: 4px;
+   153→}
+   154→.star--3 {
+   155→  top: 34%;
+   156→  left: 88%;
+   157→  --dur: 4.2s;
+   158→  --delay: 0.6s;
+   159→}
+   160→.star--4 {
+   161→  top: 62%;
+   162→  left: 6%;
+   163→  --dur: 3.8s;
+   164→  --delay: 2s;
+   165→  width: 5px;
+   166→  height: 5px;
+   167→}
+   168→.star--5 {
+   169→  top: 78%;
+   170→  left: 55%;
+   171→  --dur: 4.6s;
+   172→  --delay: 0.8s;
+   173→  width: 3px;
+   174→  height: 3px;
+   175→}
+   176→.star--6 {
+   177→  top: 22%;
+   178→  left: 42%;
+   179→  --dur: 5.5s;
+   180→  --delay: 1.8s;
+   181→  width: 4px;
+   182→  height: 4px;
+   183→}
+   184→.star--7 {
+   185→  top: 52%;
+   186→  left: 28%;
+   187→  --dur: 3.2s;
+   188→  --delay: 2.5s;
+   189→}
+   190→.star--8 {
+   191→  top: 88%;
+   192→  left: 80%;
+   193→  --dur: 4.8s;
+   194→  --delay: 0.4s;
+   195→  width: 5px;
+   196→  height: 5px;
+   197→}
+   198→.star--9 {
+   199→  top: 4%;
+   200→  left: 52%;
+   201→  --dur: 4.4s;
+   202→  --delay: 1.5s;
+   203→  width: 3px;
+   204→  height: 3px;
+   205→}
+   206→.star--10 {
+   207→  top: 44%;
+   208→  left: 94%;
+   209→  --dur: 3.6s;
+   210→  --delay: 0.3s;
+   211→  width: 4px;
+   212→  height: 4px;
+   213→}
+   214→.star--11 {
+   215→  top: 70%;
+   216→  left: 38%;
+   217→  --dur: 5.2s;
+   218→  --delay: 2.2s;
+   219→  width: 5px;
+   220→  height: 5px;
+   221→}
+   222→.star--12 {
+   223→  top: 16%;
+   224→  left: 82%;
+   225→  --dur: 4s;
+   226→  --delay: 1s;
+   227→  width: 3px;
+   228→  height: 3px;
+   229→}
+   230→
+   231→@keyframes twinkleStar {
+   232→  0%,
+   233→  100% {
+   234→    opacity: 0;
+   235→    transform: scale(0.5);
+   236→  }
+   237→  20% {
+   238→    opacity: 0.8;
+   239→    transform: scale(1);
+   240→  }
+   241→  40% {
+   242→    opacity: 0.3;
+   243→    transform: scale(0.7);
+   244→  }
+   245→  60% {
+   246→    opacity: 0.9;
+   247→    transform: scale(1.1);
+   248→  }
+   249→  80% {
+   250→    opacity: 0.1;
+   251→    transform: scale(0.6);
+   252→  }
+   253→}
+   254→
+   255→/* ── Page Shell & Open Button ────────────────────────────────── */
+   256→
+   257→.page-shell {
+   258→  position: relative;
+   259→  z-index: 1;
+   260→  flex: 1 1 auto;
+   261→  min-height: 0;
+   262→  display: grid;
+   263→  place-items: center;
+   264→  padding: 1rem;
+   265→}
+   266→
+   267→.open-button {
+   268→  position: relative;
+   269→  min-width: min(320px, 86vw);
+   270→  min-height: 5rem;
+   271→  padding: 0 2rem;
+   272→  color: #fff;
+   273→  font: inherit;
+   274→  font-size: clamp(1.15rem, 5vw, 1.6rem);
+   275→  font-weight: 900;
+   276→  letter-spacing: 0.02em;
+   277→  background: linear-gradient(
+   278→    135deg,
+   279→    var(--violet),
+   280→    var(--rose) 25%,
+   281→    var(--coral) 50%,
+   282→    var(--gold) 75%,
+   283→    var(--mint) 100%
+   284→  );
+   285→  background-size: 300% 300%;
+   286→  border: 1.5px solid rgba(255, 255, 255, 0.25);
+   287→  border-radius: 48px;
+   288→  box-shadow:
+   289→    0 20px 52px rgba(123, 97, 255, 0.26),
+   290→    0 14px 36px rgba(227, 79, 111, 0.26),
+   291→    0 0 0 0 rgba(123, 97, 255, 0),
+   292→    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+   293→    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+   294→  cursor: pointer;
+   295→  transform: translateY(0);
+   296→  overflow: hidden;
+   297→  transition:
+   298→    border-radius 0.35s var(--ease-expressive),
+   299→    transform 0.35s var(--ease-expressive),
+   300→    box-shadow 0.35s var(--ease-expressive),
+   301→    filter 0.2s ease;
+   302→  animation:
+   303→    pulseButton 1.8s var(--ease-expressive) infinite,
+   304→    colorShift 6s ease-in-out infinite;
+   305→  backdrop-filter: blur(2px);
+   306→  -webkit-backdrop-filter: blur(2px);
+   307→}
+   308→
+   309→.open-button:hover {
+   310→  filter: brightness(1.08);
+   311→  transform: translateY(-2px) scale(1.02);
+   312→  box-shadow:
+   313→    0 24px 60px rgba(123, 97, 255, 0.32),
+   314→    0 18px 44px rgba(227, 79, 111, 0.32),
+   315→    0 0 36px rgba(245, 200, 91, 0.15),
+   316→    0 0 60px rgba(158, 215, 193, 0.08),
+   317→    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+   318→    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+   319→  /* Keep colorShift at 6s so text stays synced */
+   320→  animation:
+   321→    pulseButton 1.8s var(--ease-expressive) infinite,
+   322→    colorShift 6s ease-in-out infinite;
+   323→}
+   324→
+   325→.open-button:active {
+   326→  transform: translateY(2px) scale(0.98);
+   327→  filter: brightness(0.96);
+   328→}
+   329→
+   330→.open-button:focus-visible,
+   331→.close-button:focus-visible {
+   332→  outline: 3px solid rgba(42, 27, 41, 0.42);
+   333→  outline-offset: 4px;
+   334→}
+   335→
+   336→/* ── Liquid Glass Overlay ─────────────────────────────────── */
+   337→.button-glass {
+   338→  position: absolute;
+   339→  inset: 0;
+   340→  border-radius: inherit;
+   341→  background: linear-gradient(
+   342→    135deg,
+   343→    rgba(255, 255, 255, 0.22) 0%,
+   344→    rgba(255, 255, 255, 0.08) 40%,
+   345→    transparent 60%,
+   346→    rgba(255, 255, 255, 0.06) 100%
+   347→  );
+   348→  pointer-events: none;
+   349→  z-index: 2;
+   350→  animation: glassShift 4s ease-in-out infinite;
+   351→}
+   352→
+   353→/* ── Floating Light Orbs ─────────────────────────────────── */
+   354→.button-light-orb {
+   355→  position: absolute;
+   356→  border-radius: 50%;
+   357→  pointer-events: none;
+   358→  z-index: 2;
+   359→  filter: blur(6px);
+   360→  opacity: 0.6;
+   361→}
+   362→
+   363→.orb-1 {
+   364→  width: 60px;
+   365→  height: 60px;
+   366→  top: -10%;
+   367→  left: 10%;
+   368→  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
+   369→  animation: orbFloat1 4s ease-in-out infinite;
+   370→}
+   371→
+   372→.orb-2 {
+   373→  width: 45px;
+   374→  height: 45px;
+   375→  bottom: -8%;
+   376→  right: 15%;
+   377→  background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+   378→  animation: orbFloat2 5s ease-in-out infinite;
+   379→}
+   380→
+   381→.orb-3 {
+   382→  width: 35px;
+   383→  height: 35px;
+   384→  top: 20%;
+   385→  right: 25%;
+   386→  background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 70%);
+   387→  animation: orbFloat3 3.5s ease-in-out infinite;
+   388→}
+   389→
+   390→/* ── Rotating Glow Ring ──────────────────────────────────── */
+   391→.button-glow-ring {
+   392→  position: absolute;
+   393→  inset: -2px;
+   394→  border-radius: inherit;
+   395→  background: conic-gradient(
+   396→    from var(--glow-angle),
+   397→    rgba(123, 97, 255, 0.5),
+   398→    rgba(227, 79, 111, 0.5),
+   399→    rgba(255, 140, 114, 0.5),
+   400→    rgba(245, 200, 91, 0.5),
+   401→    rgba(158, 215, 193, 0.5),
+   402→    rgba(123, 97, 255, 0.5)
+   403→  );
+   404→  z-index: 0;
+   405→  pointer-events: none;
+   406→  animation: glowRingRotate 4s linear infinite;
+   407→  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+   408→  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+   409→}
+   410→
+   411→/* ── Button Text ─────────────────────────────────────────── */
+   412→.button-text {
+   413→  position: relative;
+   414→  z-index: 4;
+   415→  font-family: var(--font-updock), "Updock", cursive;
+   416→  letter-spacing: 0.04em;
+   417→  /* Text color is driven by JS for perfect sync with animated background */
+   418→  color: #fff;
+   419→  transition: color 0.15s ease;
+   420→}
+   421→
+   422→/* ── Keyframes for button effects ─────────────────────────── */
+   423→
+   424→@keyframes colorShift {
+   425→  0% {
+   426→    background-position: 0% 50%;
+   427→  }
+   428→  25% {
+   429→    background-position: 100% 50%;
+   430→  }
+   431→  50% {
+   432→    background-position: 100% 100%;
+   433→  }
+   434→  75% {
+   435→    background-position: 0% 100%;
+   436→  }
+   437→  100% {
+   438→    background-position: 0% 50%;
+   439→  }
+   440→}
+   441→
+   442→@keyframes glassShift {
+   443→  0%, 100% {
+   444→    opacity: 0.7;
+   445→    transform: translateX(0) translateY(0);
+   446→  }
+   447→  50% {
+   448→    opacity: 1;
+   449→    transform: translateX(2px) translateY(-1px);
+   450→  }
+   451→}
+   452→
+   453→@keyframes orbFloat1 {
+   454→  0%, 100% {
+   455→    transform: translate(0, 0) scale(1);
+   456→    opacity: 0.6;
+   457→  }
+   458→  25% {
+   459→    transform: translate(12px, 8px) scale(1.15);
+   460→    opacity: 0.9;
+   461→  }
+   462→  50% {
+   463→    transform: translate(20px, 4px) scale(0.95);
+   464→    opacity: 0.5;
+   465→  }
+   466→  75% {
+   467→    transform: translate(6px, -6px) scale(1.1);
+   468→    opacity: 0.7;
+   469→  }
+   470→}
+   471→
+   472→@keyframes orbFloat2 {
+   473→  0%, 100% {
+   474→    transform: translate(0, 0) scale(1);
+   475→    opacity: 0.5;
+   476→  }
+   477→  30% {
+   478→    transform: translate(-10px, -5px) scale(1.1);
+   479→    opacity: 0.8;
+   480→  }
+   481→  60% {
+   482→    transform: translate(-18px, 2px) scale(0.9);
+   483→    opacity: 0.4;
+   484→  }
+   485→}
+   486→
+   487→@keyframes orbFloat3 {
+   488→  0%, 100% {
+   489→    transform: translate(0, 0) scale(1);
+   490→    opacity: 0.5;
+   491→  }
+   492→  35% {
+   493→    transform: translate(8px, 10px) scale(1.2);
+   494→    opacity: 0.8;
+   495→  }
+   496→  65% {
+   497→    transform: translate(-5px, 5px) scale(0.85);
+   498→    opacity: 0.3;
+   499→  }
+   500→}
+   501→
+   502→@keyframes glowRingRotate {
+   503→  from {
+   504→    --glow-angle: 0deg;
+   505→  }
+   506→  to {
+   507→    --glow-angle: 360deg;
+   508→  }
+   509→}
+   510→
+   511→/* ── Wish Popup ───────────────────────────────────────────────── */
+   512→
+   513→.wish-popup {
+   514→  position: fixed;
+   515→  inset: 0;
+   516→  z-index: 3;
+   517→  display: grid;
+   518→  place-items: center;
+   519→  padding: clamp(0.75rem, 3vw, 2rem);
+   520→  background:
+   521→    radial-gradient(circle at 18% 20%, rgba(123, 97, 255, 0.18), transparent 28%),
+   522→    radial-gradient(circle at 82% 78%, rgba(227, 79, 111, 0.1), transparent 28%),
+   523→    rgba(42, 27, 41, 0.4);
+   524→  opacity: 0;
+   525→  pointer-events: none;
+   526→  transition: opacity 0.38s var(--ease-expressive);
+   527→}
+   528→
+   529→.wish-popup.open {
+   530→  opacity: 1;
+   531→  pointer-events: auto;
+   532→}
+   533→
+   534→/* ── Popup Card ───────────────────────────────────────────────── */
+   535→
+   536→.popup-card {
+   537→  position: relative;
+   538→  width: min(980px, 100%);
+   539→  max-height: calc(100vh - 1.5rem);
+   540→  overflow: hidden;
+   541→  display: grid;
+   542→  grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1fr);
+   543→  align-items: center;
+   544→  gap: clamp(1rem, 4vw, 3rem);
+   545→  padding: clamp(1rem, 4vw, 2.8rem);
+   546→  background:
+   547→    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 252, 0.94)),
+   548→    var(--surface);
+   549→  border: 1px solid var(--outline);
+   550→  border-radius: 32px;
+   551→  box-shadow:
+   552→    var(--shadow),
+   553→    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+   554→    0 0 24px rgba(123, 97, 255, 0.04) inset;
+   555→  backdrop-filter: blur(20px);
+   556→  -webkit-backdrop-filter: blur(20px);
+   557→  transform: translateY(28px) scale(0.92);
+   558→  transition: transform 0.42s var(--ease-expressive), box-shadow 0.5s var(--ease-expressive);
+   559→  /* Never show a scrollbar on the card — content is sized to fit */
+   560→  scrollbar-width: none;
+   561→}
+   562→
+   563→.popup-card::-webkit-scrollbar {
+   564→  display: none;
+   565→}
+   566→
+   567→.wish-popup.open .popup-card {
+   568→  transform: translateY(0) scale(1);
+   569→  box-shadow:
+   570→    var(--shadow),
+   571→    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+   572→    0 0 40px rgba(123, 97, 255, 0.08),
+   573→    0 0 80px rgba(227, 79, 111, 0.05);
+   574→}
+   575→
+   576→/* ── Close Button ─────────────────────────────────────────────── */
+   577→
+   578→.close-button {
+   579→  position: absolute;
+   580→  top: 0.75rem;
+   581→  right: 0.75rem;
+   582→  display: grid;
+   583→  width: 2.5rem;
+   584→  height: 2.5rem;
+   585→  place-items: center;
+   586→  color: #71324a;
+   587→  font: inherit;
+   588→  background: rgba(255, 232, 239, 0.85);
+   589→  border: 1px solid rgba(227, 79, 111, 0.2);
+   590→  border-radius: 50%;
+   591→  cursor: pointer;
+   592→  transition:
+   593→    transform 0.25s var(--ease-expressive),
+   594→    background 0.25s var(--ease-expressive);
+   595→  z-index: 10;
+   596→}
+   597→
+   598→.close-button:hover {
+   599→  background: #ffd7e2;
+   600→  transform: rotate(90deg) scale(1.08);
+   601→  box-shadow: 0 0 12px rgba(227, 79, 111, 0.25);
+   602→}
+   603→
+   604→.close-button svg {
+   605→  pointer-events: none;
+   606→}
+   607→
+   608→/* ── Wish Text (with staggered reveal) ────────────────────────── */
+   609→
+   610→.wish-copy {
+   611→  padding-right: 0.5rem;
+   612→}
+   613→
+   614→/* Reveal animation — elements start invisible and fade in with slide */
+   615→.reveal {
+   616→  opacity: 0;
+   617→  transform: translateY(18px);
+   618→  transition:
+   619→    opacity 0.6s var(--ease-expressive),
+   620→    transform 0.6s var(--ease-expressive);
+   621→}
+   622→
+   623→.wish-popup.open .reveal--1 {
+   624→  opacity: 1;
+   625→  transform: translateY(0);
+   626→  transition-delay: 0.2s;
+   627→}
+   628→.wish-popup.open .reveal--2 {
+   629→  opacity: 1;
+   630→  transform: translateY(0);
+   631→  transition-delay: 0.35s;
+   632→}
+   633→.wish-popup.open .reveal--3 {
+   634→  opacity: 1;
+   635→  transform: translateY(0);
+   636→  transition-delay: 0.5s;
+   637→}
+   638→.wish-popup.open .reveal--4 {
+   639→  opacity: 1;
+   640→  transform: translateY(0);
+   641→  transition-delay: 0.65s;
+   642→}
+   643→.wish-popup.open .reveal--5 {
+   644→  opacity: 1;
+   645→  transform: translateY(0);
+   646→  transition-delay: 0.8s;
+   647→}
+   648→
+   649→.eyebrow {
+   650→  width: fit-content;
+   651→  margin: 0 0 0.8rem;
+   652→  padding: 0.5rem 0.75rem;
+   653→  color: #6d2338;
+   654→  font-weight: 800;
+   655→  letter-spacing: 0.08em;
+   656→  text-transform: uppercase;
+   657→  font-size: 0.72rem;
+   658→  background: rgba(255, 255, 255, 0.72);
+   659→  border: 1px solid rgba(227, 79, 111, 0.24);
+   660→  border-radius: 18px;
+   661→}
+   662→
+   663→.display-title,
+   664→.wish-copy p {
+   665→  margin-top: 0;
+   666→}
+   667→
+   668→.display-title {
+   669→  margin: 0 0 0.6rem;
+   670→  font-family: var(--font-display);
+   671→  font-size: clamp(2.7rem, 7vw, 6rem);
+   672→  font-style: italic;
+   673→  font-weight: 400;
+   674→  line-height: 0.92;
+   675→  text-align: center;
+   676→  background: linear-gradient(
+   677→    135deg,
+   678→    #3a1733 15%,
+   679→    var(--rose) 40%,
+   680→    var(--violet) 60%,
+   681→    var(--rose) 85%,
+   682→    #3a1733 100%
+   683→  );
+   684→  background-size: 200% 100%;
+   685→  -webkit-background-clip: text;
+   686→  background-clip: text;
+   687→  -webkit-text-fill-color: transparent;
+   688→  color: transparent;
+   689→  animation: titleShimmer 6s ease-in-out infinite;
+   690→}
+   691→
+   692→.lead,
+   693→.wish-note {
+   694→  color: var(--muted);
+   695→  font-size: clamp(0.88rem, 1.55vw, 1rem);
+   696→  line-height: 1.5;
+   697→}
+   698→
+   699→.lead {
+   700→  margin: 0 0 0.7rem;
+   701→}
+   702→
+   703→.wish-note {
+   704→  margin: 0 0 0.75rem;
+   705→  padding: 0.75rem 0.85rem;
+   706→  color: #4d3143;
+   707→  background: linear-gradient(
+   708→    135deg,
+   709→    rgba(255, 242, 245, 0.8),
+   710→    rgba(255, 247, 242, 0.6)
+   711→  );
+   712→  border: 1px solid rgba(227, 79, 111, 0.16);
+   713→  border-left: 4px solid var(--rose);
+   714→  border-radius: 16px;
+   715→  box-shadow: inset 0 0 12px rgba(227, 79, 111, 0.04);
+   716→}
+   717→
+   718→.signature {
+   719→  margin: 0;
+   720→  font-family: "Lavishly Yours", cursive;
+   721→  font-size: clamp(1.5rem, 4.2vw, 2.6rem);
+   722→  font-style: normal;
+   723→  text-align: center;
+   724→  background: linear-gradient(
+   725→    135deg,
+   726→    var(--rose) 0%,
+   727→    var(--coral) 40%,
+   728→    var(--gold) 50%,
+   729→    var(--coral) 60%,
+   730→    var(--rose) 100%
+   731→  );
+   732→  background-size: 200% 100%;
+   733→  -webkit-background-clip: text;
+   734→  background-clip: text;
+   735→  -webkit-text-fill-color: transparent;
+   736→  color: transparent;
+   737→  animation: gentlePulse 3s var(--ease-expressive) infinite,
+   738→    signatureShimmer 4s ease-in-out infinite;
+   739→}
+   740→
+   741→@keyframes gentlePulse {
+   742→  0%,
+   743→  100% {
+   744→    transform: scale(1);
+   745→  }
+   746→  50% {
+   747→    transform: scale(1.03);
+   748→  }
+   749→}
+   750→
+   751→/* ── Cake Scene ───────────────────────────────────────────────── */
+   752→
+   753→.cake-scene {
+   754→  position: relative;
+   755→  min-height: 430px;
+   756→  display: grid;
+   757→  place-items: center;
+   758→  overflow: hidden;
+   759→}
+   760→
+   761→/* Soft ambient glow behind the cake */
+   762→.cake-scene::before {
+   763→  content: "";
+   764→  position: absolute;
+   765→  width: min(280px, 60vw);
+   766→  aspect-ratio: 1;
+   767→  border-radius: 50%;
+   768→  background: radial-gradient(
+   769→    circle,
+   770→    rgba(255, 191, 55, 0.08) 0%,
+   771→    rgba(227, 79, 111, 0.04) 40%,
+   772→    transparent 70%
+   773→  );
+   774→  z-index: 0;
+   775→  animation: cakeGlow 4s ease-in-out infinite;
+   776→  pointer-events: none;
+   777→}
+   778→
+   779→.balloon {
+   780→  position: absolute;
+   781→  border-radius: 48% 48% 48% 48% / 58% 58% 42% 42%;
+   782→  box-shadow: inset -14px -18px 22px rgba(42, 27, 41, 0.12);
+   783→  animation: float 4.6s ease-in-out infinite;
+   784→  z-index: 1;
+   785→}
+   786→
+   787→.balloon::after {
+   788→  content: "";
+   789→  position: absolute;
+   790→  left: 50%;
+   791→  top: 96%;
+   792→  width: 1px;
+   793→  height: 92px;
+   794→  background: rgba(42, 27, 41, 0.22);
+   795→}
+   796→
+   797→/* Highlight reflection on balloons */
+   798→.balloon::before {
+   799→  content: "";
+   800→  position: absolute;
+   801→  top: 18%;
+   802→  left: 22%;
+   803→  width: 30%;
+   804→  height: 22%;
+   805→  border-radius: 50%;
+   806→  background: rgba(255, 255, 255, 0.35);
+   807→  filter: blur(2px);
+   808→}
+   809→
+   810→.balloon-one {
+   811→  top: 24px;
+   812→  left: 6%;
+   813→  width: 62px;
+   814→  height: 80px;
+   815→  background: var(--rose);
+   816→}
+   817→
+   818→.balloon-two {
+   819→  top: 62px;
+   820→  right: 3%;
+   821→  width: 62px;
+   822→  height: 80px;
+   823→  background: var(--mint);
+   824→  animation-delay: -1.4s;
+   825→}
+   826→
+   827→.balloon-three {
+   828→  top: 8px;
+   829→  left: 40%;
+   830→  width: 48px;
+   831→  height: 64px;
+   832→  background: var(--gold);
+   833→  /* Gentle bob so it never rises into the overflow-hidden top edge */
+   834→  animation: floatGentle 4.6s ease-in-out -2.8s infinite;
+   835→  opacity: 0.7;
+   836→}
+   837→
+   838→/* Blue balloon — sits right beside the golden balloon */
+   839→.balloon-four {
+   840→  top: 26px;
+   841→  left: 53%;
+   842→  width: 44px;
+   843→  height: 58px;
+   844→  background: #5bb6e8;
+   845→  animation: floatGentle 4.6s ease-in-out -1.2s infinite;
+   846→  opacity: 0.85;
+   847→}
+   848→
+   849→.cake {
+   850→  position: relative;
+   851→  width: min(300px, 70vw);
+   852→  height: 260px;
+   853→  margin-top: 92px;
+   854→  z-index: 2;
+   855→}
+   856→
+   857→.cake-top,
+   858→.cake-mid,
+   859→.cake-bottom,
+   860→.plate {
+   861→  position: absolute;
+   862→  left: 50%;
+   863→  transform: translateX(-50%);
+   864→  border-radius: 18px;
+   865→}
+   866→
+   867→.cake-top {
+   868→  bottom: 134px;
+   869→  width: 58%;
+   870→  height: 56px;
+   871→  background: linear-gradient(180deg, #fff4f5 0 45%, #ff9aab 46% 100%);
+   872→  box-shadow: 0 12px 0 #d94b67;
+   873→}
+   874→
+   875→.cake-mid {
+   876→  bottom: 70px;
+   877→  width: 76%;
+   878→  height: 70px;
+   879→  background: linear-gradient(180deg, #fff1c7 0 40%, #f7b85d 41% 100%);
+   880→  box-shadow: 0 14px 0 #de7e55;
+   881→}
+   882→
+   883→.cake-bottom {
+   884→  bottom: 0;
+   885→  width: 94%;
+   886→  height: 80px;
+   887→  background: linear-gradient(180deg, #ffe5ea 0 40%, #e75c78 41% 100%);
+   888→  box-shadow: 0 16px 0 #a93c56;
+   889→}
+   890→
+   891→.plate {
+   892→  bottom: -24px;
+   893→  width: 100%;
+   894→  height: 26px;
+   895→  background: rgba(255, 255, 255, 0.86);
+   896→  box-shadow: 0 20px 36px rgba(62, 32, 48, 0.18);
+   897→  border-radius: 50%;
+   898→}
+   899→
+   900→.candles {
+   901→  position: absolute;
+   902→  left: 50%;
+   903→  bottom: 190px;
+   904→  display: flex;
+   905→  gap: 20px;
+   906→  transform: translateX(-50%);
+   907→  z-index: 2;
+   908→}
+   909→
+   910→.candles span {
+   911→  position: relative;
+   912→  width: 11px;
+   913→  height: 48px;
+   914→  border-radius: 6px;
+   915→  background: repeating-linear-gradient(45deg, #fff 0 6px, #7bbfa9 6px 12px);
+   916→}
+   917→
+   918→.candles span::before {
+   919→  content: "";
+   920→  position: absolute;
+   921→  left: 50%;
+   922→  top: -24px;
+   923→  width: 17px;
+   924→  height: 25px;
+   925→  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+   926→  background: radial-gradient(
+   927→    circle at 50% 65%,
+   928→    #fff7ad 0 18%,
+   929→    #ffbf37 42%,
+   930→    #ff6a3c 100%
+   931→  );
+   932→  transform: translateX(-50%);
+   933→  animation: flame 1.2s ease-in-out infinite alternate;
+   934→  box-shadow: 0 0 12px rgba(255, 191, 55, 0.5);
+   935→}
+   936→
+   937→/* Warm ambient glow from the candles */
+   938→.candles::after {
+   939→  content: "";
+   940→  position: absolute;
+   941→  left: 50%;
+   942→  top: -60px;
+   943→  width: 140px;
+   944→  height: 100px;
+   945→  transform: translateX(-50%);
+   946→  background: radial-gradient(
+   947→    ellipse at 50% 80%,
+   948→    rgba(255, 191, 55, 0.25) 0%,
+   949→    rgba(255, 140, 55, 0.1) 40%,
+   950→    transparent 70%
+   951→  );
+   952→  pointer-events: none;
+   953→  z-index: 0;
+   954→  animation: candleGlow 2s ease-in-out infinite alternate;
+   955→}
+   956→
+   957→/* ── Confetti Burst (canvas-driven; container reserved) ───────── */
+   958→
+   959→.confetti-burst {
+   960→  position: absolute;
+   961→  inset: 0;
+   962→  pointer-events: none;
+   963→  z-index: 5;
+   964→}
+   965→
+   966→/* ── Footer ───────────────────────────────────────────────────── */
+   967→
+   968→.gift-footer {
+   969→  position: relative;
+   970→  z-index: 2;
+   971→  flex-shrink: 0;
+   972→  display: flex;
+   973→  justify-content: center;
+   974→  align-items: center;
+   975→  padding: 0.6rem 1rem;
+   976→  font-size: 0.72rem;
+   977→  letter-spacing: 0.08em;
+   978→  text-transform: uppercase;
+   979→  color: rgba(74, 47, 67, 0.55);
+   980→  pointer-events: none;
+   981→}
+   982→
+   983→.gift-footer span {
+   984→  display: inline-flex;
+   985→  align-items: center;
+   986→  gap: 0.5rem;
+   987→}
+   988→
+   989→.gift-footer .heart-dot {
+   990→  color: var(--rose);
+   991→  display: inline-block;
+   992→  animation: heartbeat 1.2s ease-in-out infinite;
+   993→}
+   994→
+   995→/* ── Keyframes ────────────────────────────────────────────────── */
+   996→
+   997→@keyframes pulseButton {
+   998→  0%,
+   999→  100% {
+  1000→    transform: translateY(0) scale(1);
+  1001→    box-shadow:
+  1002→      0 20px 52px rgba(123, 97, 255, 0.26),
+  1003→      0 14px 36px rgba(227, 79, 111, 0.26),
+  1004→      0 0 0 0 rgba(123, 97, 255, 0),
+  1005→      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  1006→  }
+  1007→  50% {
+  1008→    transform: translateY(-5px) scale(1.03);
+  1009→    box-shadow:
+  1010→      0 20px 52px rgba(123, 97, 255, 0.26),
+  1011→      0 14px 36px rgba(227, 79, 111, 0.26),
+  1012→      0 0 28px rgba(123, 97, 255, 0.2),
+  1013→      0 0 56px rgba(227, 79, 111, 0.12),
+  1014→      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  1015→  }
+  1016→}
+  1017→
+  1018→@keyframes float {
+  1019→  0%,
+  1020→  100% {
+  1021→    transform: translateY(0) rotate(-3deg);
+  1022→  }
+  1023→  50% {
+  1024→    transform: translateY(-22px) rotate(3deg);
+  1025→  }
+  1026→}
+  1027→
+  1028→/* Gentler bob for balloons positioned near the top of the cake-scene
+  1029→   so they stay clear of its overflow-hidden top edge. */
+  1030→@keyframes floatGentle {
+  1031→  0%,
+  1032→  100% {
+  1033→    transform: translateY(0) rotate(-2deg);
+  1034→  }
+  1035→  50% {
+  1036→    transform: translateY(-6px) rotate(2deg);
+  1037→  }
+  1038→}
+  1039→
+  1040→@keyframes flame {
+  1041→  from {
+  1042→    transform: translateX(-50%) scale(0.9) rotate(-4deg);
+  1043→  }
+  1044→  to {
+  1045→    transform: translateX(-50%) scale(1.08) rotate(5deg);
+  1046→  }
+  1047→}
+  1048→
+  1049→@keyframes ambientOrb {
+  1050→  0%,
+  1051→  100% {
+  1052→    transform: translate(0, 0);
+  1053→  }
+  1054→  33% {
+  1055→    transform: translate(40vw, 30vh);
+  1056→  }
+  1057→  66% {
+  1058→    transform: translate(-10vw, 50vh);
+  1059→  }
+  1060→}
+  1061→
+  1062→@keyframes candleGlow {
+  1063→  from {
+  1064→    opacity: 0.6;
+  1065→    transform: translateX(-50%) scale(0.92);
+  1066→  }
+  1067→  to {
+  1068→    opacity: 1;
+  1069→    transform: translateX(-50%) scale(1.08);
+  1070→  }
+  1071→}
+  1072→
+  1073→@keyframes cakeGlow {
+  1074→  0%,
+  1075→  100% {
+  1076→    opacity: 0.6;
+  1077→    transform: scale(1);
+  1078→  }
+  1079→  50% {
+  1080→    opacity: 1;
+  1081→    transform: scale(1.08);
+  1082→  }
+  1083→}
+  1084→
+  1085→@keyframes heartbeat {
+  1086→  0%,
+  1087→  100% {
+  1088→    transform: scale(1);
+  1089→  }
+  1090→  14% {
+  1091→    transform: scale(1.25);
+  1092→  }
+  1093→  28% {
+  1094→    transform: scale(1);
+  1095→  }
+  1096→  42% {
+  1097→    transform: scale(1.2);
+  1098→  }
+  1099→  56% {
+  1100→    transform: scale(1);
+  1101→  }
+  1102→}
+  1103→
+  1104→@keyframes titleShimmer {
+  1105→  0%,
+  1106→  100% {
+  1107→    background-position: 0% 50%;
+  1108→  }
+  1109→  50% {
+  1110→    background-position: 100% 50%;
+  1111→  }
+  1112→}
+  1113→
+  1114→@keyframes signatureShimmer {
+  1115→  0%,
+  1116→  100% {
+  1117→    background-position: 0% 50%;
+  1118→  }
+  1119→  50% {
+  1120→    background-position: 100% 50%;
+  1121→  }
+  1122→}
+  1123→
+  1124→/* ── Responsive ────────────────────────────────────────────────── */
+  1125→
+  1126→@media (max-width: 760px) {
+  1127→  .gift-root {
+  1128→    overflow: hidden;
+  1129→  }
+  1130→
+  1131→  .gift-root.wish-is-open {
+  1132→    overflow: hidden;
+  1133→  }
+  1134→
+  1135→  .popup-card {
+  1136→    grid-template-columns: 1fr;
+  1137→    gap: 0.5rem;
+  1138→  }
+  1139→
+  1140→  .cake-scene {
+  1141→    min-height: 230px;
+  1142→  }
+  1143→
+  1144→  .cake {
+  1145→    transform: scale(0.62);
+  1146→    transform-origin: center bottom;
+  1147→    margin-top: 8px;
+  1148→  }
+  1149→
+  1150→  .balloon {
+  1151→    width: 48px;
+  1152→    height: 64px;
+  1153→  }
+  1154→
+  1155→  .balloon::after {
+  1156→    height: 70px;
+  1157→  }
+  1158→
+  1159→  .balloon-three {
+  1160→    width: 38px;
+  1161→    height: 50px;
+  1162→  }
+  1163→
+  1164→  .balloon-four {
+  1165→    width: 34px;
+  1166→    height: 46px;
+  1167→  }
+  1168→
+  1169→  .wish-copy {
+  1170→    padding-right: 0;
+  1171→  }
+  1172→}
+  1173→
+  1174→@media (max-width: 440px) {
+  1175→  .popup-card {
+  1176→    padding: 0.9rem;
+  1177→  }
+  1178→
+  1179→  .cake-scene {
+  1180→    min-height: 190px;
+  1181→  }
+  1182→
+  1183→  .display-title {
+  1184→    font-size: clamp(2.2rem, 13vw, 3.4rem);
+  1185→  }
+  1186→
+  1187→  .lead,
+  1188→  .wish-note {
+  1189→    font-size: 0.84rem;
+  1190→    line-height: 1.36;
+  1191→  }
+  1192→
+  1193→  .wish-note {
+  1194→    padding: 0.65rem;
+  1195→  }
+  1196→
+  1197→  .signature {
+  1198→    font-size: 1.45rem;
+  1199→  }
+  1200→
+  1201→  .star {
+  1202→    display: none;
+  1203→  }
+  1204→}
+  1205→
+  1206→/* ── Short viewports: compact the card so everything fits, no scrollbar ── */
+  1207→@media (max-height: 760px) {
+  1208→  .popup-card {
+  1209→    padding: clamp(0.85rem, 2vw, 1.4rem);
+  1210→    gap: clamp(0.75rem, 2vw, 1.5rem);
+  1211→  }
+  1212→
+  1213→  .cake-scene {
+  1214→    min-height: 300px;
+  1215→  }
+  1216→
+  1217→  .cake {
+  1218→    transform: scale(0.82);
+  1219→    transform-origin: center bottom;
+  1220→    margin-top: 40px;
+  1221→  }
+  1222→
+  1223→  .display-title {
+  1224→    font-size: clamp(2rem, 5vw, 3.6rem);
+  1225→  }
+  1226→
+  1227→  .lead,
+  1228→  .wish-note {
+  1229→    font-size: 0.82rem;
+  1230→    line-height: 1.4;
+  1231→  }
+  1232→
+  1233→  .wish-note {
+  1234→    padding: 0.55rem 0.7rem;
+  1235→    margin-bottom: 0.5rem;
+  1236→  }
+  1237→
+  1238→  .lead {
+  1239→    margin-bottom: 0.5rem;
+  1240→  }
+  1241→
+  1242→  .eyebrow {
+  1243→    margin-bottom: 0.5rem;
+  1244→  }
+  1245→
+  1246→  .display-title {
+  1247→    margin-bottom: 0.4rem;
+  1248→  }
+  1249→}
+  1250→
+  1251→@media (max-height: 600px) {
+  1252→  .cake-scene {
+  1253→    min-height: 220px;
+  1254→  }
+  1255→
+  1256→  .cake {
+  1257→    transform: scale(0.62);
+  1258→    margin-top: 8px;
+  1259→  }
+  1260→
+  1261→  .popup-card {
+  1262→    padding: 0.8rem;
+  1263→    gap: 0.5rem;
+  1264→  }
+  1265→}
+  1266→
+  1267→/* ── Magical Wand Cursor ──────────────────────────────────────── */
+  1268→
+  1269→/* Hide the native cursor only on devices that have a precise pointer */
+  1270→@media (hover: hover) and (pointer: fine) {
+  1271→  html,
+  1272→  body,
+  1273→  .gift-root,
+  1274→  .gift-root *,
+  1275→  .gift-root a,
+  1276→  .gift-root button {
+  1277→    cursor: none !important;
+  1278→  }
+  1279→}
+  1280→
+  1281→.magic-cursor {
+  1282→  position: fixed;
+  1283→  top: 0;
+  1284→  left: 0;
+  1285→  width: 56px;
+  1286→  height: 56px;
+  1287→  pointer-events: none;
+  1288→  z-index: 9999;
+  1289→  transform: translate3d(-200px, -200px, 0);
+  1290→  will-change: transform;
+  1291→  opacity: 1;
+  1292→  transition: opacity 0.4s ease;
+  1293→  --wand-tilt: -8deg;
+  1294→}
+  1295→
+  1296→/* Never render on touch / coarse-pointer devices */
+  1297→@media (hover: none), (pointer: coarse) {
+  1298→  .magic-cursor {
+  1299→    display: none;
+  1300→  }
+  1301→}
+  1302→
+  1303→.magic-cursor.is-hidden {
+  1304→  opacity: 0;
+  1305→  transition: opacity 0.6s ease;
+  1306→}
+  1307→
+  1308→.magic-wand {
+  1309→  display: block;
+  1310→  width: 100%;
+  1311→  height: 100%;
+  1312→  overflow: visible;
+  1313→  transform-origin: 10px 10px;
+  1314→  transform: rotate(var(--wand-tilt, -8deg));
+  1315→  transition: transform 0.2s var(--ease-spring);
+  1316→  filter: drop-shadow(0 2px 8px rgba(42, 27, 41, 0.3))
+  1317→    drop-shadow(0 0 4px rgba(160, 107, 214, 0.2));
+  1318→}
+  1319→
+  1320→/* Tilt + grow when hovering interactive elements */
+  1321→.magic-cursor.is-active .magic-wand {
+  1322→  transform: rotate(-22deg) scale(1.14);
+  1323→  filter: drop-shadow(0 2px 10px rgba(42, 27, 41, 0.35))
+  1324→    drop-shadow(0 0 8px rgba(245, 200, 91, 0.4))
+  1325→    drop-shadow(0 0 16px rgba(227, 79, 111, 0.2));
+  1326→}
+  1327→
+  1328→/* Slight "tap" when pressing */
+  1329→.magic-cursor.is-pressed .magic-wand {
+  1330→  transform: rotate(-2deg) scale(0.92);
+  1331→  transition: transform 0.1s var(--ease-spring);
+  1332→}
+  1333→
+  1334→.magic-cursor.is-active.is-pressed .magic-wand {
+  1335→  transform: rotate(-12deg) scale(1.06);
+  1336→  filter: drop-shadow(0 2px 10px rgba(42, 27, 41, 0.35))
+  1337→    drop-shadow(0 0 12px rgba(245, 200, 91, 0.6))
+  1338→    drop-shadow(0 0 20px rgba(227, 79, 111, 0.3));
+  1339→  transition: transform 0.1s var(--ease-spring);
+  1340→}
+  1341→
+  1342→/* Outer aura glow */
+  1343→.wand-aura {
+  1344→  transform-box: fill-box;
+  1345→  transform-origin: center;
+  1346→  animation: wandAura 3s ease-in-out infinite;
+  1347→}
+  1348→
+  1349→/* Inner halo */
+  1350→.wand-halo {
+  1351→  transform-box: fill-box;
+  1352→  transform-origin: center;
+  1353→  animation: wandHalo 2.4s ease-in-out infinite;
+  1354→}
+  1355→
+  1356→/* Sparkle dots twinkle */
+  1357→.sparkle-dot {
+  1358→  opacity: 0;
+  1359→  animation: sparkleTwinkle 2.8s ease-in-out infinite;
+  1360→}
+  1361→.sparkle-dot.sd-1 { animation-delay: 0s; }
+  1362→.sparkle-dot.sd-2 { animation-delay: 0.5s; }
+  1363→.sparkle-dot.sd-3 { animation-delay: 1.0s; }
+  1364→.sparkle-dot.sd-4 { animation-delay: 1.5s; }
+  1365→.sparkle-dot.sd-5 { animation-delay: 2.0s; }
+  1366→
+  1367→/* Hover ring - hidden by default, shown on is-active */
+  1368→.hover-ring {
+  1369→  opacity: 0;
+  1370→  transform-box: fill-box;
+  1371→  transform-origin: center;
+  1372→  transition: opacity 0.3s ease, transform 0.3s var(--ease-spring);
+  1373→  transform: scale(0.6) rotate(0deg);
+  1374→}
+  1375→.magic-cursor.is-active .hover-ring {
+  1376→  opacity: 1;
+  1377→  transform: scale(1) rotate(45deg);
+  1378→  animation: hoverRingSpin 3s linear infinite;
+  1379→}
+  1380→
+  1381→.wand-star {
+  1382→  transform-box: fill-box;
+  1383→  transform-origin: center;
+  1384→  animation: wandTip 1.8s ease-in-out infinite;
+  1385→}
+  1386→
+  1387→@keyframes wandAura {
+  1388→  0%,
+  1389→  100% {
+  1390→    opacity: 0.2;
+  1391→    transform: scale(0.85);
+  1392→  }
+  1393→  50% {
+  1394→    opacity: 0.45;
+  1395→    transform: scale(1.15);
+  1396→  }
+  1397→}
+  1398→
+  1399→@keyframes wandHalo {
+  1400→  0%,
+  1401→  100% {
+  1402→    opacity: 0.35;
+  1403→    transform: scale(0.9);
+  1404→  }
+  1405→  50% {
+  1406→    opacity: 0.65;
+  1407→    transform: scale(1.2);
+  1408→  }
+  1409→}
+  1410→
+  1411→@keyframes wandTip {
+  1412→  0%,
+  1413→  100% {
+  1414→    filter: drop-shadow(0 0 3px rgba(245, 200, 91, 0.8))
+  1415→      drop-shadow(0 0 6px rgba(255, 140, 114, 0.45));
+  1416→    transform: scale(1);
+  1417→  }
+  1418→  50% {
+  1419→    filter: drop-shadow(0 0 8px rgba(245, 200, 91, 1))
+  1420→      drop-shadow(0 0 14px rgba(255, 140, 114, 0.75))
+  1421→      drop-shadow(0 0 20px rgba(227, 79, 111, 0.25));
+  1422→    transform: scale(1.1);
+  1423→  }
+  1424→}
+  1425→
+  1426→@keyframes sparkleTwinkle {
+  1427→  0%, 100% {
+  1428→    opacity: 0;
+  1429→    transform: scale(0.5);
+  1430→  }
+  1431→  30% {
+  1432→    opacity: 0.9;
+  1433→    transform: scale(1.2);
+  1434→  }
+  1435→  60% {
+  1436→    opacity: 0.7;
+  1437→    transform: scale(1);
+  1438→  }
+  1439→}
+  1440→
+  1441→@keyframes hoverRingSpin {
+  1442→  from { transform: scale(1) rotate(0deg); }
+  1443→  to { transform: scale(1) rotate(360deg); }
+  1444→}
+  1445→
+  1446→/* ── Reduced Motion ───────────────────────────────────────────── */
+  1447→
+  1448→@media (prefers-reduced-motion: reduce) {
+  1449→  .gift-root *,
+  1450→  .gift-root *::before,
+  1451→  .gift-root *::after {
+  1452→    animation-duration: 0.01ms !important;
+  1453→    animation-iteration-count: 1 !important;
+  1454→    transition-duration: 0.01ms !important;
+  1455→  }
+  1456→
+  1457→  .reveal {
+  1458→    opacity: 1;
+  1459→    transform: none;
+  1460→  }
+  1461→
+  1462→  .button-glow-ring,
+  1463→  .button-light-orb,
+  1464→  .button-glass {
+  1465→    display: none;
+  1466→  }
+  1467→}
+  1468→
