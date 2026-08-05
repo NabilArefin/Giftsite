@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock, Lavishly_Yours } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -49,6 +49,13 @@ const updock = Updock({
   display: "swap",
 });
 
+const lavishlyYours = Lavishly_Yours({
+  variable: "--font-lavishly",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Happy Birthday Nuha",
   description: "A little wish for you \u2014 crafted with love.",
@@ -90,7 +97,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} ${lavishlyYours.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />

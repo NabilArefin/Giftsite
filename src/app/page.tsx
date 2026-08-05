@@ -191,8 +191,7 @@ export default function GiftPage() {
   const mouseRef = useRef({ x: -100, y: -100, last: 0 });
   const reducedRef = useRef(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const buttonTextRef = useRef<HTMLSpanElement | null>(null);
+
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -309,122 +308,6 @@ export default function GiftPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeWish]);
 
-  // Dynamically compute button text color based on actual rendered background luminance.
-  // This ensures perfect sync regardless of animation state (hover, etc.)
-  useEffect(() => {
-    const btn = buttonRef.current;
-    const txt = buttonTextRef.current;
-    if (!btn || !txt) return;
-
-    let raf = 0;
-    let lastUpdate = 0;
-    const THROTTLE_MS = 50; // ~20fps sampling — smooth enough, low cost
-
-    // Smoothed luminance to avoid flicker
-    let smoothLum = 0.45;
-
-    // Gradient color stops: violet → rose → coral → gold → mint
-    const stops = [
-      { t: 0,    r: 123, g: 97,  b: 255 }, // violet
-      { t: 0.25, r: 227, g: 79,  b: 111 }, // rose
-      { t: 0.50, r: 255, g: 140, b: 114 }, // coral
-      { t: 0.75, r: 245, g: 200, b: 91  }, // gold
-      { t: 1.00, r: 158, g: 215, b: 193 }, // mint
-    ];
-
-    const tick = (now: number) => {
-      if (now - lastUpdate >= THROTTLE_MS) {
-        lastUpdate = now;
-
-        const rect = btn.getBoundingClientRect();
-        if (rect.width < 1 || rect.height < 1) {
-          raf = requestAnimationFrame(tick);
-          return;
-        }
-
-        // Read the current animated background-position
-        const style = getComputedStyle(btn);
-        const bgPos = style.backgroundPosition;
-
-        // Parse background-position — may be in % or px
-        const parts = bgPos.split(/\s+/);
-        let posX = 0;
-        let posY = 0;
-        if (parts.length >= 2) {
-          const xVal = parseFloat(parts[0]);
-          const yVal = parseFloat(parts[1]);
-          // If the value has a % sign, treat as percentage (0-100)
-          // If px, convert to percentage based on background-size (300%)
-          if (parts[0].includes("%")) {
-            posX = xVal; // 0-100
-          } else {
-            // px value: posX% = xPx / (rect.width * 2) * 100
-            posX = (xVal / (rect.width * 2)) * 100;
-          }
-          if (parts[1].includes("%")) {
-            posY = yVal;
-          } else {
-            posY = (yVal / (rect.height * 2)) * 100;
-          }
-        }
-
-        // For background-size: 300% 300% with 135deg gradient:
-        // The visible center in background fractional coords:
-        // fracX = (posX/100 * 2 + 0.5) / 3
-        // fracY = (posY/100 * 2 + 0.5) / 3
-        // gradientT along 135deg diagonal = (fracX + fracY) / 2
-        const fracX = (posX / 100 * 2 + 0.5) / 3;
-        const fracY = (posY / 100 * 2 + 0.5) / 3;
-        const gradientT = Math.min(1, Math.max(0, (fracX + fracY) / 2));
-
-        // Interpolate color at gradientT
-        let r = stops[0].r, g = stops[0].g, b = stops[0].b;
-        for (let i = 0; i < stops.length - 1; i++) {
-          if (gradientT >= stops[i].t && gradientT <= stops[i + 1].t) {
-            const localT = (gradientT - stops[i].t) / (stops[i + 1].t - stops[i].t);
-            r = stops[i].r + (stops[i + 1].r - stops[i].r) * localT;
-            g = stops[i].g + (stops[i + 1].g - stops[i].g) * localT;
-            b = stops[i].b + (stops[i + 1].b - stops[i].b) * localT;
-            break;
-          }
-        }
-
-        // Perceived luminance (ITU-R BT.709)
-        const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-
-        // Smooth the luminance to avoid jitter
-        smoothLum += (lum - smoothLum) * 0.25;
-
-        // Map luminance to text color:
-        // Luminance range is ~0.44 (violet/rose) to ~0.79 (gold/mint)
-        // threshold=0.58, transitionWidth=0.13 gives:
-        //   <0.45: white, 0.45-0.71: gray transition, >0.71: black
-        const threshold = 0.58;
-        const transitionWidth = 0.13;
-
-        let textColor: string;
-        if (smoothLum < threshold - transitionWidth) {
-          textColor = "rgb(255, 255, 255)"; // white on dark bg
-        } else if (smoothLum > threshold + transitionWidth) {
-          textColor = "rgb(17, 17, 17)"; // near-black on bright bg
-        } else {
-          // Smooth interpolation through gray shades
-          const t = (smoothLum - (threshold - transitionWidth)) / (2 * transitionWidth);
-          const gray = Math.round(255 - t * 238); // 255 → 17
-          textColor = `rgb(${gray}, ${gray}, ${gray})`;
-        }
-
-        txt.style.color = textColor;
-      }
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
   // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
   useEffect(() => {
     const cursor = cursorRef.current;
@@ -497,8 +380,8 @@ export default function GiftPage() {
         tiltAngle = -8 + velocity.x * 0.8;
         tiltAngle = Math.max(-30, Math.min(20, tiltAngle));
       }
-      cursor.style.transform = `translate3d(${current.x - 10}px, ${
-        current.y - 10
+      cursor.style.transform = `translate3d(${current.x - 7}px, ${
+        current.y - 7
       }px, 0)`;
       // Apply velocity tilt via CSS custom property
       cursor.style.setProperty("--wand-tilt", `${tiltAngle}deg`);
@@ -525,60 +408,135 @@ export default function GiftPage() {
   return (
     <div className={`gift-root ${isOpen ? "wish-is-open" : ""}`}>
       <div ref={cursorRef} className="magic-cursor is-hidden" aria-hidden="true">
-        <svg className="magic-wand" width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <svg className="magic-wand" width="48" height="48" viewBox="0 0 90 90" fill="none">
           <defs>
             <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#c9a0f0" />
-              <stop offset="30%" stopColor="#a06bd6" />
-              <stop offset="65%" stopColor="#5a3d7d" />
-              <stop offset="100%" stopColor="#2a1b29" />
+              <stop offset="0%" stopColor="#d4a056" />
+              <stop offset="15%" stopColor="#b8863a" />
+              <stop offset="30%" stopColor="#a0722e" />
+              <stop offset="50%" stopColor="#7a5420" />
+              <stop offset="70%" stopColor="#5c3d14" />
+              <stop offset="85%" stopColor="#3d280a" />
+              <stop offset="100%" stopColor="#2a1b06" />
             </linearGradient>
-            <radialGradient id="wandTip" cx="50%" cy="50%" r="50%">
+            <linearGradient id="wandShaftHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#e8c47a" />
+              <stop offset="40%" stopColor="#c9a050" />
+              <stop offset="100%" stopColor="#8b6914" />
+            </linearGradient>
+            <linearGradient id="wandHandle" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4a3520" />
+              <stop offset="30%" stopColor="#3a2818" />
+              <stop offset="60%" stopColor="#2a1c10" />
+              <stop offset="100%" stopColor="#1a0f08" />
+            </linearGradient>
+            <linearGradient id="handleWrap" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8b6914" />
+              <stop offset="50%" stopColor="#6b4f10" />
+              <stop offset="100%" stopColor="#4a3520" />
+            </linearGradient>
+            <radialGradient id="wandTipCore" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="20%" stopColor="#fff7e0" />
-              <stop offset="45%" stopColor="#fff7ad" />
-              <stop offset="70%" stopColor="#f5c85b" />
-              <stop offset="100%" stopColor="#ff8c72" />
+              <stop offset="30%" stopColor="#fffbe6" />
+              <stop offset="55%" stopColor="#ffe066" />
+              <stop offset="75%" stopColor="#ffb347" />
+              <stop offset="100%" stopColor="#ff8c72" stopOpacity="0.6" />
             </radialGradient>
             <radialGradient id="wandOuterGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="rgba(245,200,91,0.35)" />
-              <stop offset="50%" stopColor="rgba(255,140,114,0.15)" />
-              <stop offset="100%" stopColor="rgba(255,140,114,0)" />
+              <stop offset="0%" stopColor="rgba(255,240,180,0.6)" />
+              <stop offset="30%" stopColor="rgba(255,200,91,0.35)" />
+              <stop offset="55%" stopColor="rgba(255,140,114,0.15)" />
+              <stop offset="80%" stopColor="rgba(227,79,111,0.06)" />
+              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
             </radialGradient>
-            <filter id="wandGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+            <radialGradient id="wandAmbientGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(245,200,91,0.25)" />
+              <stop offset="40%" stopColor="rgba(255,140,114,0.1)" />
+              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+            </radialGradient>
+            <filter id="wandGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
               <feMerge>
-                <feMergeNode in="blur" />
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter id="wandGlowStrong" x="-150%" y="-150%" width="400%" height="400%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur3" />
+              <feMerge>
+                <feMergeNode in="blur3" />
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <pattern id="woodGrain" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(90,60,20,0.15)" strokeWidth="0.5" />
+              <line x1="2" y1="0" x2="2" y2="4" stroke="rgba(60,40,10,0.1)" strokeWidth="0.3" />
+            </pattern>
           </defs>
-          {/* Soft outer glow aura */}
-          <circle className="wand-aura" cx="10" cy="10" r="18" fill="url(#wandOuterGlow)" />
+          {/* Ambient glow */}
+          <circle className="wand-ambient" cx="14" cy="14" r="32" fill="url(#wandAmbientGlow)" />
+          {/* Outer aura */}
+          <circle className="wand-aura" cx="14" cy="14" r="20" fill="url(#wandOuterGlow)" />
+          {/* Shaft shadow */}
+          <line x1="16" y1="16" x2="72" y2="72" stroke="rgba(20,10,5,0.3)" strokeWidth="7" strokeLinecap="round" />
+          {/* Main shaft */}
+          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaft)" strokeWidth="5.5" strokeLinecap="round" />
+          {/* Wood grain overlay */}
+          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#woodGrain)" strokeWidth="5" strokeLinecap="round" />
+          {/* Highlight stripe */}
+          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaftHighlight)" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+          {/* Edge highlight */}
+          <line x1="13.5" y1="13.5" x2="69" y2="69" stroke="rgba(232,196,122,0.3)" strokeWidth="1" strokeLinecap="round" />
+          {/* Ferrule ring */}
+          <circle cx="56" cy="56" r="4.5" fill="#5c3d14" stroke="#3d280a" strokeWidth="1" />
+          <circle cx="56" cy="56" r="3" fill="#6b4f10" opacity="0.6" />
+          {/* Handle shadow */}
+          <line x1="62" y1="62" x2="82" y2="82" stroke="rgba(10,5,2,0.5)" strokeWidth="11" strokeLinecap="round" />
+          {/* Handle */}
+          <line x1="60" y1="60" x2="80" y2="80" stroke="url(#wandHandle)" strokeWidth="9" strokeLinecap="round" />
+          {/* Handle texture */}
+          <line x1="60" y1="60" x2="80" y2="80" stroke="rgba(100,70,30,0.3)" strokeWidth="3" strokeLinecap="round" />
+          {/* Gold grip wraps */}
+          <line x1="63" y1="63" x2="65" y2="65" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+          <line x1="68" y1="68" x2="70" y2="70" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+          <line x1="73" y1="73" x2="75" y2="75" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+          {/* Pommel */}
+          <circle cx="82" cy="82" r="5" fill="#2a1b06" stroke="#1a0f08" strokeWidth="1" />
+          <circle cx="82" cy="82" r="3.5" fill="#3d280a" opacity="0.7" />
+          <circle cx="81" cy="81" r="1.5" fill="rgba(139,105,20,0.4)" />
           {/* Inner halo */}
-          <circle className="wand-halo" cx="10" cy="10" r="9" fill="url(#wandTip)" />
-          {/* Tiny sparkle dots around the star */}
-          <circle className="sparkle-dot sd-1" cx="2" cy="6" r="0.8" fill="#fff7ad" />
-          <circle className="sparkle-dot sd-2" cx="18" cy="5" r="0.6" fill="#ffffff" />
-          <circle className="sparkle-dot sd-3" cx="4" cy="16" r="0.7" fill="#ff8c72" />
-          <circle className="sparkle-dot sd-4" cx="16" cy="15" r="0.5" fill="#f5c85b" />
-          <circle className="sparkle-dot sd-5" cx="10" cy="0" r="0.6" fill="#ffffff" />
-          {/* Shaft with gradient */}
-          <line x1="12" y1="12" x2="44" y2="44" stroke="url(#wandShaft)" strokeWidth="4" strokeLinecap="round" />
-          {/* Handle base */}
-          <line x1="38" y1="38" x2="50" y2="50" stroke="#2a1b29" strokeWidth="7" strokeLinecap="round" />
-          {/* Gold grip rings */}
-          <line x1="40" y1="40" x2="42" y2="42" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
-          <line x1="44" y1="44" x2="46" y2="46" stroke="#f5c85b" strokeWidth="2" strokeLinecap="round" />
-          {/* Star tip with glow filter */}
+          <circle className="wand-halo" cx="14" cy="14" r="8" fill="url(#wandTipCore)" filter="url(#wandGlow)" />
+          {/* Core point */}
+          <circle className="wand-core" cx="14" cy="14" r="3" fill="white" opacity="0.95" />
+          {/* Star tip */}
           <path
             className="wand-star"
-            d="M 10,2 L 11.88,7.41 L 17.61,7.53 L 13.04,10.99 L 14.70,16.47 L 10,13.2 L 5.30,16.47 L 6.96,10.99 L 2.39,7.53 L 8.12,7.41 Z"
-            fill="url(#wandTip)"
-            filter="url(#wandGlow)"
+            d="M 14,4 L 15.5,10.5 L 22,11 L 17,14.5 L 18.5,21 L 14,17.5 L 9.5,21 L 11,14.5 L 6,11 L 12.5,10.5 Z"
+            fill="url(#wandTipCore)"
+            filter="url(#wandGlowStrong)"
           />
-          {/* Hover ring (shown when is-active) */}
-          <circle className="hover-ring" cx="10" cy="10" r="14" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
+          {/* Sparkle dots */}
+          <circle className="sparkle-dot sd-1" cx="4" cy="8" r="1.2" fill="#fff7ad" />
+          <circle className="sparkle-dot sd-2" cx="24" cy="6" r="0.9" fill="#ffffff" />
+          <circle className="sparkle-dot sd-3" cx="6" cy="22" r="1.0" fill="#ff8c72" />
+          <circle className="sparkle-dot sd-4" cx="22" cy="20" r="0.7" fill="#f5c85b" />
+          <circle className="sparkle-dot sd-5" cx="14" cy="0" r="0.8" fill="#ffffff" />
+          <circle className="sparkle-dot sd-6" cx="0" cy="14" r="0.6" fill="#ffe066" />
+          <circle className="sparkle-dot sd-7" cx="28" cy="14" r="0.5" fill="#fff7ad" />
+          <circle className="sparkle-dot sd-8" cx="8" cy="28" r="0.7" fill="#ff8c72" />
+          {/* Magic rays */}
+          <line className="magic-ray mr-1" x1="14" y1="14" x2="2" y2="2" stroke="rgba(255,240,180,0.3)" strokeWidth="0.5" />
+          <line className="magic-ray mr-2" x1="14" y1="14" x2="26" y2="2" stroke="rgba(255,240,180,0.25)" strokeWidth="0.5" />
+          <line className="magic-ray mr-3" x1="14" y1="14" x2="2" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+          <line className="magic-ray mr-4" x1="14" y1="14" x2="26" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+          {/* Hover ring */}
+          <circle className="hover-ring" cx="14" cy="14" r="16" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
         </svg>
       </div>
 
@@ -610,7 +568,6 @@ export default function GiftPage() {
         <button
           type="button"
           className="open-button"
-          ref={buttonRef}
           onClick={openWish}
           aria-haspopup="dialog"
           aria-expanded={isOpen}
@@ -621,7 +578,7 @@ export default function GiftPage() {
           <span className="button-light-orb orb-2" />
           <span className="button-light-orb orb-3" />
           <span className="button-glow-ring" />
-          <span className="button-text" ref={buttonTextRef}>Tap Here</span>
+          <span className="button-text">Tap Here</span>
         </button>
       </main>
 
@@ -695,7 +652,7 @@ export default function GiftPage() {
               you in every little way I can.
             </p>
             <p className="signature reveal reveal--5">
-              I&thinsp;&hearts;&thinsp;U
+              I&thinsp;♥&thinsp;U
             </p>
           </div>
         </div>
@@ -703,9 +660,9 @@ export default function GiftPage() {
 
       <footer className="gift-footer">
         <div className="footer-box">
-          <span className="footer-ornament">✦</span>
-          <span>Made with <span className="heart-dot">&hearts;</span> just for you</span>
-          <span className="footer-ornament footer-ornament--right">✦</span>
+          <span className="footer-ornament footer-ornament-left">✦</span>
+          <span className="footer-text">Made with <span className="heart-dot">♥</span> just for you</span>
+          <span className="footer-ornament footer-ornament-right">✦</span>
         </div>
       </footer>
     </div>
