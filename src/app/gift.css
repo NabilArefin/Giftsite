@@ -724,7 +724,7 @@
   font-size: clamp(2.8rem, 7.5vw, 6.2rem);
   font-style: normal;
   font-weight: 400;
-  line-height: .95;
+  line-height: 1.15;
 }
 
 .title-line {
