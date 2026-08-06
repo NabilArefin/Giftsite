@@ -736,8 +736,7 @@ export default function GiftPage() {
 
           <div className="wish-copy">
             <h1 id="wishTitle" className="display-title reveal reveal--2">
-              Happy Birthday
-              <br />
+              <span className="title-line">Happy Birthday</span>
               <span className="name-accent">Nuha</span>
             </h1>
             <p className="wish-note reveal reveal--3">

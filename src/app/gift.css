@@ -720,6 +720,15 @@
   font-family: var(--font-germania), "Germania One", cursive;
   text-align: center;
   letter-spacing: .02em;
+  margin: 0 0 .8rem;
+  font-size: clamp(2.8rem, 7.5vw, 6.2rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: .95;
+}
+
+.title-line {
+  display: block;
   background: linear-gradient(135deg, #2a0f24 5%, #6b1d4a 15%, var(--rose) 30%, #d4628a 42%, var(--violet) 50%, #c46298 58%, var(--rose) 70%, #6b1d4a 85%, #2a0f24 95%);
   -webkit-text-fill-color: transparent;
   color: #0000;
@@ -727,11 +736,6 @@
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  margin: 0 0 .8rem;
-  font-size: clamp(2.8rem, 7.5vw, 6.2rem);
-  font-style: normal;
-  font-weight: 400;
-  line-height: .95;
   animation: 5s ease-in-out infinite titleShimmer;
 }
 
