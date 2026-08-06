@@ -747,22 +747,11 @@
   padding: 0 .1em;
   font-weight: 400;
   display: inline-block;
-  background: linear-gradient(90deg, #c89020 0%, #f5c85b 25%, #ffda6b 50%, #fff7ad 75%, #f5c85b 100%);
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: 3s ease-in-out infinite nuhaShimmer;
+  color: #d4a020;
 }
 
-@keyframes nuhaShimmer {
-  0%, to {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
+
+
 
 .lead,
 .wish-note {
