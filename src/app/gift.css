@@ -739,10 +739,25 @@
   font-size: 1.4em;
   font-family: var(--font-sacramento), "Sacramento", cursive;
   letter-spacing: .04em;
-  filter: drop-shadow(0 2px 6px #e34f6f40) drop-shadow(0 0 16px #e34f6f1a);
+  filter: drop-shadow(0 2px 6px #c8902040) drop-shadow(0 0 16px #f5c85b1a);
   padding: 0 .1em;
   font-weight: 400;
   display: inline-block;
+  background: linear-gradient(90deg, #c89020 0%, #f5c85b 25%, #ffda6b 50%, #fff7ad 75%, #f5c85b 100%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: 3s ease-in-out infinite nuhaShimmer;
+}
+
+@keyframes nuhaShimmer {
+  0%, to {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .lead,
