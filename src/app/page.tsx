@@ -191,8 +191,104 @@ export default function GiftPage() {
   const mouseRef = useRef({ x: -100, y: -100, last: 0 });
   const reducedRef = useRef(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonTextRef = useRef<HTMLSpanElement | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  // ── JS-driven text color sync ──
+  // Reads the button's actual computed background-position every frame,
+  // maps it to a gradient position, computes luminance, and sets text color
+  // so it always contrasts perfectly with the animated background.
+  useEffect(() => {
+    const btn = buttonRef.current;
+    const txt = buttonTextRef.current;
+    if (!btn || !txt) return;
+
+    let smoothLum = 0.6; // start near middle
+    const LUM_THRESHOLD = 0.58;
+    const TRANSITION_WIDTH = 0.13;
+    const SMOOTH_FACTOR = 0.25;
+
+    let colorRaf = 0;
+
+    const tick = () => {
+      const pos = getComputedStyle(btn).backgroundPosition;
+      // Parse "X% Y%" or "Xpx Ypx"
+      const parts = pos.split(/\s+/);
+      let fracX = 0.5;
+      let fracY = 0.5;
+
+      for (let i = 0; i < parts.length && i < 2; i++) {
+        const v = parseFloat(parts[i]);
+        if (parts[i].includes('%')) {
+          // For background-size: 300%, 0%→start, 100%→end
+          // frac: 0→0.333, 1→1.0  →  (pct/100 * 2 + 1) / 3
+          // Actually: bg-size 300% means the image is 3x the container.
+          // bg-pos 0% = left edge of image at left edge of container = gradient start
+          // bg-pos 100% = right edge of image at right edge of container = gradient end
+          // So fracX = pct / 100 maps [0,1] for the full gradient sweep
+          // But with 300% size, position 0%=gradient-start, 50%=gradient-middle, 100%=gradient-end
+          const f = v / 100;
+          if (i === 0) fracX = f;
+          else fracY = f;
+        } else {
+          // px value — approximate by ratio to element size
+          const dim = i === 0 ? btn.offsetWidth : btn.offsetHeight;
+          if (dim > 0) {
+            const f = Math.min(1, Math.max(0, v / (dim * 2))); // rough normalization
+            if (i === 0) fracX = f;
+            else fracY = f;
+          }
+        }
+      }
+
+      // The gradient is 135deg with 5 color stops (violet, rose, coral, gold, mint)
+      // gradientT goes from 0 (violet/rose) to 1 (gold/mint)
+      // For 135deg gradient, position depends on both X and Y
+      const gradientT = (fracX + fracY) / 2;
+
+      // Map gradientT to approximate luminance of the gradient colors
+      // violet(#7b61ff) lum≈0.44, rose(#e34f6f) lum≈0.45, coral(#ff8c72) lum≈0.53, gold(#f5c85b) lum≈0.72, mint(#9ed7c1) lum≈0.69
+      // Use a piecewise approximation:
+      let lum = 0.44;
+      if (gradientT < 0.25) {
+        lum = 0.44 + (0.45 - 0.44) * (gradientT / 0.25); // violet→rose
+      } else if (gradientT < 0.5) {
+        lum = 0.45 + (0.53 - 0.45) * ((gradientT - 0.25) / 0.25); // rose→coral
+      } else if (gradientT < 0.75) {
+        lum = 0.53 + (0.72 - 0.53) * ((gradientT - 0.5) / 0.25); // coral→gold
+      } else {
+        lum = 0.72 + (0.69 - 0.72) * ((gradientT - 0.75) / 0.25); // gold→mint
+      }
+
+      // Apply exponential smoothing to prevent jitter
+      smoothLum = smoothLum + SMOOTH_FACTOR * (lum - smoothLum);
+
+      // Map luminance to text color with smooth gray transition
+      // Low lum (dark bg) → white text, High lum (bright bg) → dark text
+      let r: number, g: number, b: number;
+      if (smoothLum < LUM_THRESHOLD - TRANSITION_WIDTH) {
+        // Fully white
+        r = 255; g = 255; b = 255;
+      } else if (smoothLum > LUM_THRESHOLD + TRANSITION_WIDTH) {
+        // Fully dark
+        r = 17; g = 17; b = 17;
+      } else {
+        // Transition zone — smooth gray interpolation
+        const t = (smoothLum - (LUM_THRESHOLD - TRANSITION_WIDTH)) / (2 * TRANSITION_WIDTH);
+        r = Math.round(255 + (17 - 255) * t);
+        g = Math.round(255 + (17 - 255) * t);
+        b = Math.round(255 + (17 - 255) * t);
+      }
+
+      txt.style.color = `rgb(${r},${g},${b})`;
+      colorRaf = requestAnimationFrame(tick);
+    };
+
+    colorRaf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(colorRaf);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -566,6 +662,7 @@ export default function GiftPage() {
 
       <main className="page-shell">
         <button
+          ref={buttonRef}
           type="button"
           className="open-button"
           onClick={openWish}
@@ -578,7 +675,7 @@ export default function GiftPage() {
           <span className="button-light-orb orb-2" />
           <span className="button-light-orb orb-3" />
           <span className="button-glow-ring" />
-          <span className="button-text">Tap Here</span>
+          <span ref={buttonTextRef} className="button-text">Tap Here</span>
         </button>
       </main>
 

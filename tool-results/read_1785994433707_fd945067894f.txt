@@ -1,0 +1,1751 @@
+     1→     1→@property --glow-angle {
+     2→     2→  syntax: "<angle>";
+     3→     3→  inherits: false;
+     4→     4→  initial-value: 0deg;
+     5→     5→}
+     6→     6→
+     7→     7→@font-face {
+     8→     8→  font-family: Amsterline;
+     9→     9→  src: url(/fonts/amsterline.ttf) format("truetype");
+    10→    10→  font-weight: 400;
+    11→    11→  font-style: normal;
+    12→    12→  font-display: swap;
+    13→    13→}
+    14→    14→
+    15→    15→.gift-root {
+    16→    16→  --ink: #2a1b29;
+    17→    17→  --muted: #705c68;
+    18→    18→  --rose: #e34f6f;
+    19→    19→  --coral: #ff8c72;
+    20→    20→  --gold: #f5c85b;
+    21→    21→  --mint: #9ed7c1;
+    22→    22→  --violet: #7b61ff;
+    23→    23→  --surface: #fffbfeeb;
+    24→    24→  --surface-high: #fffffff5;
+    25→    25→  --outline: #58405424;
+    26→    26→  --shadow: 0 24px 70px #3e203033;
+    27→    27→  --ease-expressive: cubic-bezier(.2, 0, 0, 1);
+    28→    28→  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    29→    29→  --font-display: var(--font-display), "Playfair Display", Georgia, "Times New Roman", serif;
+    30→    30→  --font-body: var(--font-body), "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    31→    31→  min-height: 100vh;
+    32→    32→  color: var(--ink);
+    33→    33→  font-family: var(--font-body);
+    34→    34→  background: linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
+    35→    35→  flex-direction: column;
+    36→    36→  display: flex;
+    37→    37→  position: fixed;
+    38→    38→  inset: 0;
+    39→    39→  overflow: hidden;
+    40→    40→}
+    41→    41→
+    42→    42→.frost-blob {
+    43→    43→  pointer-events: none;
+    44→    44→  z-index: 0;
+    45→    45→  filter: blur(80px);
+    46→    46→  opacity: .55;
+    47→    47→  will-change: transform;
+    48→    48→  border-radius: 50%;
+    49→    49→  position: fixed;
+    50→    50→}
+    51→    51→
+    52→    52→.frost-blob-1 {
+    53→    53→  background: #7b61ff4d;
+    54→    54→  width: 45vmax;
+    55→    55→  height: 45vmax;
+    56→    56→  animation: 18s ease-in-out infinite frostDrift1;
+    57→    57→  top: -15%;
+    58→    58→  left: -10%;
+    59→    59→}
+    60→    60→
+    61→    61→.frost-blob-2 {
+    62→    62→  background: #f5c85b59;
+    63→    63→  width: 40vmax;
+    64→    64→  height: 40vmax;
+    65→    65→  animation: 22s ease-in-out infinite frostDrift2;
+    66→    66→  top: -10%;
+    67→    67→  right: -12%;
+    68→    68→}
+    69→    69→
+    70→    70→.frost-blob-3 {
+    71→    71→  background: #9ed7c161;
+    72→    72→  width: 42vmax;
+    73→    73→  height: 42vmax;
+    74→    74→  animation: 20s ease-in-out infinite frostDrift3;
+    75→    75→  bottom: -12%;
+    76→    76→  right: -8%;
+    77→    77→}
+    78→    78→
+    79→    79→.frost-blob-4 {
+    80→    80→  background: #e34f6f38;
+    81→    81→  width: 38vmax;
+    82→    82→  height: 38vmax;
+    83→    83→  animation: 24s ease-in-out infinite frostDrift4;
+    84→    84→  bottom: -10%;
+    85→    85→  left: -10%;
+    86→    86→}
+    87→    87→
+    88→    88→.frost-blob-5 {
+    89→    89→  background: #ff8c722e;
+    90→    90→  width: 30vmax;
+    91→    91→  height: 30vmax;
+    92→    92→  animation: 16s ease-in-out infinite frostDrift5;
+    93→    93→  top: 30%;
+    94→    94→  left: 25%;
+    95→    95→}
+    96→    96→
+    97→    97→@keyframes frostDrift1 {
+    98→    98→  0%, to {
+    99→    99→    transform: translate(0) scale(1);
+   100→   100→  }
+   101→   101→  25% {
+   102→   102→    transform: translate(30vw, 20vh) scale(1.1);
+   103→   103→  }
+   104→   104→  50% {
+   105→   105→    transform: translate(50vw, 45vh) scale(.95);
+   106→   106→  }
+   107→   107→  75% {
+   108→   108→    transform: translate(15vw, 55vh) scale(1.05);
+   109→   109→  }
+   110→   110→}
+   111→   111→
+   112→   112→@keyframes frostDrift2 {
+   113→   113→  0%, to {
+   114→   114→    transform: translate(0) scale(1);
+   115→   115→  }
+   116→   116→  25% {
+   117→   117→    transform: translate(-25vw, 25vh) scale(.9);
+   118→   118→  }
+   119→   119→  50% {
+   120→   120→    transform: translate(-40vw, 50vh) scale(1.1);
+   121→   121→  }
+   122→   122→  75% {
+   123→   123→    transform: translate(-15vw, 30vh) scale(1);
+   124→   124→  }
+   125→   125→}
+   126→   126→
+   127→   127→@keyframes frostDrift3 {
+   128→   128→  0%, to {
+   129→   129→    transform: translate(0) scale(1);
+   130→   130→  }
+   131→   131→  25% {
+   132→   132→    transform: translate(-20vw, -30vh) scale(1.08);
+   133→   133→  }
+   134→   134→  50% {
+   135→   135→    transform: translate(-35vw, -15vh) scale(.92);
+   136→   136→  }
+   137→   137→  75% {
+   138→   138→    transform: translate(-10vw, -40vh) scale(1.05);
+   139→   139→  }
+   140→   140→}
+   141→   141→
+   142→   142→@keyframes frostDrift4 {
+   143→   143→  0%, to {
+   144→   144→    transform: translate(0) scale(1);
+   145→   145→  }
+   146→   146→  25% {
+   147→   147→    transform: translate(25vw, -20vh) scale(1.1);
+   148→   148→  }
+   149→   149→  50% {
+   150→   150→    transform: translate(45vw, -10vh) scale(.95);
+   151→   151→  }
+   152→   152→  75% {
+   153→   153→    transform: translate(20vw, -35vh) scale(1.08);
+   154→   154→  }
+   155→   155→}
+   156→   156→
+   157→   157→@keyframes frostDrift5 {
+   158→   158→  0%, to {
+   159→   159→    transform: translate(0) scale(1);
+   160→   160→  }
+   161→   161→  33% {
+   162→   162→    transform: translate(20vw, -15vh) scale(1.12);
+   163→   163→  }
+   164→   164→  66% {
+   165→   165→    transform: translate(-10vw, 20vh) scale(.88);
+   166→   166→  }
+   167→   167→}
+   168→   168→
+   169→   169→.gift-root.wish-is-open {
+   170→   170→  scrollbar-width: none;
+   171→   171→  overflow: hidden;
+   172→   172→}
+   173→   173→
+   174→   174→.gift-root::-webkit-scrollbar {
+   175→   175→  display: none;
+   176→   176→}
+   177→   177→
+   178→   178→.sparkle-canvas {
+   179→   179→  pointer-events: none;
+   180→   180→  z-index: 4;
+   181→   181→  width: 100%;
+   182→   182→  height: 100%;
+   183→   183→  position: fixed;
+   184→   184→  inset: 0;
+   185→   185→}
+   186→   186→
+   187→   187→.stars-layer {
+   188→   188→  pointer-events: none;
+   189→   189→  z-index: 0;
+   190→   190→  position: fixed;
+   191→   191→  inset: 0;
+   192→   192→  overflow: hidden;
+   193→   193→}
+   194→   194→
+   195→   195→.star {
+   196→   196→  background: var(--gold);
+   197→   197→  opacity: 0;
+   198→   198→  width: 6px;
+   199→   199→  height: 6px;
+   200→   200→  animation: twinkleStar var(--dur, 4s) var(--delay, 0s) var(--ease-expressive) infinite;
+   201→   201→  border-radius: 50%;
+   202→   202→  position: absolute;
+   203→   203→  box-shadow: 0 0 8px #f5c85b80, 0 0 2px #fff9;
+   204→   204→}
+   205→   205→
+   206→   206→.star:before,
+   207→   207→.star:after {
+   208→   208→  content: "";
+   209→   209→  background: var(--gold);
+   210→   210→  border-radius: 50%;
+   211→   211→  position: absolute;
+   212→   212→}
+   213→   213→
+   214→   214→.star:before {
+   215→   215→  width: 100%;
+   216→   216→  height: 100%;
+   217→   217→}
+   218→   218→
+   219→   219→.star:after {
+   220→   220→  width: 14px;
+   221→   221→  height: 2px;
+   222→   222→  top: 50%;
+   223→   223→  left: 50%;
+   224→   224→  transform: translate(-50%, -50%) rotate(45deg);
+   225→   225→  box-shadow: 0 0 4px #f5c85b66;
+   226→   226→}
+   227→   227→
+   228→   228→.star--1 {
+   229→   229→  --dur: 3.5s;
+   230→   230→  --delay: 0s;
+   231→   231→  top: 8%;
+   232→   232→  left: 15%;
+   233→   233→}
+   234→   234→
+   235→   235→.star--2 {
+   236→   236→  --dur: 5s;
+   237→   237→  --delay: 1.2s;
+   238→   238→  width: 4px;
+   239→   239→  height: 4px;
+   240→   240→  top: 14%;
+   241→   241→  left: 72%;
+   242→   242→}
+   243→   243→
+   244→   244→.star--3 {
+   245→   245→  --dur: 4.2s;
+   246→   246→  --delay: .6s;
+   247→   247→  top: 34%;
+   248→   248→  left: 88%;
+   249→   249→}
+   250→   250→
+   251→   251→.star--4 {
+   252→   252→  --dur: 3.8s;
+   253→   253→  --delay: 2s;
+   254→   254→  width: 5px;
+   255→   255→  height: 5px;
+   256→   256→  top: 62%;
+   257→   257→  left: 6%;
+   258→   258→}
+   259→   259→
+   260→   260→.star--5 {
+   261→   261→  --dur: 4.6s;
+   262→   262→  --delay: .8s;
+   263→   263→  width: 3px;
+   264→   264→  height: 3px;
+   265→   265→  top: 78%;
+   266→   266→  left: 55%;
+   267→   267→}
+   268→   268→
+   269→   269→.star--6 {
+   270→   270→  --dur: 5.5s;
+   271→   271→  --delay: 1.8s;
+   272→   272→  width: 4px;
+   273→   273→  height: 4px;
+   274→   274→  top: 22%;
+   275→   275→  left: 42%;
+   276→   276→}
+   277→   277→
+   278→   278→.star--7 {
+   279→   279→  --dur: 3.2s;
+   280→   280→  --delay: 2.5s;
+   281→   281→  top: 52%;
+   282→   282→  left: 28%;
+   283→   283→}
+   284→   284→
+   285→   285→.star--8 {
+   286→   286→  --dur: 4.8s;
+   287→   287→  --delay: .4s;
+   288→   288→  width: 5px;
+   289→   289→  height: 5px;
+   290→   290→  top: 88%;
+   291→   291→  left: 80%;
+   292→   292→}
+   293→   293→
+   294→   294→.star--9 {
+   295→   295→  --dur: 4.4s;
+   296→   296→  --delay: 1.5s;
+   297→   297→  width: 3px;
+   298→   298→  height: 3px;
+   299→   299→  top: 4%;
+   300→   300→  left: 52%;
+   301→   301→}
+   302→   302→
+   303→   303→.star--10 {
+   304→   304→  --dur: 3.6s;
+   305→   305→  --delay: .3s;
+   306→   306→  width: 4px;
+   307→   307→  height: 4px;
+   308→   308→  top: 44%;
+   309→   309→  left: 94%;
+   310→   310→}
+   311→   311→
+   312→   312→.star--11 {
+   313→   313→  --dur: 5.2s;
+   314→   314→  --delay: 2.2s;
+   315→   315→  width: 5px;
+   316→   316→  height: 5px;
+   317→   317→  top: 70%;
+   318→   318→  left: 38%;
+   319→   319→}
+   320→   320→
+   321→   321→.star--12 {
+   322→   322→  --dur: 4s;
+   323→   323→  --delay: 1s;
+   324→   324→  width: 3px;
+   325→   325→  height: 3px;
+   326→   326→  top: 16%;
+   327→   327→  left: 82%;
+   328→   328→}
+   329→   329→
+   330→   330→@keyframes twinkleStar {
+   331→   331→  0%, to {
+   332→   332→    opacity: 0;
+   333→   333→    transform: scale(.4);
+   334→   334→  }
+   335→   335→  15% {
+   336→   336→    opacity: .9;
+   337→   337→    transform: scale(1.1);
+   338→   338→  }
+   339→   339→  35% {
+   340→   340→    opacity: .2;
+   341→   341→    transform: scale(.6);
+   342→   342→  }
+   343→   343→  55% {
+   344→   344→    opacity: 1;
+   345→   345→    transform: scale(1.15);
+   346→   346→  }
+   347→   347→  75% {
+   348→   348→    opacity: .15;
+   349→   349→    transform: scale(.5);
+   350→   350→  }
+   351→   351→  90% {
+   352→   352→    opacity: .7;
+   353→   353→    transform: scale(.9);
+   354→   354→  }
+   355→   355→}
+   356→   356→
+   357→   357→.page-shell {
+   358→   358→  z-index: 1;
+   359→   359→  flex: auto;
+   360→   360→  place-items: center;
+   361→   361→  min-height: 0;
+   362→   362→  padding: 1rem;
+   363→   363→  display: grid;
+   364→   364→  position: relative;
+   365→   365→}
+   366→   366→
+   367→   367→.open-button {
+   368→   368→  color: #fff;
+   369→   369→  min-width: min(320px, 86vw);
+   370→   370→  min-height: 5rem;
+   371→   371→  font: inherit;
+   372→   372→  letter-spacing: .02em;
+   373→   373→  background: linear-gradient(135deg, var(--violet), var(--rose) 25%, var(--coral) 50%, var(--gold) 75%, var(--mint) 100%);
+   374→   374→  cursor: pointer;
+   375→   375→  transition: border-radius .35s var(--ease-expressive), transform .35s var(--ease-expressive), box-shadow .35s var(--ease-expressive), filter .2s ease;
+   376→   376→  animation: pulseButton 1.8s var(--ease-expressive) infinite, colorShift 6s ease-in-out infinite;
+   377→   377→  -webkit-backdrop-filter: blur(2px);
+   378→   378→  background-size: 300% 300%;
+   379→   379→  border: 1.5px solid #ffffff40;
+   380→   380→  border-radius: 48px;
+   381→   381→  padding: 0 2rem;
+   382→   382→  font-size: clamp(1.6rem, 6vw, 2.2rem);
+   383→   383→  font-weight: 900;
+   384→   384→  position: relative;
+   385→   385→  overflow: hidden;
+   386→   386→  transform: translateY(0);
+   387→   387→  box-shadow: 0 20px 52px #7b61ff42, 0 14px 36px #e34f6f42, 0 0 #7b61ff00, inset 0 1px #ffffff40, inset 0 -1px #00000014;
+   388→   388→}
+   389→   389→
+   390→   390→.open-button:hover {
+   391→   391→  filter: brightness(1.08);
+   392→   392→  animation: pulseButton 1.8s var(--ease-expressive) infinite, colorShift 2s ease-in-out infinite;
+   393→   393→  transform: translateY(-2px) scale(1.02);
+   394→   394→  box-shadow: 0 24px 60px #7b61ff52, 0 18px 44px #e34f6f52, 0 0 36px #f5c85b26, 0 0 60px #9ed7c114, inset 0 1px #ffffff4d, inset 0 -1px #00000014;
+   395→   395→}
+   396→   396→
+   397→   397→.open-button:active {
+   398→   398→  filter: brightness(.96);
+   399→   399→  transform: translateY(2px) scale(.98);
+   400→   400→}
+   401→   401→
+   402→   402→.open-button:focus-visible,
+   403→   403→.close-button:focus-visible {
+   404→   404→  outline-offset: 4px;
+   405→   405→  outline: 3px solid #2a1b296b;
+   406→   406→}
+   407→   407→
+   408→   408→.button-glass {
+   409→   409→  border-radius: inherit;
+   410→   410→  pointer-events: none;
+   411→   411→  z-index: 1;
+   412→   412→  background: linear-gradient(165deg, #ffffff59 0%, #ffffff1f 25%, #0000 50%), radial-gradient(80% 50% at 50% 100%, #ffffff1f 0%, #0000 70%);
+   413→   413→  animation: 4s ease-in-out infinite glassShift;
+   414→   414→  position: absolute;
+   415→   415→  inset: 0;
+   416→   416→}
+   417→   417→
+   418→   418→.button-light-orb {
+   419→   419→  pointer-events: none;
+   420→   420→  z-index: 2;
+   421→   421→  filter: blur(10px);
+   422→   422→  mix-blend-mode: overlay;
+   423→   423→  border-radius: 50%;
+   424→   424→  position: absolute;
+   425→   425→}
+   426→   426→
+   427→   427→.orb-1 {
+   428→   428→  background: radial-gradient(circle, #ffffff8c 0%, #7b61ff4d 50%, #0000 70%);
+   429→   429→  width: 70px;
+   430→   430→  height: 70px;
+   431→   431→  animation: 3s ease-in-out infinite orbFloat1;
+   432→   432→  top: -12px;
+   433→   433→  left: 10%;
+   434→   434→}
+   435→   435→
+   436→   436→.orb-2 {
+   437→   437→  background: radial-gradient(circle, #f5c85b80 0%, #e34f6f40 50%, #0000 70%);
+   438→   438→  width: 55px;
+   439→   439→  height: 55px;
+   440→   440→  animation: 3.5s ease-in-out infinite orbFloat2;
+   441→   441→  top: 5px;
+   442→   442→  right: 15%;
+   443→   443→}
+   444→   444→
+   445→   445→.orb-3 {
+   446→   446→  background: radial-gradient(circle, #9ed7c180 0%, #7b61ff33 50%, #0000 70%);
+   447→   447→  width: 45px;
+   448→   448→  height: 45px;
+   449→   449→  animation: 2.8s ease-in-out infinite orbFloat3;
+   450→   450→  bottom: -5px;
+   451→   451→  left: 35%;
+   452→   452→}
+   453→   453→
+   454→   454→.button-glow-ring {
+   455→   455→  border-radius: inherit;
+   456→   456→  background: linear-gradient(var(--button-bg, transparent), var(--button-bg, transparent)) padding-box, conic-gradient(from var(--glow-angle, 0deg), #ffffff73, #f5c85b66, #e34f6f59, #7b61ff66, #9ed7c159, #ffffff73) border-box;
+   457→   457→  pointer-events: none;
+   458→   458→  z-index: 3;
+   459→   459→  -webkit-mask-composite: xor;
+   460→   460→  border: 1.5px solid #0000;
+   461→   461→  animation: 2.5s ease-in-out infinite glowRingPulse, 4s linear infinite glowRingRotate;
+   462→   462→  position: absolute;
+   463→   463→  inset: -1px;
+   464→   464→  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+   465→   465→  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+   466→   466→  -webkit-mask-position: 0 0, 0 0;
+   467→   467→  mask-position: 0 0, 0 0;
+   468→   468→  -webkit-mask-size: auto, auto;
+   469→   469→  mask-size: auto, auto;
+   470→   470→  -webkit-mask-repeat: repeat, repeat;
+   471→   471→  mask-repeat: repeat, repeat;
+   472→   472→  -webkit-mask-clip: padding-box, border-box;
+   473→   473→  mask-clip: padding-box, border-box;
+   474→   474→  -webkit-mask-origin: padding-box, border-box;
+   475→   475→  mask-origin: padding-box, border-box;
+   476→   476→  -webkit-mask-composite: xor;
+   477→   477→  mask-composite: exclude;
+   478→   478→  -webkit-mask-source-type: auto, auto;
+   479→   479→  mask-mode: match-source, match-source;
+   480→   480→}
+   481→   481→
+   482→   482→.button-text {
+   483→   483→  z-index: 4;
+   484→   484→  font-family: var(--font-updock), "Updock", cursive;
+   485→   485→  letter-spacing: .04em;
+   486→   486→  color: #fff;
+   487→   487→  animation: 6s ease-in-out infinite textColorShift;
+   488→   488→  position: relative;
+   489→   489→}
+   490→   490→
+   491→   491→@keyframes textColorShift {
+   492→   492→  0% {
+   493→   493→    color: #fff;
+   494→   494→  }
+   495→   495→  8% {
+   496→   496→    color: #fff;
+   497→   497→  }
+   498→   498→  14% {
+   499→   499→    color: #e0e0e0;
+   500→   500→  }
+   501→   501→  18% {
+   502→   502→    color: #b0b0b0;
+   503→   503→  }
+   504→   504→  22% {
+   505→   505→    color: gray;
+   506→   506→  }
+   507→   507→  26% {
+   508→   508→    color: #505050;
+   509→   509→  }
+   510→   510→  30% {
+   511→   511→    color: #222;
+   512→   512→  }
+   513→   513→  34% {
+   514→   514→    color: #111;
+   515→   515→  }
+   516→   516→  50% {
+   517→   517→    color: #111;
+   518→   518→  }
+   519→   519→  66% {
+   520→   520→    color: #111;
+   521→   521→  }
+   522→   522→  70% {
+   523→   523→    color: #222;
+   524→   524→  }
+   525→   525→  74% {
+   526→   526→    color: #505050;
+   527→   527→  }
+   528→   528→  78% {
+   529→   529→    color: gray;
+   530→   530→  }
+   531→   531→  82% {
+   532→   532→    color: #b0b0b0;
+   533→   533→  }
+   534→   534→  86% {
+   535→   535→    color: #e0e0e0;
+   536→   536→  }
+   537→   537→  92% {
+   538→   538→    color: #fff;
+   539→   539→  }
+   540→   540→  to {
+   541→   541→    color: #fff;
+   542→   542→  }
+   543→   543→}
+   544→   544→
+   545→   545→@keyframes glassShift {
+   546→   546→  0%, to {
+   547→   547→    opacity: .7;
+   548→   548→    transform: translate(0) translateY(0);
+   549→   549→  }
+   550→   550→  50% {
+   551→   551→    opacity: 1;
+   552→   552→    transform: translate(2px) translateY(-1px);
+   553→   553→  }
+   554→   554→}
+   555→   555→
+   556→   556→@keyframes colorShift {
+   557→   557→  0% {
+   558→   558→    background-position: 0%;
+   559→   559→  }
+   560→   560→  25% {
+   561→   561→    background-position: 100%;
+   562→   562→  }
+   563→   563→  50% {
+   564→   564→    background-position: 100% 100%;
+   565→   565→  }
+   566→   566→  75% {
+   567→   567→    background-position: 0 100%;
+   568→   568→  }
+   569→   569→  to {
+   570→   570→    background-position: 0%;
+   571→   571→  }
+   572→   572→}
+   573→   573→
+   574→   574→@keyframes orbFloat1 {
+   575→   575→  0%, to {
+   576→   576→    opacity: .6;
+   577→   577→    transform: translate(0) scale(1);
+   578→   578→  }
+   579→   579→  25% {
+   580→   580→    opacity: .9;
+   581→   581→    transform: translate(12px, 8px) scale(1.15);
+   582→   582→  }
+   583→   583→  50% {
+   584→   584→    opacity: .5;
+   585→   585→    transform: translate(20px, 4px) scale(.95);
+   586→   586→  }
+   587→   587→  75% {
+   588→   588→    opacity: .8;
+   589→   589→    transform: translate(8px, -2px) scale(1.1);
+   590→   590→  }
+   591→   591→}
+   592→   592→
+   593→   593→@keyframes orbFloat2 {
+   594→   594→  0%, to {
+   595→   595→    opacity: .5;
+   596→   596→    transform: translate(0) scale(1);
+   597→   597→  }
+   598→   598→  30% {
+   599→   599→    opacity: .8;
+   600→   600→    transform: translate(-10px, 6px) scale(1.1);
+   601→   601→  }
+   602→   602→  60% {
+   603→   603→    opacity: .4;
+   604→   604→    transform: translate(-18px, 2px) scale(.9);
+   605→   605→  }
+   606→   606→  80% {
+   607→   607→    opacity: .7;
+   608→   608→    transform: translate(-6px, -4px) scale(1.05);
+   609→   609→  }
+   610→   610→}
+   611→   611→
+   612→   612→@keyframes orbFloat3 {
+   613→   613→  0%, to {
+   614→   614→    opacity: .5;
+   615→   615→    transform: translate(0) scale(1);
+   616→   616→  }
+   617→   617→  35% {
+   618→   618→    opacity: .8;
+   619→   619→    transform: translate(8px, -6px) scale(1.12);
+   620→   620→  }
+   621→   621→  65% {
+   622→   622→    opacity: .4;
+   623→   623→    transform: translate(16px, -2px) scale(.88);
+   624→   624→  }
+   625→   625→  85% {
+   626→   626→    opacity: .7;
+   627→   627→    transform: translate(4px, 4px) scale(1.08);
+   628→   628→  }
+   629→   629→}
+   630→   630→
+   631→   631→@keyframes glowRingPulse {
+   632→   632→  0%, to {
+   633→   633→    opacity: .4;
+   634→   634→    filter: blur(.5px);
+   635→   635→  }
+   636→   636→  50% {
+   637→   637→    opacity: .85;
+   638→   638→    filter: blur();
+   639→   639→  }
+   640→   640→}
+   641→   641→
+   642→   642→@keyframes glowRingRotate {
+   643→   643→  0% {
+   644→   644→    --glow-angle: 0deg;
+   645→   645→  }
+   646→   646→  to {
+   647→   647→    --glow-angle: 360deg;
+   648→   648→  }
+   649→   649→}
+   650→   650→
+   651→   651→.wish-popup {
+   652→   652→  z-index: 3;
+   653→   653→  -webkit-backdrop-filter: blur(4px);
+   654→   654→  opacity: 0;
+   655→   655→  pointer-events: none;
+   656→   656→  transition: opacity .42s var(--ease-expressive);
+   657→   657→  background: radial-gradient(circle at 18% 20%, #7b61ff33, #0000 30%), radial-gradient(circle at 82% 78%, #e34f6f1f, #0000 30%), #2a1b2973;
+   658→   658→  place-items: center;
+   659→   659→  padding: clamp(.75rem, 3vw, 2rem);
+   660→   660→  display: grid;
+   661→   661→  position: fixed;
+   662→   662→  inset: 0;
+   663→   663→}
+   664→   664→
+   665→   665→.wish-popup.open {
+   666→   666→  opacity: 1;
+   667→   667→  pointer-events: auto;
+   668→   668→}
+   669→   669→
+   670→   670→.popup-card {
+   671→   671→  background: linear-gradient(145deg, #fffffff2, #fff7fced), var(--surface);
+   672→   672→  width: min(980px, 100%);
+   673→   673→  max-height: calc(100vh - 1.5rem);
+   674→   674→  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset, 0 0 24px #7b61ff0a inset;
+   675→   675→  -webkit-backdrop-filter: blur(20px);
+   676→   676→  transition: transform .48s var(--ease-spring), box-shadow .5s var(--ease-expressive);
+   677→   677→  scrollbar-width: none;
+   678→   678→  border: 1px solid #fff6;
+   679→   679→  border-radius: 32px;
+   680→   680→  grid-template-columns: minmax(260px, .78fr) minmax(0, 1fr);
+   681→   681→  align-items: center;
+   682→   682→  gap: clamp(1rem, 4vw, 3rem);
+   683→   683→  padding: clamp(1rem, 4vw, 2.8rem);
+   684→   684→  display: grid;
+   685→   685→  position: relative;
+   686→   686→  overflow: hidden;
+   687→   687→  transform: translateY(28px) scale(.92);
+   688→   688→}
+   689→   689→
+   690→   690→.popup-card::-webkit-scrollbar {
+   691→   691→  display: none;
+   692→   692→}
+   693→   693→
+   694→   694→.wish-popup.open .popup-card {
+   695→   695→  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset, 0 0 40px #7b61ff14, 0 0 80px #e34f6f0d;
+   696→   696→  transform: translateY(0) scale(1);
+   697→   697→}
+   698→   698→
+   699→   699→.close-button {
+   700→   700→  color: #71324a;
+   701→   701→  width: 2.5rem;
+   702→   702→  height: 2.5rem;
+   703→   703→  font: inherit;
+   704→   704→  cursor: pointer;
+   705→   705→  transition: transform .25s var(--ease-expressive), background .25s var(--ease-expressive);
+   706→   706→  z-index: 10;
+   707→   707→  background: #ffe8efd9;
+   708→   708→  border: 1px solid #e34f6f33;
+   709→   709→  border-radius: 50%;
+   710→   710→  place-items: center;
+   711→   711→  display: grid;
+   712→   712→  position: absolute;
+   713→   713→  top: .75rem;
+   714→   714→  right: .75rem;
+   715→   715→}
+   716→   716→
+   717→   717→.close-button:hover {
+   718→   718→  background: #ffd7e2;
+   719→   719→  transform: rotate(90deg) scale(1.12);
+   720→   720→  box-shadow: 0 0 16px #e34f6f4d;
+   721→   721→}
+   722→   722→
+   723→   723→.close-button svg {
+   724→   724→  pointer-events: none;
+   725→   725→}
+   726→   726→
+   727→   727→.wish-copy {
+   728→   728→  padding-right: .5rem;
+   729→   729→}
+   730→   730→
+   731→   731→.reveal {
+   732→   732→  opacity: 0;
+   733→   733→  transition: opacity .7s var(--ease-expressive), transform .7s var(--ease-spring);
+   734→   734→  transform: translateY(20px) scale(.97);
+   735→   735→}
+   736→   736→
+   737→   737→.wish-popup.open .reveal--1 {
+   738→   738→  opacity: 1;
+   739→   739→  transition-delay: .2s;
+   740→   740→  transform: translateY(0);
+   741→   741→}
+   742→   742→
+   743→   743→.wish-popup.open .reveal--2 {
+   744→   744→  opacity: 1;
+   745→   745→  transition-delay: .35s;
+   746→   746→  transform: translateY(0);
+   747→   747→}
+   748→   748→
+   749→   749→.wish-popup.open .reveal--3 {
+   750→   750→  opacity: 1;
+   751→   751→  transition-delay: .5s;
+   752→   752→  transform: translateY(0);
+   753→   753→}
+   754→   754→
+   755→   755→.wish-popup.open .reveal--4 {
+   756→   756→  opacity: 1;
+   757→   757→  transition-delay: .65s;
+   758→   758→  transform: translateY(0);
+   759→   759→}
+   760→   760→
+   761→   761→.wish-popup.open .reveal--5 {
+   762→   762→  opacity: 1;
+   763→   763→  transition-delay: .8s;
+   764→   764→  transform: translateY(0);
+   765→   765→}
+   766→   766→
+   767→   767→.display-title,
+   768→   768→.wish-copy p {
+   769→   769→  margin-top: 0;
+   770→   770→}
+   771→   771→
+   772→   772→.display-title {
+   773→   773→  font-family: var(--font-germania), "Germania One", cursive;
+   774→   774→  text-align: center;
+   775→   775→  letter-spacing: .02em;
+   776→   776→  background: linear-gradient(135deg, #2a0f24 5%, #6b1d4a 15%, var(--rose) 30%, #d4628a 42%, var(--violet) 50%, #c46298 58%, var(--rose) 70%, #6b1d4a 85%, #2a0f24 95%);
+   777→   777→  -webkit-text-fill-color: transparent;
+   778→   778→  color: #0000;
+   779→   779→  filter: drop-shadow(0 2px 10px #e34f6f33) drop-shadow(0 0 20px #7b61ff14);
+   780→   780→  background-size: 200% 100%;
+   781→   781→  -webkit-background-clip: text;
+   782→   782→  background-clip: text;
+   783→   783→  margin: 0 0 .8rem;
+   784→   784→  font-size: clamp(2.8rem, 7.5vw, 6.2rem);
+   785→   785→  font-style: normal;
+   786→   786→  font-weight: 400;
+   787→   787→  line-height: .95;
+   788→   788→  animation: 5s ease-in-out infinite titleShimmer;
+   789→   789→}
+   790→   790→
+   791→   791→.name-accent {
+   792→   792→  font-size: 1.4em;
+   793→   793→  font-family: var(--font-sacramento), "Sacramento", cursive;
+   794→   794→  letter-spacing: .04em;
+   795→   795→  filter: drop-shadow(0 2px 6px #e34f6f40) drop-shadow(0 0 16px #e34f6f1a);
+   796→   796→  padding: 0 .1em;
+   797→   797→  font-weight: 400;
+   798→   798→  display: inline-block;
+   799→   799→}
+   800→   800→
+   801→   801→.lead,
+   802→   802→.wish-note {
+   803→   803→  color: var(--muted);
+   804→   804→  font-size: clamp(.88rem, 1.55vw, 1rem);
+   805→   805→  line-height: 1.5;
+   806→   806→}
+   807→   807→
+   808→   808→.wish-note {
+   809→   809→  color: #3d2236;
+   810→   810→  letter-spacing: .01em;
+   811→   811→  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.05);
+   812→   812→  background: radial-gradient(at 0 0, #ffdce666 0%, #0000 50%), radial-gradient(at 100% 100%, #ffe6d24d 0%, #0000 50%), radial-gradient(#ffffff59 0%, #0000 70%), linear-gradient(145deg, #fff6, #fff8fa40);
+   813→   813→  border: 1px solid #ffffff73;
+   814→   814→  border-radius: 20px;
+   815→   815→  margin: 0 0 1rem;
+   816→   816→  padding: 1.3rem 1.4rem 1.3rem 1.5rem;
+   817→   817→  font-size: clamp(.9rem, 1.6vw, 1.02rem);
+   818→   818→  line-height: 1.65;
+   819→   819→  animation: 6s ease-in-out infinite glassShimmer;
+   820→   820→  position: relative;
+   821→   821→  overflow: hidden;
+   822→   822→  box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #fff3, 0 0 40px #e34f6f0a;
+   823→   823→}
+   824→   824→
+   825→   825→.wish-note:before {
+   826→   826→  content: "\201C";
+   827→   827→  color: var(--rose);
+   828→   828→  opacity: .18;
+   829→   829→  pointer-events: none;
+   830→   830→  text-shadow: 0 0 16px #ffc8dc4d, 0 0 32px #c8b4ff1a;
+   831→   831→  font-family: Georgia, Times New Roman, serif;
+   832→   832→  font-size: 2.8rem;
+   833→   833→  line-height: 1;
+   834→   834→  position: absolute;
+   835→   835→  top: -6px;
+   836→   836→  left: 10px;
+   837→   837→}
+   838→   838→
+   839→   839→.wish-note:after {
+   840→   840→  content: "\201D";
+   841→   841→  color: var(--rose);
+   842→   842→  opacity: .18;
+   843→   843→  pointer-events: none;
+   844→   844→  text-shadow: 0 0 20px #ffc8dc66, 0 0 40px #c8b4ff26;
+   845→   845→  font-family: Georgia, Times New Roman, serif;
+   846→   846→  font-size: 2.8rem;
+   847→   847→  line-height: 1;
+   848→   848→  position: absolute;
+   849→   849→  bottom: -12px;
+   850→   850→  right: 14px;
+   851→   851→}
+   852→   852→
+   853→   853→@keyframes glassShimmer {
+   854→   854→  0%, to {
+   855→   855→    box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #fff3, 0 0 40px #e34f6f0a;
+   856→   856→  }
+   857→   857→  50% {
+   858→   858→    box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #ffffff59, 0 0 60px #e34f6f14, 0 0 80px #7b61ff08;
+   859→   859→  }
+   860→   860→}
+   861→   861→
+   862→   862→.signature {
+   863→   863→  font-family: var(--font-lavishly), "Lavishly Yours", cursive;
+   864→   864→  letter-spacing: .03em;
+   865→   865→  text-align: center;
+   866→   866→  background: linear-gradient(135deg, #c43058 0%, var(--rose) 15%, var(--coral) 35%, var(--gold) 50%, var(--coral) 65%, var(--rose) 85%, #c43058 100%);
+   867→   867→  -webkit-text-fill-color: transparent;
+   868→   868→  color: #0000;
+   869→   869→  animation: gentlePulse 3s var(--ease-expressive) infinite, signatureShimmer 4s ease-in-out infinite;
+   870→   870→  filter: drop-shadow(0 2px 8px #e34f6f40) drop-shadow(0 0 14px #e34f6f14);
+   871→   871→  background-size: 200% 100%;
+   872→   872→  -webkit-background-clip: text;
+   873→   873→  background-clip: text;
+   874→   874→  margin: 0;
+   875→   875→  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+   876→   876→  font-style: normal;
+   877→   877→}
+   878→   878→
+   879→   879→@keyframes gentlePulse {
+   880→   880→  0%, to {
+   881→   881→    transform: scale(1);
+   882→   882→  }
+   883→   883→  50% {
+   884→   884→    transform: scale(1.03);
+   885→   885→  }
+   886→   886→}
+   887→   887→
+   888→   888→.cake-scene {
+   889→   889→  place-items: center;
+   890→   890→  min-height: 430px;
+   891→   891→  display: grid;
+   892→   892→  position: relative;
+   893→   893→  overflow: hidden;
+   894→   894→}
+   895→   895→
+   896→   896→.cake-scene:before {
+   897→   897→  content: "";
+   898→   898→  aspect-ratio: 1;
+   899→   899→  z-index: 0;
+   900→   900→  pointer-events: none;
+   901→   901→  background: radial-gradient(circle, #ffbf3714 0%, #e34f6f0a 40%, #0000 70%);
+   902→   902→  border-radius: 50%;
+   903→   903→  width: min(280px, 60vw);
+   904→   904→  animation: 4s ease-in-out infinite cakeGlow;
+   905→   905→  position: absolute;
+   906→   906→}
+   907→   907→
+   908→   908→.balloon {
+   909→   909→  z-index: 1;
+   910→   910→  border-radius: 50% / 42% 42% 58% 58%;
+   911→   911→  animation: 4.6s ease-in-out infinite float;
+   912→   912→  position: absolute;
+   913→   913→}
+   914→   914→
+   915→   915→.balloon:after {
+   916→   916→  content: "";
+   917→   917→  background: linear-gradient(#78646e66 0%, #78646e26 100%);
+   918→   918→  border-radius: 0 0 50%;
+   919→   919→  width: 1.5px;
+   920→   920→  height: 88px;
+   921→   921→  position: absolute;
+   922→   922→  top: 100%;
+   923→   923→  left: 50%;
+   924→   924→  transform: translate(-50%);
+   925→   925→}
+   926→   926→
+   927→   927→.balloon:before {
+   928→   928→  content: "";
+   929→   929→  z-index: 2;
+   930→   930→  border-radius: 50% 50% 20% 20%;
+   931→   931→  width: 8px;
+   932→   932→  height: 8px;
+   933→   933→  position: absolute;
+   934→   934→  bottom: -5px;
+   935→   935→  left: 50%;
+   936→   936→  transform: translate(-50%);
+   937→   937→}
+   938→   938→
+   939→   939→.balloon-one {
+   940→   940→  background: radial-gradient(at 35% 30%, #ffffff73 0%, #ffffff14 40%, #0000 65%), radial-gradient(#e84060 0%, #c42848 50%, #9a1e38 100%);
+   941→   941→  width: 64px;
+   942→   942→  height: 78px;
+   943→   943→  top: 24px;
+   944→   944→  left: 6%;
+   945→   945→  box-shadow: inset -6px -8px 14px #00000026, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
+   946→   946→}
+   947→   947→
+   948→   948→.balloon-one:before {
+   949→   949→  background: #9a1e38;
+   950→   950→}
+   951→   951→
+   952→   952→.balloon-two {
+   953→   953→  background: radial-gradient(at 35% 30%, #ffffff73 0%, #ffffff14 40%, #0000 65%), radial-gradient(#6dd4a8 0%, #3db880 50%, #2a9a68 100%);
+   954→   954→  width: 64px;
+   955→   955→  height: 78px;
+   956→   956→  animation-delay: -1.4s;
+   957→   957→  top: 62px;
+   958→   958→  right: 3%;
+   959→   959→  box-shadow: inset -6px -8px 14px #0000001f, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
+   960→   960→}
+   961→   961→
+   962→   962→.balloon-two:before {
+   963→   963→  background: #2a9a68;
+   964→   964→}
+   965→   965→
+   966→   966→.balloon-three {
+   967→   967→  background: radial-gradient(at 35% 30%, #ffffff80 0%, #ffffff1a 40%, #0000 65%), radial-gradient(#f5c85b 0%, #e0a830 50%, #c89020 100%);
+   968→   968→  width: 50px;
+   969→   969→  height: 62px;
+   970→   970→  animation: 4.6s ease-in-out -2.8s infinite floatGentle;
+   971→   971→  top: 8px;
+   972→   972→  left: 40%;
+   973→   973→  box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
+   974→   974→}
+   975→   975→
+   976→   976→.balloon-three:before {
+   977→   977→  background: #c89020;
+   978→   978→}
+   979→   979→
+   980→   980→.balloon-four {
+   981→   981→  background: radial-gradient(at 35% 30%, #ffffff80 0%, #ffffff1a 40%, #0000 65%), radial-gradient(#4db8e0 0%, #2898c8 50%, #1a7aaa 100%);
+   982→   982→  width: 46px;
+   983→   983→  height: 56px;
+   984→   984→  animation: 4.6s ease-in-out -1.2s infinite floatGentle;
+   985→   985→  top: 26px;
+   986→   986→  left: 53%;
+   987→   987→  box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
+   988→   988→}
+   989→   989→
+   990→   990→.balloon-four:before {
+   991→   991→  background: #1a7aaa;
+   992→   992→}
+   993→   993→
+   994→   994→.cake {
+   995→   995→  z-index: 2;
+   996→   996→  filter: drop-shadow(0 12px 32px #3e203038);
+   997→   997→  width: min(300px, 70vw);
+   998→   998→  height: 270px;
+   999→   999→  margin-top: 92px;
+  1000→  1000→  position: relative;
+  1001→  1001→}
+  1002→  1002→
+  1003→  1003→.cake-top,
+  1004→  1004→.cake-mid,
+  1005→  1005→.cake-bottom {
+  1006→  1006→  position: absolute;
+  1007→  1007→  left: 50%;
+  1008→  1008→  transform: translate(-50%);
+  1009→  1009→}
+  1010→  1010→
+  1011→  1011→.cake-top {
+  1012→  1012→  background: linear-gradient(#f5e0b8 0%, #e8c88a 18%, #d4a96a 45%, #c49555 75%, #b88545 100%);
+  1013→  1013→  border-radius: 14px 14px 10px 10px;
+  1014→  1014→  width: 58%;
+  1015→  1015→  height: 54px;
+  1016→  1016→  bottom: 138px;
+  1017→  1017→  box-shadow: inset 0 2px 4px #ffffff4d, inset 0 -3px 6px #0000001a, inset -4px 0 8px #0000000d, inset 4px 0 8px #0000000d, 0 4px #b88545, 0 6px #a07038;
+  1018→  1018→}
+  1019→  1019→
+  1020→  1020→.cake-top:before {
+  1021→  1021→  content: "";
+  1022→  1022→  background: linear-gradient(#fffdf7 0%, #faf0e0 50%, #f0dfc5 100%);
+  1023→  1023→  border-radius: 14px 14px 4px 4px;
+  1024→  1024→  height: 15px;
+  1025→  1025→  position: absolute;
+  1026→  1026→  top: -7px;
+  1027→  1027→  left: -3px;
+  1028→  1028→  right: -3px;
+  1029→  1029→  box-shadow: inset 0 1px 2px #ffffffe6, inset 0 -1px 2px #c8aa7833;
+  1030→  1030→}
+  1031→  1031→
+  1032→  1032→.cake-top:after {
+  1033→  1033→  content: "";
+  1034→  1034→  pointer-events: none;
+  1035→  1035→  background: radial-gradient(6px 14px at 18% 0, #faf0e0 70%, #0000 71%), radial-gradient(8px 20px at 42% 0, #faf0e0 70%, #0000 71%), radial-gradient(5px 10px at 65% 0, #faf0e0 70%, #0000 71%), radial-gradient(7px 16px at 86% 0, #faf0e0 70%, #0000 71%);
+  1036→  1036→  height: 100%;
+  1037→  1037→  position: absolute;
+  1038→  1038→  top: 2px;
+  1039→  1039→  left: 0;
+  1040→  1040→  right: 0;
+  1041→  1041→}
+  1042→  1042→
+  1043→  1043→.cake-mid {
+  1044→  1044→  background: linear-gradient(#8b6340 0%, #6b4226 18%, #5a3520 45%, #4a2c1a 75%, #3e2215 100%);
+  1045→  1045→  border-radius: 16px 16px 12px 12px;
+  1046→  1046→  width: 76%;
+  1047→  1047→  height: 76px;
+  1048→  1048→  bottom: 68px;
+  1049→  1049→  box-shadow: inset 0 2px 4px #ffffff1f, inset 0 -4px 8px #00000026, inset -5px 0 10px #00000014, inset 5px 0 10px #00000014, 0 5px #3e2215, 0 8px #2c1507;
+  1050→  1050→}
+  1051→  1051→
+  1052→  1052→.cake-mid:before {
+  1053→  1053→  content: "";
+  1054→  1054→  background: linear-gradient(#5c3317 0%, #4a2810 50%, #3a1e0a 100%);
+  1055→  1055→  border-radius: 16px 16px 4px 4px;
+  1056→  1056→  height: 16px;
+  1057→  1057→  position: absolute;
+  1058→  1058→  top: -8px;
+  1059→  1059→  left: -4px;
+  1060→  1060→  right: -4px;
+  1061→  1061→  box-shadow: inset 0 1px 2px #ffffff1a, inset 0 -1px 2px #0000004d;
+  1062→  1062→}
+  1063→  1063→
+  1064→  1064→.cake-mid:after {
+  1065→  1065→  content: "";
+  1066→  1066→  pointer-events: none;
+  1067→  1067→  background: radial-gradient(7px 18px at 12% 0, #4a2810 70%, #0000 71%), radial-gradient(9px 24px at 30% 0, #4a2810 70%, #0000 71%), radial-gradient(6px 12px at 52% 0, #4a2810 70%, #0000 71%), radial-gradient(8px 20px at 72% 0, #4a2810 70%, #0000 71%), radial-gradient(7px 16px at 90% 0, #4a2810 70%, #0000 71%);
+  1068→  1068→  height: 100%;
+  1069→  1069→  position: absolute;
+  1070→  1070→  top: 2px;
+  1071→  1071→  left: 0;
+  1072→  1072→  right: 0;
+  1073→  1073→}
+  1074→  1074→
+  1075→  1075→.cake-bottom {
+  1076→  1076→  background: linear-gradient(#a04040 0%, #8b2e2e 18%, #7a2525 45%, #6a1e1e 75%, #5c1818 100%);
+  1077→  1077→  border-radius: 18px 18px 14px 14px;
+  1078→  1078→  width: 94%;
+  1079→  1079→  height: 80px;
+  1080→  1080→  bottom: 0;
+  1081→  1081→  box-shadow: inset 0 2px 4px #ffffff1f, inset 0 -5px 10px #00000026, inset -6px 0 12px #00000012, inset 6px 0 12px #00000012, 0 6px #5c1818, 0 10px #4a1212;
+  1082→  1082→}
+  1083→  1083→
+  1084→  1084→.cake-bottom:before {
+  1085→  1085→  content: "";
+  1086→  1086→  background: linear-gradient(#fffef8 0%, #faf2e0 50%, #f0e0c8 100%);
+  1087→  1087→  border-radius: 18px 18px 4px 4px;
+  1088→  1088→  height: 18px;
+  1089→  1089→  position: absolute;
+  1090→  1090→  top: -9px;
+  1091→  1091→  left: -4px;
+  1092→  1092→  right: -4px;
+  1093→  1093→  box-shadow: inset 0 1px 2px #ffffffe6, inset 0 -1px 2px #c8aa7826;
+  1094→  1094→}
+  1095→  1095→
+  1096→  1096→.cake-bottom:after {
+  1097→  1097→  content: "";
+  1098→  1098→  pointer-events: none;
+  1099→  1099→  background: radial-gradient(8px 22px at 10% 0, #faf2e0 70%, #0000 71%), radial-gradient(10px 28px at 28% 0, #faf2e0 70%, #0000 71%), radial-gradient(6px 14px at 48% 0, #faf2e0 70%, #0000 71%), radial-gradient(9px 24px at 66% 0, #faf2e0 70%, #0000 71%), radial-gradient(7px 18px at 82% 0, #faf2e0 70%, #0000 71%), radial-gradient(8px 20px at 95% 0, #faf2e0 70%, #0000 71%);
+  1100→  1100→  height: 100%;
+  1101→  1101→  position: absolute;
+  1102→  1102→  top: 4px;
+  1103→  1103→  left: 0;
+  1104→  1104→  right: 0;
+  1105→  1105→}
+  1106→  1106→
+  1107→  1107→.plate {
+  1108→  1108→  background: linear-gradient(#fffffff2 0%, #f8f4f8eb 40%, #f0ecf0e0 100%);
+  1109→  1109→  border-radius: 50%;
+  1110→  1110→  width: 102%;
+  1111→  1111→  height: 28px;
+  1112→  1112→  position: absolute;
+  1113→  1113→  bottom: -26px;
+  1114→  1114→  left: 50%;
+  1115→  1115→  transform: translate(-50%);
+  1116→  1116→  box-shadow: 0 22px 40px #3e203038, 0 8px 16px #3e20301f, inset 0 1px 2px #fff9, inset 0 -2px 4px #0000000a, 0 0 0 1px #c8b4be4d;
+  1117→  1117→}
+  1118→  1118→
+  1119→  1119→.candles {
+  1120→  1120→  z-index: 2;
+  1121→  1121→  gap: 24px;
+  1122→  1122→  display: flex;
+  1123→  1123→  position: absolute;
+  1124→  1124→  bottom: 192px;
+  1125→  1125→  left: 50%;
+  1126→  1126→  transform: translate(-50%);
+  1127→  1127→}
+  1128→  1128→
+  1129→  1129→.candles span {
+  1130→  1130→  background: linear-gradient(90deg, #c8a090 0%, #e8d0c4 18%, #f5e8e0 35%, #fff5f0 50%, #f5e8e0 65%, #e0c8bc 82%, #c8a090 100%);
+  1131→  1131→  border-radius: 3px 3px 4px 4px;
+  1132→  1132→  width: 12px;
+  1133→  1133→  height: 46px;
+  1134→  1134→  position: relative;
+  1135→  1135→  box-shadow: inset -1px 0 2px #00000014, inset 1px 0 2px #0000000a, 0 1px 3px #00000026;
+  1136→  1136→}
+  1137→  1137→
+  1138→  1138→.candles span:after {
+  1139→  1139→  content: "";
+  1140→  1140→  background: linear-gradient(#f5e8e0 0%, #e8d0c4 100%);
+  1141→  1141→  border-radius: 3px 3px 2px 2px;
+  1142→  1142→  width: 5px;
+  1143→  1143→  height: 14px;
+  1144→  1144→  position: absolute;
+  1145→  1145→  top: 8px;
+  1146→  1146→  left: -2px;
+  1147→  1147→  box-shadow: inset 0 1px 1px #fff6;
+  1148→  1148→}
+  1149→  1149→
+  1150→  1150→.candles span:before {
+  1151→  1151→  content: "";
+  1152→  1152→  filter: blur(.3px);
+  1153→  1153→  background: radial-gradient(at 50% 75%, #6ea8e0 0%, #8eb8e8 8%, #fff 14%, #fffde0 20%, #fff176 30%, #ffbf37 45%, #ff8a3c 60%, #ff46144d 80%, #0000 100%);
+  1154→  1154→  border-radius: 50% 50% 35% 35% / 65% 65% 35% 35%;
+  1155→  1155→  width: 12px;
+  1156→  1156→  height: 24px;
+  1157→  1157→  animation: .6s ease-in-out infinite alternate flame;
+  1158→  1158→  position: absolute;
+  1159→  1159→  top: -30px;
+  1160→  1160→  left: 50%;
+  1161→  1161→  transform: translate(-50%);
+  1162→  1162→  box-shadow: 0 0 4px #6ea8e066, 0 0 8px #ffdc5099, 0 0 16px #ffa0284d, 0 0 32px #ff641e1a;
+  1163→  1163→}
+  1164→  1164→
+  1165→  1165→.candles:after {
+  1166→  1166→  content: "";
+  1167→  1167→  pointer-events: none;
+  1168→  1168→  z-index: 0;
+  1169→  1169→  background: radial-gradient(at 50% 80%, #ffdc5047 0%, #ffb43c1f 35%, #ff8c280d 60%, #0000 80%);
+  1170→  1170→  width: 100px;
+  1171→  1171→  height: 80px;
+  1172→  1172→  animation: 2s ease-in-out infinite alternate candleGlow;
+  1173→  1173→  position: absolute;
+  1174→  1174→  top: -80px;
+  1175→  1175→  left: 50%;
+  1176→  1176→  transform: translate(-50%);
+  1177→  1177→}
+  1178→  1178→
+  1179→  1179→.confetti-burst {
+  1180→  1180→  pointer-events: none;
+  1181→  1181→  z-index: 5;
+  1182→  1182→  position: absolute;
+  1183→  1183→  inset: 0;
+  1184→  1184→}
+  1185→  1185→
+  1186→  1186→.gift-footer {
+  1187→  1187→  z-index: 2;
+  1188→  1188→  pointer-events: none;
+  1189→  1189→  flex-shrink: 0;
+  1190→  1190→  justify-content: center;
+  1191→  1191→  align-items: center;
+  1192→  1192→  padding: .75rem 1rem;
+  1193→  1193→  display: flex;
+  1194→  1194→  position: relative;
+  1195→  1195→}
+  1196→  1196→
+  1197→  1197→.footer-box {
+  1198→  1198→  -webkit-backdrop-filter: blur(12px);
+  1199→  1199→  background: #ffffff59;
+  1200→  1200→  border: 1px solid #e34f6f26;
+  1201→  1201→  border-radius: 999px;
+  1202→  1202→  align-items: center;
+  1203→  1203→  gap: .6rem;
+  1204→  1204→  padding: .45rem 1.2rem;
+  1205→  1205→  display: inline-flex;
+  1206→  1206→  position: relative;
+  1207→  1207→  overflow: hidden;
+  1208→  1208→  box-shadow: 0 2px 12px #e34f6f14, 0 1px 3px #7b61ff0f, inset 0 1px #ffffff80;
+  1209→  1209→}
+  1210→  1210→
+  1211→  1211→.footer-box:before {
+  1212→  1212→  content: "";
+  1213→  1213→  pointer-events: none;
+  1214→  1214→  background: linear-gradient(135deg, #f5c85b14 0%, #e34f6f0f 50%, #7b61ff14 100%);
+  1215→  1215→  border-radius: 999px;
+  1216→  1216→  position: absolute;
+  1217→  1217→  inset: 0;
+  1218→  1218→}
+  1219→  1219→
+  1220→  1220→.footer-text {
+  1221→  1221→  letter-spacing: .12em;
+  1222→  1222→  text-transform: uppercase;
+  1223→  1223→  color: #4a2f438c;
+  1224→  1224→  z-index: 1;
+  1225→  1225→  align-items: center;
+  1226→  1226→  gap: .4rem;
+  1227→  1227→  font-size: .72rem;
+  1228→  1228→  font-weight: 500;
+  1229→  1229→  display: inline-flex;
+  1230→  1230→  position: relative;
+  1231→  1231→}
+  1232→  1232→
+  1233→  1233→.footer-ornament {
+  1234→  1234→  color: var(--rose);
+  1235→  1235→  opacity: .5;
+  1236→  1236→  z-index: 1;
+  1237→  1237→  font-size: .55rem;
+  1238→  1238→  animation: 2.5s ease-in-out infinite ornamentGlow;
+  1239→  1239→  position: relative;
+  1240→  1240→}
+  1241→  1241→
+  1242→  1242→.footer-ornament-left {
+  1243→  1243→  animation-delay: 0s;
+  1244→  1244→}
+  1245→  1245→
+  1246→  1246→.footer-ornament-right {
+  1247→  1247→  animation-delay: 1.25s;
+  1248→  1248→}
+  1249→  1249→
+  1250→  1250→.gift-footer .heart-dot {
+  1251→  1251→  color: var(--rose);
+  1252→  1252→  filter: drop-shadow(0 0 4px #e34f6f66);
+  1253→  1253→  font-size: .85rem;
+  1254→  1254→  animation: 1.2s ease-in-out infinite heartbeat;
+  1255→  1255→  display: inline-block;
+  1256→  1256→}
+  1257→  1257→
+  1258→  1258→@keyframes ornamentGlow {
+  1259→  1259→  0%, to {
+  1260→  1260→    opacity: .35;
+  1261→  1261→    transform: scale(.9);
+  1262→  1262→  }
+  1263→  1263→  50% {
+  1264→  1264→    opacity: .7;
+  1265→  1265→    transform: scale(1.1);
+  1266→  1266→  }
+  1267→  1267→}
+  1268→  1268→
+  1269→  1269→@keyframes pulseButton {
+  1270→  1270→  0%, to {
+  1271→  1271→    transform: translateY(0) scale(1);
+  1272→  1272→    box-shadow: 0 20px 52px #7b61ff42, 0 14px 36px #e34f6f42, 0 0 #7b61ff00, inset 0 1px #fff3;
+  1273→  1273→  }
+  1274→  1274→  50% {
+  1275→  1275→    transform: translateY(-5px) scale(1.03);
+  1276→  1276→    box-shadow: 0 20px 52px #7b61ff42, 0 14px 36px #e34f6f42, 0 0 28px #7b61ff33, 0 0 56px #e34f6f1f, inset 0 1px #fff3;
+  1277→  1277→  }
+  1278→  1278→}
+  1279→  1279→
+  1280→  1280→@keyframes float {
+  1281→  1281→  0%, to {
+  1282→  1282→    transform: translateY(0) rotate(-3deg);
+  1283→  1283→  }
+  1284→  1284→  50% {
+  1285→  1285→    transform: translateY(-22px) rotate(3deg);
+  1286→  1286→  }
+  1287→  1287→}
+  1288→  1288→
+  1289→  1289→@keyframes floatGentle {
+  1290→  1290→  0%, to {
+  1291→  1291→    transform: translateY(0) rotate(-2deg);
+  1292→  1292→  }
+  1293→  1293→  50% {
+  1294→  1294→    transform: translateY(-6px) rotate(2deg);
+  1295→  1295→  }
+  1296→  1296→}
+  1297→  1297→
+  1298→  1298→@keyframes flame {
+  1299→  1299→  0% {
+  1300→  1300→    transform: translate(-50%) scaleX(.88) scaleY(1.05) rotate(-2deg);
+  1301→  1301→  }
+  1302→  1302→  25% {
+  1303→  1303→    transform: translate(-50%) scaleX(1) scaleY(.95) rotate(1deg);
+  1304→  1304→  }
+  1305→  1305→  50% {
+  1306→  1306→    transform: translate(-50%) scaleX(.92) scaleY(1.08) rotate(-1deg);
+  1307→  1307→  }
+  1308→  1308→  75% {
+  1309→  1309→    transform: translate(-50%) scaleX(1.02) scaleY(.92) rotate(2deg);
+  1310→  1310→  }
+  1311→  1311→  to {
+  1312→  1312→    transform: translate(-50%) scaleX(.9) scaleY(1.04) rotate(-2deg);
+  1313→  1313→  }
+  1314→  1314→}
+  1315→  1315→
+  1316→  1316→@keyframes candleGlow {
+  1317→  1317→  0% {
+  1318→  1318→    opacity: .6;
+  1319→  1319→    transform: translate(-50%) scale(.92);
+  1320→  1320→  }
+  1321→  1321→  to {
+  1322→  1322→    opacity: 1;
+  1323→  1323→    transform: translate(-50%) scale(1.08);
+  1324→  1324→  }
+  1325→  1325→}
+  1326→  1326→
+  1327→  1327→@keyframes cakeGlow {
+  1328→  1328→  0%, to {
+  1329→  1329→    opacity: .6;
+  1330→  1330→    transform: scale(1);
+  1331→  1331→  }
+  1332→  1332→  50% {
+  1333→  1333→    opacity: 1;
+  1334→  1334→    transform: scale(1.08);
+  1335→  1335→  }
+  1336→  1336→}
+  1337→  1337→
+  1338→  1338→@keyframes heartbeat {
+  1339→  1339→  0%, to {
+  1340→  1340→    transform: scale(1);
+  1341→  1341→  }
+  1342→  1342→  14% {
+  1343→  1343→    transform: scale(1.25);
+  1344→  1344→  }
+  1345→  1345→  28% {
+  1346→  1346→    transform: scale(1);
+  1347→  1347→  }
+  1348→  1348→  42% {
+  1349→  1349→    transform: scale(1.2);
+  1350→  1350→  }
+  1351→  1351→  56% {
+  1352→  1352→    transform: scale(1);
+  1353→  1353→  }
+  1354→  1354→}
+  1355→  1355→
+  1356→  1356→@keyframes titleShimmer {
+  1357→  1357→  0%, to {
+  1358→  1358→    background-position: 0%;
+  1359→  1359→  }
+  1360→  1360→  50% {
+  1361→  1361→    background-position: 100%;
+  1362→  1362→  }
+  1363→  1363→}
+  1364→  1364→
+  1365→  1365→@keyframes signatureShimmer {
+  1366→  1366→  0%, to {
+  1367→  1367→    background-position: 0%;
+  1368→  1368→  }
+  1369→  1369→  50% {
+  1370→  1370→    background-position: 100%;
+  1371→  1371→  }
+  1372→  1372→}
+  1373→  1373→
+  1374→  1374→@media (max-width: 760px) {
+  1375→  1375→  .gift-root,
+  1376→  1376→  .gift-root.wish-is-open {
+  1377→  1377→    overflow: hidden;
+  1378→  1378→  }
+  1379→  1379→  .popup-card {
+  1380→  1380→    grid-template-columns: 1fr;
+  1381→  1381→    gap: .5rem;
+  1382→  1382→  }
+  1383→  1383→  .cake-scene {
+  1384→  1384→    min-height: 230px;
+  1385→  1385→  }
+  1386→  1386→  .cake {
+  1387→  1387→    transform-origin: bottom;
+  1388→  1388→    margin-top: 8px;
+  1389→  1389→    transform: scale(.62);
+  1390→  1390→  }
+  1391→  1391→  .balloon {
+  1392→  1392→    width: 48px;
+  1393→  1393→    height: 64px;
+  1394→  1394→  }
+  1395→  1395→  .balloon:after {
+  1396→  1396→    height: 70px;
+  1397→  1397→  }
+  1398→  1398→  .balloon-three {
+  1399→  1399→    width: 38px;
+  1400→  1400→    height: 50px;
+  1401→  1401→  }
+  1402→  1402→  .balloon-four {
+  1403→  1403→    width: 34px;
+  1404→  1404→    height: 46px;
+  1405→  1405→  }
+  1406→  1406→  .wish-copy {
+  1407→  1407→    padding-right: 0;
+  1408→  1408→  }
+  1409→  1409→}
+  1410→  1410→
+  1411→  1411→@media (max-width: 440px) {
+  1412→  1412→  .popup-card {
+  1413→  1413→    padding: .9rem;
+  1414→  1414→  }
+  1415→  1415→  .cake-scene {
+  1416→  1416→    min-height: 190px;
+  1417→  1417→  }
+  1418→  1418→  .display-title {
+  1419→  1419→    font-size: clamp(2.2rem, 13vw, 3.4rem);
+  1420→  1420→  }
+  1421→  1421→  .wish-note {
+  1422→  1422→    padding: .65rem;
+  1423→  1423→    font-size: .84rem;
+  1424→  1424→    line-height: 1.36;
+  1425→  1425→  }
+  1426→  1426→  .signature {
+  1427→  1427→    font-size: 1.45rem;
+  1428→  1428→  }
+  1429→  1429→  .star {
+  1430→  1430→    display: none;
+  1431→  1431→  }
+  1432→  1432→}
+  1433→  1433→
+  1434→  1434→@media (max-height: 760px) {
+  1435→  1435→  .popup-card {
+  1436→  1436→    gap: clamp(.75rem, 2vw, 1.5rem);
+  1437→  1437→    padding: clamp(.85rem, 2vw, 1.4rem);
+  1438→  1438→  }
+  1439→  1439→  .cake-scene {
+  1440→  1440→    min-height: 300px;
+  1441→  1441→  }
+  1442→  1442→  .cake {
+  1443→  1443→    transform-origin: bottom;
+  1444→  1444→    margin-top: 40px;
+  1445→  1445→    transform: scale(.82);
+  1446→  1446→  }
+  1447→  1447→  .display-title {
+  1448→  1448→    font-size: clamp(2rem, 5vw, 3.6rem);
+  1449→  1449→  }
+  1450→  1450→  .wish-note {
+  1451→  1451→    margin-bottom: .5rem;
+  1452→  1452→    padding: .55rem .7rem;
+  1453→  1453→    font-size: .82rem;
+  1454→  1454→    line-height: 1.4;
+  1455→  1455→  }
+  1456→  1456→  .display-title {
+  1457→  1457→    margin-bottom: .4rem;
+  1458→  1458→  }
+  1459→  1459→}
+  1460→  1460→
+  1461→  1461→@media (max-height: 600px) {
+  1462→  1462→  .cake-scene {
+  1463→  1463→    min-height: 220px;
+  1464→  1464→  }
+  1465→  1465→  .cake {
+  1466→  1466→    margin-top: 8px;
+  1467→  1467→    transform: scale(.62);
+  1468→  1468→  }
+  1469→  1469→  .popup-card {
+  1470→  1470→    gap: .5rem;
+  1471→  1471→    padding: .8rem;
+  1472→  1472→  }
+  1473→  1473→}
+  1474→  1474→
+  1475→  1475→@media (hover: hover) and (pointer: fine) {
+  1476→  1476→  html,
+  1477→  1477→  body,
+  1478→  1478→  .gift-root,
+  1479→  1479→  .gift-root *,
+  1480→  1480→  .gift-root a,
+  1481→  1481→  .gift-root button {
+  1482→  1482→    cursor: none !important;
+  1483→  1483→  }
+  1484→  1484→}
+  1485→  1485→
+  1486→  1486→.magic-cursor {
+  1487→  1487→  pointer-events: none;
+  1488→  1488→  z-index: 9999;
+  1489→  1489→  will-change: transform;
+  1490→  1490→  opacity: 1;
+  1491→  1491→  --wand-tilt: -8deg;
+  1492→  1492→  width: 48px;
+  1493→  1493→  height: 48px;
+  1494→  1494→  transition: opacity .4s;
+  1495→  1495→  position: fixed;
+  1496→  1496→  top: 0;
+  1497→  1497→  left: 0;
+  1498→  1498→  transform: translate(-200px, -200px);
+  1499→  1499→}
+  1500→  1500→
+  1501→  1501→@media (hover: none),
+  1502→  1502→(pointer: coarse) {
+  1503→  1503→  .magic-cursor {
+  1504→  1504→    display: none;
+  1505→  1505→  }
+  1506→  1506→}
+  1507→  1507→
+  1508→  1508→.magic-cursor.is-hidden {
+  1509→  1509→  opacity: 0;
+  1510→  1510→  transition: opacity .6s;
+  1511→  1511→}
+  1512→  1512→
+  1513→  1513→.magic-wand {
+  1514→  1514→  transform-origin: 14px 14px;
+  1515→  1515→  width: 100%;
+  1516→  1516→  height: 100%;
+  1517→  1517→  transform: rotate(var(--wand-tilt, -8deg));
+  1518→  1518→  transition: transform .2s var(--ease-spring);
+  1519→  1519→  filter: drop-shadow(0 2px 8px #2a1b294d) drop-shadow(0 0 6px #a06bd626);
+  1520→  1520→  display: block;
+  1521→  1521→  overflow: visible;
+  1522→  1522→}
+  1523→  1523→
+  1524→  1524→.magic-cursor.is-active .magic-wand {
+  1525→  1525→  filter: drop-shadow(0 2px 10px #2a1b2959) drop-shadow(0 0 10px #f5c85b80) drop-shadow(0 0 20px #e34f6f40) drop-shadow(0 0 30px #fff0b426);
+  1526→  1526→  transform: rotate(-22deg) scale(1.14);
+  1527→  1527→}
+  1528→  1528→
+  1529→  1529→.magic-cursor.is-pressed .magic-wand {
+  1530→  1530→  transition: transform .1s var(--ease-spring);
+  1531→  1531→  transform: rotate(-2deg) scale(.92);
+  1532→  1532→}
+  1533→  1533→
+  1534→  1534→.magic-cursor.is-active.is-pressed .magic-wand {
+  1535→  1535→  filter: drop-shadow(0 2px 10px #2a1b2959) drop-shadow(0 0 16px #f5c85bb3) drop-shadow(0 0 28px #e34f6f66) drop-shadow(0 0 40px #fff0b433);
+  1536→  1536→  transition: transform .1s var(--ease-spring);
+  1537→  1537→  transform: rotate(-12deg) scale(1.06);
+  1538→  1538→}
+  1539→  1539→
+  1540→  1540→.wand-ambient {
+  1541→  1541→  transform-box: fill-box;
+  1542→  1542→  transform-origin: 50%;
+  1543→  1543→  animation: 4s ease-in-out infinite wandAmbient;
+  1544→  1544→}
+  1545→  1545→
+  1546→  1546→.wand-aura {
+  1547→  1547→  transform-box: fill-box;
+  1548→  1548→  transform-origin: 50%;
+  1549→  1549→  animation: 3s ease-in-out infinite wandAura;
+  1550→  1550→}
+  1551→  1551→
+  1552→  1552→.wand-halo {
+  1553→  1553→  transform-box: fill-box;
+  1554→  1554→  transform-origin: 50%;
+  1555→  1555→  animation: 2.4s ease-in-out infinite wandHalo;
+  1556→  1556→}
+  1557→  1557→
+  1558→  1558→.wand-core {
+  1559→  1559→  transform-box: fill-box;
+  1560→  1560→  transform-origin: 50%;
+  1561→  1561→  animation: 1.5s ease-in-out infinite wandCorePulse;
+  1562→  1562→}
+  1563→  1563→
+  1564→  1564→.sparkle-dot {
+  1565→  1565→  opacity: 0;
+  1566→  1566→  animation: 2.8s ease-in-out infinite sparkleTwinkle;
+  1567→  1567→}
+  1568→  1568→
+  1569→  1569→.sparkle-dot.sd-1 {
+  1570→  1570→  animation-delay: 0s;
+  1571→  1571→}
+  1572→  1572→
+  1573→  1573→.sparkle-dot.sd-2 {
+  1574→  1574→  animation-delay: .35s;
+  1575→  1575→}
+  1576→  1576→
+  1577→  1577→.sparkle-dot.sd-3 {
+  1578→  1578→  animation-delay: .7s;
+  1579→  1579→}
+  1580→  1580→
+  1581→  1581→.sparkle-dot.sd-4 {
+  1582→  1582→  animation-delay: 1.05s;
+  1583→  1583→}
+  1584→  1584→
+  1585→  1585→.sparkle-dot.sd-5 {
+  1586→  1586→  animation-delay: 1.4s;
+  1587→  1587→}
+  1588→  1588→
+  1589→  1589→.sparkle-dot.sd-6 {
+  1590→  1590→  animation-delay: 1.75s;
+  1591→  1591→}
+  1592→  1592→
+  1593→  1593→.sparkle-dot.sd-7 {
+  1594→  1594→  animation-delay: 2.1s;
+  1595→  1595→}
+  1596→  1596→
+  1597→  1597→.sparkle-dot.sd-8 {
+  1598→  1598→  animation-delay: 2.45s;
+  1599→  1599→}
+  1600→  1600→
+  1601→  1601→.magic-ray {
+  1602→  1602→  opacity: 0;
+  1603→  1603→  animation: 2.5s ease-in-out infinite rayShimmer;
+  1604→  1604→}
+  1605→  1605→
+  1606→  1606→.magic-ray.mr-1 {
+  1607→  1607→  animation-delay: 0s;
+  1608→  1608→}
+  1609→  1609→
+  1610→  1610→.magic-ray.mr-2 {
+  1611→  1611→  animation-delay: .6s;
+  1612→  1612→}
+  1613→  1613→
+  1614→  1614→.magic-ray.mr-3 {
+  1615→  1615→  animation-delay: 1.2s;
+  1616→  1616→}
+  1617→  1617→
+  1618→  1618→.magic-ray.mr-4 {
+  1619→  1619→  animation-delay: 1.8s;
+  1620→  1620→}
+  1621→  1621→
+  1622→  1622→.hover-ring {
+  1623→  1623→  opacity: 0;
+  1624→  1624→  transform-box: fill-box;
+  1625→  1625→  transform-origin: 50%;
+  1626→  1626→  transition: opacity .3s ease, transform .3s var(--ease-spring);
+  1627→  1627→  transform: scale(.6) rotate(0);
+  1628→  1628→}
+  1629→  1629→
+  1630→  1630→.magic-cursor.is-active .hover-ring {
+  1631→  1631→  opacity: 1;
+  1632→  1632→  animation: 3s linear infinite hoverRingSpin;
+  1633→  1633→  transform: scale(1) rotate(45deg);
+  1634→  1634→}
+  1635→  1635→
+  1636→  1636→.wand-star {
+  1637→  1637→  transform-box: fill-box;
+  1638→  1638→  transform-origin: 50%;
+  1639→  1639→  animation: 1.8s ease-in-out infinite wandTip;
+  1640→  1640→}
+  1641→  1641→
+  1642→  1642→@keyframes wandAmbient {
+  1643→  1643→  0%, to {
+  1644→  1644→    opacity: .15;
+  1645→  1645→    transform: scale(.8);
+  1646→  1646→  }
+  1647→  1647→  50% {
+  1648→  1648→    opacity: .35;
+  1649→  1649→    transform: scale(1.2);
+  1650→  1650→  }
+  1651→  1651→}
+  1652→  1652→
+  1653→  1653→@keyframes wandAura {
+  1654→  1654→  0%, to {
+  1655→  1655→    opacity: .25;
+  1656→  1656→    transform: scale(.85);
+  1657→  1657→  }
+  1658→  1658→  50% {
+  1659→  1659→    opacity: .55;
+  1660→  1660→    transform: scale(1.2);
+  1661→  1661→  }
+  1662→  1662→}
+  1663→  1663→
+  1664→  1664→@keyframes wandHalo {
+  1665→  1665→  0%, to {
+  1666→  1666→    opacity: .4;
+  1667→  1667→    transform: scale(.9);
+  1668→  1668→  }
+  1669→  1669→  50% {
+  1670→  1670→    opacity: .75;
+  1671→  1671→    transform: scale(1.25);
+  1672→  1672→  }
+  1673→  1673→}
+  1674→  1674→
+  1675→  1675→@keyframes wandCorePulse {
+  1676→  1676→  0%, to {
+  1677→  1677→    opacity: .85;
+  1678→  1678→    filter: drop-shadow(0 0 2px #fff9);
+  1679→  1679→    transform: scale(.9);
+  1680→  1680→  }
+  1681→  1681→  50% {
+  1682→  1682→    opacity: 1;
+  1683→  1683→    filter: drop-shadow(0 0 6px #ffffffe6) drop-shadow(0 0 10px #fff0b480);
+  1684→  1684→    transform: scale(1.15);
+  1685→  1685→  }
+  1686→  1686→}
+  1687→  1687→
+  1688→  1688→@keyframes wandTip {
+  1689→  1689→  0%, to {
+  1690→  1690→    filter: drop-shadow(0 0 4px #f5c85bcc) drop-shadow(0 0 8px #ff8c7280);
+  1691→  1691→    transform: scale(1);
+  1692→  1692→  }
+  1693→  1693→  50% {
+  1694→  1694→    filter: drop-shadow(0 0 10px #f5c85b) drop-shadow(0 0 18px #ff8c72cc) drop-shadow(0 0 28px #e34f6f4d);
+  1695→  1695→    transform: scale(1.08);
+  1696→  1696→  }
+  1697→  1697→}
+  1698→  1698→
+  1699→  1699→@keyframes rayShimmer {
+  1700→  1700→  0%, to {
+  1701→  1701→    opacity: 0;
+  1702→  1702→    transform: scaleX(.5);
+  1703→  1703→  }
+  1704→  1704→  40% {
+  1705→  1705→    opacity: .6;
+  1706→  1706→    transform: scaleX(1);
+  1707→  1707→  }
+  1708→  1708→  60% {
+  1709→  1709→    opacity: .4;
+  1710→  1710→    transform: scaleX(.9);
+  1711→  1711→  }
+  1712→  1712→}
+  1713→  1713→
+  1714→  1714→@keyframes sparkleTwinkle {
+  1715→  1715→  0%, to {
+  1716→  1716→    opacity: 0;
+  1717→  1717→    transform: scale(.5);
+  1718→  1718→  }
+  1719→  1719→  30% {
+  1720→  1720→    opacity: .9;
+  1721→  1721→    transform: scale(1.3);
+  1722→  1722→  }
+  1723→  1723→  60% {
+  1724→  1724→    opacity: .7;
+  1725→  1725→    transform: scale(1);
+  1726→  1726→  }
+  1727→  1727→}
+  1728→  1728→
+  1729→  1729→@keyframes hoverRingSpin {
+  1730→  1730→  0% {
+  1731→  1731→    transform: scale(1) rotate(0);
+  1732→  1732→  }
+  1733→  1733→  to {
+  1734→  1734→    transform: scale(1) rotate(360deg);
+  1735→  1735→  }
+  1736→  1736→}
+  1737→  1737→
+  1738→  1738→@media (prefers-reduced-motion: reduce) {
+  1739→  1739→  .gift-root *,
+  1740→  1740→  .gift-root :before,
+  1741→  1741→  .gift-root :after {
+  1742→  1742→    transition-duration: .01ms !important;
+  1743→  1743→    animation-duration: .01ms !important;
+  1744→  1744→    animation-iteration-count: 1 !important;
+  1745→  1745→  }
+  1746→  1746→  .reveal {
+  1747→  1747→    opacity: 1;
+  1748→  1748→    transform: none;
+  1749→  1749→  }
+  1750→  1750→}
+  1751→  1751→

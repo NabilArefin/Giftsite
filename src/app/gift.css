@@ -389,7 +389,6 @@
 
 .open-button:hover {
   filter: brightness(1.08);
-  animation: pulseButton 1.8s var(--ease-expressive) infinite, colorShift 2s ease-in-out infinite;
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 24px 60px #7b61ff52, 0 18px 44px #e34f6f52, 0 0 36px #f5c85b26, 0 0 60px #9ed7c114, inset 0 1px #ffffff4d, inset 0 -1px #00000014;
 }
@@ -484,63 +483,11 @@
   font-family: var(--font-updock), "Updock", cursive;
   letter-spacing: .04em;
   color: #fff;
-  animation: 6s ease-in-out infinite textColorShift;
+  transition: color 0.12s ease;
   position: relative;
 }
 
-@keyframes textColorShift {
-  0% {
-    color: #fff;
-  }
-  8% {
-    color: #fff;
-  }
-  14% {
-    color: #e0e0e0;
-  }
-  18% {
-    color: #b0b0b0;
-  }
-  22% {
-    color: gray;
-  }
-  26% {
-    color: #505050;
-  }
-  30% {
-    color: #222;
-  }
-  34% {
-    color: #111;
-  }
-  50% {
-    color: #111;
-  }
-  66% {
-    color: #111;
-  }
-  70% {
-    color: #222;
-  }
-  74% {
-    color: #505050;
-  }
-  78% {
-    color: gray;
-  }
-  82% {
-    color: #b0b0b0;
-  }
-  86% {
-    color: #e0e0e0;
-  }
-  92% {
-    color: #fff;
-  }
-  to {
-    color: #fff;
-  }
-}
+
 
 @keyframes glassShift {
   0%, to {
