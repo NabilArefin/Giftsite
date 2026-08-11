@@ -191,104 +191,134 @@ export default function GiftPage() {
   const mouseRef = useRef({ x: -100, y: -100, last: 0 });
   const reducedRef = useRef(false);
   const cursorRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const buttonTextRef = useRef<HTMLSpanElement | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [cutProgress, setCutProgress] = useState(0);
+  const [isCutting, setIsCutting] = useState(false);
+  const [isCutComplete, setIsCutComplete] = useState(false);
 
-  // ── JS-driven text color sync ──
-  // Reads the button's actual computed background-position every frame,
-  // maps it to a gradient position, computes luminance, and sets text color
-  // so it always contrasts perfectly with the animated background.
+  const cakeAreaRef = useRef<HTMLDivElement | null>(null);
+  const cutTrackRef = useRef<number[]>([]); // tracks horizontal coverage
+  const isDraggingRef = useRef(false);
+
+
+  // ── Cake cutting interaction ──
+  // Track drag across the cake to compute cut progress
   useEffect(() => {
-    const btn = buttonRef.current;
-    const txt = buttonTextRef.current;
-    if (!btn || !txt) return;
+    const cakeArea = cakeAreaRef.current;
+    if (!cakeArea) return;
 
-    let smoothLum = 0.6; // start near middle
-    const LUM_THRESHOLD = 0.58;
-    const TRANSITION_WIDTH = 0.13;
-    const SMOOTH_FACTOR = 0.25;
+    const SEGMENTS = 40; // divide cake width into segments
+    cutTrackRef.current = new Array(SEGMENTS).fill(0);
 
-    let colorRaf = 0;
-
-    const tick = () => {
-      const pos = getComputedStyle(btn).backgroundPosition;
-      // Parse "X% Y%" or "Xpx Ypx"
-      const parts = pos.split(/\s+/);
-      let fracX = 0.5;
-      let fracY = 0.5;
-
-      for (let i = 0; i < parts.length && i < 2; i++) {
-        const v = parseFloat(parts[i]);
-        if (parts[i].includes('%')) {
-          // For background-size: 300%, 0%→start, 100%→end
-          // frac: 0→0.333, 1→1.0  →  (pct/100 * 2 + 1) / 3
-          // Actually: bg-size 300% means the image is 3x the container.
-          // bg-pos 0% = left edge of image at left edge of container = gradient start
-          // bg-pos 100% = right edge of image at right edge of container = gradient end
-          // So fracX = pct / 100 maps [0,1] for the full gradient sweep
-          // But with 300% size, position 0%=gradient-start, 50%=gradient-middle, 100%=gradient-end
-          const f = v / 100;
-          if (i === 0) fracX = f;
-          else fracY = f;
-        } else {
-          // px value — approximate by ratio to element size
-          const dim = i === 0 ? btn.offsetWidth : btn.offsetHeight;
-          if (dim > 0) {
-            const f = Math.min(1, Math.max(0, v / (dim * 2))); // rough normalization
-            if (i === 0) fracX = f;
-            else fracY = f;
-          }
-        }
-      }
-
-      // The gradient is 135deg with 5 color stops (violet, rose, coral, gold, mint)
-      // gradientT goes from 0 (violet/rose) to 1 (gold/mint)
-      // For 135deg gradient, position depends on both X and Y
-      const gradientT = (fracX + fracY) / 2;
-
-      // Map gradientT to approximate luminance of the gradient colors
-      // violet(#7b61ff) lum≈0.44, rose(#e34f6f) lum≈0.45, coral(#ff8c72) lum≈0.53, gold(#f5c85b) lum≈0.72, mint(#9ed7c1) lum≈0.69
-      // Use a piecewise approximation:
-      let lum = 0.44;
-      if (gradientT < 0.25) {
-        lum = 0.44 + (0.45 - 0.44) * (gradientT / 0.25); // violet→rose
-      } else if (gradientT < 0.5) {
-        lum = 0.45 + (0.53 - 0.45) * ((gradientT - 0.25) / 0.25); // rose→coral
-      } else if (gradientT < 0.75) {
-        lum = 0.53 + (0.72 - 0.53) * ((gradientT - 0.5) / 0.25); // coral→gold
-      } else {
-        lum = 0.72 + (0.69 - 0.72) * ((gradientT - 0.75) / 0.25); // gold→mint
-      }
-
-      // Apply exponential smoothing to prevent jitter
-      smoothLum = smoothLum + SMOOTH_FACTOR * (lum - smoothLum);
-
-      // Map luminance to text color with smooth gray transition
-      // Low lum (dark bg) → white text, High lum (bright bg) → dark text
-      let r: number, g: number, b: number;
-      if (smoothLum < LUM_THRESHOLD - TRANSITION_WIDTH) {
-        // Fully white
-        r = 255; g = 255; b = 255;
-      } else if (smoothLum > LUM_THRESHOLD + TRANSITION_WIDTH) {
-        // Fully dark
-        r = 17; g = 17; b = 17;
-      } else {
-        // Transition zone — smooth gray interpolation
-        const t = (smoothLum - (LUM_THRESHOLD - TRANSITION_WIDTH)) / (2 * TRANSITION_WIDTH);
-        r = Math.round(255 + (17 - 255) * t);
-        g = Math.round(255 + (17 - 255) * t);
-        b = Math.round(255 + (17 - 255) * t);
-      }
-
-      txt.style.color = `rgb(${r},${g},${b})`;
-      colorRaf = requestAnimationFrame(tick);
+    const getProgress = () => {
+      const covered = cutTrackRef.current.filter((v) => v > 0).length;
+      return covered / SEGMENTS;
     };
 
-    colorRaf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(colorRaf);
-  }, []);
+    const handleMove = (clientX: number, clientY: number) => {
+      if (!isDraggingRef.current || isCutComplete) return;
+      const rect = cakeArea.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      // Check if pointer is within the cut zone (middle band of cake)
+      const cutZoneTop = rect.height * 0.35;
+      const cutZoneBottom = rect.height * 0.65;
+      if (y < cutZoneTop || y > cutZoneBottom) return;
+      if (x < 0 || x > rect.width) return;
+
+      // Mark segment as cut
+      const segIndex = Math.floor((x / rect.width) * SEGMENTS);
+      if (segIndex >= 0 && segIndex < SEGMENTS) {
+        cutTrackRef.current[segIndex] = 1;
+      }
+
+      const progress = getProgress();
+      setCutProgress(progress);
+      setIsCutting(true);
+
+      if (progress >= 0.95 && !isCutComplete) {
+        setCutProgress(1);
+        setIsCutComplete(true);
+        // Trigger the wish after a short delay for the split animation
+        setTimeout(() => {
+          setIsOpen(true);
+          // Burst hearts and confetti inline
+          const { w, h } = sizeRef.current;
+          const cx = w / 2;
+          for (let i = 0; i < 80; i++) {
+            particlesRef.current.push(createParticle(cx, h * 0.38, { burst: true }));
+          }
+          window.setTimeout(() => {
+            for (let i = 0; i < 60; i++) {
+              particlesRef.current.push(createParticle(cx, h * 0.35, { confetti: true }));
+            }
+          }, 200);
+        }, 800);
+      }
+    };
+
+    const onMouseDown = (e: MouseEvent) => {
+      const rect = cakeArea.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const cutZoneTop = rect.height * 0.35;
+      const cutZoneBottom = rect.height * 0.65;
+      if (y >= cutZoneTop && y <= cutZoneBottom) {
+        isDraggingRef.current = true;
+        handleMove(e.clientX, e.clientY);
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      handleMove(e.clientX, e.clientY);
+    };
+
+    const onMouseUp = () => {
+      isDraggingRef.current = false;
+      setIsCutting(false);
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const rect = cakeArea.getBoundingClientRect();
+      const y = touch.clientY - rect.top;
+      const cutZoneTop = rect.height * 0.35;
+      const cutZoneBottom = rect.height * 0.65;
+      if (y >= cutZoneTop && y <= cutZoneBottom) {
+        isDraggingRef.current = true;
+        handleMove(touch.clientX, touch.clientY);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDraggingRef.current) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleMove(touch.clientX, touch.clientY);
+    };
+
+    const onTouchEnd = () => {
+      isDraggingRef.current = false;
+      setIsCutting(false);
+    };
+
+    cakeArea.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    cakeArea.addEventListener("touchstart", onTouchStart, { passive: true });
+    cakeArea.addEventListener("touchmove", onTouchMove, { passive: false });
+    cakeArea.addEventListener("touchend", onTouchEnd);
+
+    return () => {
+      cakeArea.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      cakeArea.removeEventListener("touchstart", onTouchStart);
+      cakeArea.removeEventListener("touchmove", onTouchMove);
+      cakeArea.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [isCutComplete]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -661,22 +691,105 @@ export default function GiftPage() {
       </div>
 
       <main className="page-shell">
-        <button
-          ref={buttonRef}
-          type="button"
-          className="open-button"
-          onClick={openWish}
-          aria-haspopup="dialog"
-          aria-expanded={isOpen}
-          aria-controls="wishPopup"
-        >
-          <span className="button-glass" />
-          <span className="button-light-orb orb-1" />
-          <span className="button-light-orb orb-2" />
-          <span className="button-light-orb orb-3" />
-          <span className="button-glow-ring" />
-          <span ref={buttonTextRef} className="button-text">Tap Here</span>
-        </button>
+        <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
+          <div className="cut-instructions">
+            <p className="cut-title">Drag across the cake to cut it</p>
+            <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+          </div>
+
+          <div
+            ref={cakeAreaRef}
+            className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
+          >
+            {/* Cut line visual */}
+            <div className="cut-line">
+              <div className="cut-line-fill" style={{ width: `${cutProgress * 100}%` }} />
+              <div className="cut-line-glow" style={{ left: `${cutProgress * 100}%` }} />
+            </div>
+
+            {/* Cake SVG */}
+            <svg className="cut-cake-svg" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Plate */}
+              <ellipse cx="200" cy="272" rx="170" ry="18" fill="#e8d5c0" stroke="#d4b896" strokeWidth="2" />
+              <ellipse cx="200" cy="268" rx="155" ry="12" fill="#f5e6d3" />
+
+              {/* Bottom layer */}
+              <rect x="60" y="200" width="280" height="68" rx="12" fill="#e8a0b0" />
+              <rect x="60" y="200" width="280" height="10" rx="5" fill="#f0b8c8" />
+              <rect x="60" y="200" width="280" height="68" rx="12" fill="url(#cakeBottomGrad)" />
+              {/* Bottom layer decorations */}
+              <circle cx="100" cy="234" r="4" fill="#f5c85b" opacity="0.7" />
+              <circle cx="150" cy="230" r="3" fill="#ff8c72" opacity="0.6" />
+              <circle cx="200" cy="236" r="4" fill="#f5c85b" opacity="0.7" />
+              <circle cx="250" cy="230" r="3" fill="#ff8c72" opacity="0.6" />
+              <circle cx="300" cy="234" r="4" fill="#f5c85b" opacity="0.7" />
+
+              {/* Middle layer */}
+              <rect x="80" y="140" width="240" height="64" rx="10" fill="#f0c0d0" />
+              <rect x="80" y="140" width="240" height="8" rx="4" fill="#f8d0dc" />
+              <rect x="80" y="140" width="240" height="64" rx="10" fill="url(#cakeMidGrad)" />
+              {/* Mid layer decorations */}
+              <circle cx="120" cy="172" r="3" fill="#e34f6f" opacity="0.5" />
+              <circle cx="200" cy="174" r="3" fill="#e34f6f" opacity="0.5" />
+              <circle cx="280" cy="172" r="3" fill="#e34f6f" opacity="0.5" />
+
+              {/* Top layer */}
+              <rect x="100" y="82" width="200" height="62" rx="8" fill="#f8d8e4" />
+              <rect x="100" y="82" width="200" height="7" rx="3.5" fill="#fff0f4" />
+              <rect x="100" y="82" width="200" height="62" rx="8" fill="url(#cakeTopGrad)" />
+              {/* Frosting drips */}
+              <path d="M110 82 Q115 95 110 105 Q108 98 110 82" fill="#fff0f4" opacity="0.8" />
+              <path d="M160 82 Q163 100 158 112 Q155 102 160 82" fill="#fff0f4" opacity="0.8" />
+              <path d="M200 82 Q203 95 198 108 Q195 98 200 82" fill="#fff0f4" opacity="0.8" />
+              <path d="M240 82 Q243 98 238 110 Q235 100 240 82" fill="#fff0f4" opacity="0.8" />
+              <path d="M290 82 Q293 92 288 102 Q285 95 290 82" fill="#fff0f4" opacity="0.8" />
+
+              {/* Candles */}
+              <rect x="175" y="42" width="6" height="42" rx="3" fill="#f5c85b" />
+              <rect x="197" y="36" width="6" height="48" rx="3" fill="#e34f6f" />
+              <rect x="219" y="42" width="6" height="42" rx="3" fill="#7b61ff" />
+              {/* Flames */}
+              <ellipse cx="178" cy="38" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
+              <ellipse cx="178" cy="36" rx="2.5" ry="5" fill="#fff7ad" />
+              <ellipse cx="200" cy="32" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
+              <ellipse cx="200" cy="30" rx="2.5" ry="5" fill="#fff7ad" />
+              <ellipse cx="222" cy="38" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
+              <ellipse cx="222" cy="36" rx="2.5" ry="5" fill="#fff7ad" />
+
+              {/* Gradients */}
+              <defs>
+                <linearGradient id="cakeBottomGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f0b8c8" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#d08098" stopOpacity="0.3" />
+                </linearGradient>
+                <linearGradient id="cakeMidGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f8d0dc" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#e0a0b8" stopOpacity="0.3" />
+                </linearGradient>
+                <linearGradient id="cakeTopGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#fff0f4" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#f0c0d0" stopOpacity="0.3" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Cut zone highlight overlay */}
+            <div className="cut-zone-highlight" />
+
+            {/* Cake split animation (appears when cut is complete) */}
+            <div className="cake-split-left" style={{ transform: isCutComplete ? "translateX(-30px) rotate(-3deg)" : "translateX(0)" }} />
+            <div className="cake-split-right" style={{ transform: isCutComplete ? "translateX(30px) rotate(3deg)" : "translateX(0)" }} />
+          </div>
+
+          {/* Progress bar */}
+          <div className="cut-progress-container">
+            <div className="cut-progress-bar">
+              <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+              <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 20}%` }} />
+            </div>
+            <span className="cut-progress-text">{Math.round(cutProgress * 100)}%</span>
+          </div>
+        </div>
       </main>
 
       <section

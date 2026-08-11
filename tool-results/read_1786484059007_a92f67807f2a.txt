@@ -1,0 +1,767 @@
+     1→"use client";
+     2→
+     3→import { useCallback, useEffect, useRef, useState } from "react";
+     4→import "./gift.css";
+     5→
+     6→type ParticleShape = "heart" | "dot" | "star" | "circle" | "square";
+     7→
+     8→type Particle = {
+     9→  x: number;
+    10→  y: number;
+    11→  vx: number;
+    12→  vy: number;
+    13→  size: number;
+    14→  life: number;
+    15→  age: number;
+    16→  color: string;
+    17→  shape: ParticleShape;
+    18→  spin: number;
+    19→  gravity: number;
+    20→  wobble: number;
+    21→  wobbleSpeed: number;
+    22→};
+    23→
+    24→type CreateOptions = {
+    25→  burst?: boolean;
+    26→  trail?: boolean;
+    27→  confetti?: boolean;
+    28→};
+    29→
+    30→const PALETTE = ["#e34f6f", "#ff8c72", "#f5c85b", "#9ed7c1", "#7b61ff", "#ffffff"];
+    31→const AMBIENT_PALETTE = PALETTE.slice(0, PALETTE.length - 1); // exclude white for ambient
+    32→
+    33→function createParticle(x: number, y: number, opts: CreateOptions = {}): Particle {
+    34→  const isBurst = opts.burst || false;
+    35→  const isTrail = opts.trail || false;
+    36→  const isConfetti = opts.confetti || false;
+    37→
+    38→  const angle = Math.random() * Math.PI * 2;
+    39→  let speed: number;
+    40→  if (isBurst) {
+    41→    speed = 2.4 + Math.random() * 4.6;
+    42→  } else if (isTrail) {
+    43→    speed = 0.3 + Math.random() * 0.8;
+    44→  } else {
+    45→    speed = 0.4 + Math.random() * 1.4;
+    46→  }
+    47→
+    48→  const shapes: ParticleShape[] = isConfetti
+    49→    ? ["star", "circle", "square"]
+    50→    : ["heart", "dot"];
+    51→
+    52→  return {
+    53→    x,
+    54→    y,
+    55→    vx: isConfetti
+    56→      ? Math.cos(angle) * (1 + Math.random() * 3)
+    57→      : Math.cos(angle) * speed,
+    58→    vy: isConfetti
+    59→      ? Math.sin(angle) * (1 + Math.random() * 3) - 2
+    60→      : Math.sin(angle) * speed - (isBurst ? 2 : 0),
+    61→    size: isBurst
+    62→      ? 5 + Math.random() * 7
+    63→      : isTrail
+    64→        ? 1.5 + Math.random() * 3
+    65→        : isConfetti
+    66→          ? 3 + Math.random() * 5
+    67→          : 2 + Math.random() * 4,
+    68→    life: isBurst
+    69→      ? 90 + Math.random() * 50
+    70→      : isTrail
+    71→        ? 40 + Math.random() * 40
+    72→        : isConfetti
+    73→          ? 100 + Math.random() * 80
+    74→          : 140 + Math.random() * 120,
+    75→    age: 0,
+    76→    color: isConfetti
+    77→      ? PALETTE[Math.floor(Math.random() * PALETTE.length)]
+    78→      : AMBIENT_PALETTE[Math.floor(Math.random() * AMBIENT_PALETTE.length)],
+    79→    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    80→    spin: Math.random() * Math.PI,
+    81→    gravity: isConfetti ? 0.06 : isTrail ? 0.01 : 0.018,
+    82→    wobble: isConfetti ? 0.08 : 0,
+    83→    wobbleSpeed: 0.05 + Math.random() * 0.05,
+    84→  };
+    85→}
+    86→
+    87→function drawHeart(
+    88→  ctx: CanvasRenderingContext2D,
+    89→  x: number,
+    90→  y: number,
+    91→  size: number,
+    92→  color: string,
+    93→  alpha: number,
+    94→  spin: number,
+    95→) {
+    96→  ctx.save();
+    97→  ctx.translate(x, y);
+    98→  ctx.rotate(spin);
+    99→  ctx.scale(size / 18, size / 18);
+   100→  ctx.globalAlpha = alpha;
+   101→  ctx.fillStyle = color;
+   102→  ctx.beginPath();
+   103→  ctx.moveTo(0, 6);
+   104→  ctx.bezierCurveTo(-16, -4, -8, -18, 0, -9);
+   105→  ctx.bezierCurveTo(8, -18, 16, -4, 0, 6);
+   106→  ctx.fill();
+   107→  ctx.restore();
+   108→}
+   109→
+   110→function drawStar(
+   111→  ctx: CanvasRenderingContext2D,
+   112→  x: number,
+   113→  y: number,
+   114→  size: number,
+   115→  color: string,
+   116→  alpha: number,
+   117→  spin: number,
+   118→) {
+   119→  ctx.save();
+   120→  ctx.translate(x, y);
+   121→  ctx.rotate(spin);
+   122→  ctx.globalAlpha = alpha;
+   123→  ctx.fillStyle = color;
+   124→  ctx.beginPath();
+   125→  for (let i = 0; i < 5; i++) {
+   126→    const outerAngle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+   127→    const innerAngle = outerAngle + (2 * Math.PI) / 10;
+   128→    if (i === 0) {
+   129→      ctx.moveTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   130→    } else {
+   131→      ctx.lineTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   132→    }
+   133→    ctx.lineTo(
+   134→      Math.cos(innerAngle) * size * 0.45,
+   135→      Math.sin(innerAngle) * size * 0.45,
+   136→    );
+   137→  }
+   138→  ctx.closePath();
+   139→  ctx.fill();
+   140→  ctx.restore();
+   141→}
+   142→
+   143→function drawSquare(
+   144→  ctx: CanvasRenderingContext2D,
+   145→  x: number,
+   146→  y: number,
+   147→  size: number,
+   148→  color: string,
+   149→  alpha: number,
+   150→  spin: number,
+   151→) {
+   152→  ctx.save();
+   153→  ctx.translate(x, y);
+   154→  ctx.rotate(spin);
+   155→  ctx.globalAlpha = alpha;
+   156→  ctx.fillStyle = color;
+   157→  ctx.fillRect(-size / 2, -size / 2, size, size);
+   158→  ctx.restore();
+   159→}
+   160→
+   161→function drawParticle(ctx: CanvasRenderingContext2D, p: Particle) {
+   162→  const alpha = Math.max(0, 1 - p.age / p.life);
+   163→  if (alpha <= 0) return;
+   164→
+   165→  switch (p.shape) {
+   166→    case "heart":
+   167→      drawHeart(ctx, p.x, p.y, p.size * 2.2, p.color, alpha, p.spin);
+   168→      break;
+   169→    case "star":
+   170→      drawStar(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   171→      break;
+   172→    case "square":
+   173→      drawSquare(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   174→      break;
+   175→    default: {
+   176→      ctx.globalAlpha = alpha;
+   177→      ctx.fillStyle = p.color;
+   178→      ctx.beginPath();
+   179→      ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2);
+   180→      ctx.fill();
+   181→      ctx.globalAlpha = 1;
+   182→    }
+   183→  }
+   184→}
+   185→
+   186→export default function GiftPage() {
+   187→  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+   188→  const particlesRef = useRef<Particle[]>([]);
+   189→  const rafRef = useRef<number | null>(null);
+   190→  const sizeRef = useRef({ w: 0, h: 0 });
+   191→  const mouseRef = useRef({ x: -100, y: -100, last: 0 });
+   192→  const reducedRef = useRef(false);
+   193→  const cursorRef = useRef<HTMLDivElement | null>(null);
+   194→  const buttonRef = useRef<HTMLButtonElement | null>(null);
+   195→  const buttonTextRef = useRef<HTMLSpanElement | null>(null);
+   196→
+   197→  const [isOpen, setIsOpen] = useState(false);
+   198→
+   199→  // ── JS-driven text color sync ──
+   200→  // Reads the button's actual computed background-position every frame,
+   201→  // maps it to a gradient position, computes luminance, and sets text color
+   202→  // so it always contrasts perfectly with the animated background.
+   203→  useEffect(() => {
+   204→    const btn = buttonRef.current;
+   205→    const txt = buttonTextRef.current;
+   206→    if (!btn || !txt) return;
+   207→
+   208→    let smoothLum = 0.6; // start near middle
+   209→    const LUM_THRESHOLD = 0.58;
+   210→    const TRANSITION_WIDTH = 0.13;
+   211→    const SMOOTH_FACTOR = 0.25;
+   212→
+   213→    let colorRaf = 0;
+   214→
+   215→    const tick = () => {
+   216→      const pos = getComputedStyle(btn).backgroundPosition;
+   217→      // Parse "X% Y%" or "Xpx Ypx"
+   218→      const parts = pos.split(/\s+/);
+   219→      let fracX = 0.5;
+   220→      let fracY = 0.5;
+   221→
+   222→      for (let i = 0; i < parts.length && i < 2; i++) {
+   223→        const v = parseFloat(parts[i]);
+   224→        if (parts[i].includes('%')) {
+   225→          // For background-size: 300%, 0%→start, 100%→end
+   226→          // frac: 0→0.333, 1→1.0  →  (pct/100 * 2 + 1) / 3
+   227→          // Actually: bg-size 300% means the image is 3x the container.
+   228→          // bg-pos 0% = left edge of image at left edge of container = gradient start
+   229→          // bg-pos 100% = right edge of image at right edge of container = gradient end
+   230→          // So fracX = pct / 100 maps [0,1] for the full gradient sweep
+   231→          // But with 300% size, position 0%=gradient-start, 50%=gradient-middle, 100%=gradient-end
+   232→          const f = v / 100;
+   233→          if (i === 0) fracX = f;
+   234→          else fracY = f;
+   235→        } else {
+   236→          // px value — approximate by ratio to element size
+   237→          const dim = i === 0 ? btn.offsetWidth : btn.offsetHeight;
+   238→          if (dim > 0) {
+   239→            const f = Math.min(1, Math.max(0, v / (dim * 2))); // rough normalization
+   240→            if (i === 0) fracX = f;
+   241→            else fracY = f;
+   242→          }
+   243→        }
+   244→      }
+   245→
+   246→      // The gradient is 135deg with 5 color stops (violet, rose, coral, gold, mint)
+   247→      // gradientT goes from 0 (violet/rose) to 1 (gold/mint)
+   248→      // For 135deg gradient, position depends on both X and Y
+   249→      const gradientT = (fracX + fracY) / 2;
+   250→
+   251→      // Map gradientT to approximate luminance of the gradient colors
+   252→      // violet(#7b61ff) lum≈0.44, rose(#e34f6f) lum≈0.45, coral(#ff8c72) lum≈0.53, gold(#f5c85b) lum≈0.72, mint(#9ed7c1) lum≈0.69
+   253→      // Use a piecewise approximation:
+   254→      let lum = 0.44;
+   255→      if (gradientT < 0.25) {
+   256→        lum = 0.44 + (0.45 - 0.44) * (gradientT / 0.25); // violet→rose
+   257→      } else if (gradientT < 0.5) {
+   258→        lum = 0.45 + (0.53 - 0.45) * ((gradientT - 0.25) / 0.25); // rose→coral
+   259→      } else if (gradientT < 0.75) {
+   260→        lum = 0.53 + (0.72 - 0.53) * ((gradientT - 0.5) / 0.25); // coral→gold
+   261→      } else {
+   262→        lum = 0.72 + (0.69 - 0.72) * ((gradientT - 0.75) / 0.25); // gold→mint
+   263→      }
+   264→
+   265→      // Apply exponential smoothing to prevent jitter
+   266→      smoothLum = smoothLum + SMOOTH_FACTOR * (lum - smoothLum);
+   267→
+   268→      // Map luminance to text color with smooth gray transition
+   269→      // Low lum (dark bg) → white text, High lum (bright bg) → dark text
+   270→      let r: number, g: number, b: number;
+   271→      if (smoothLum < LUM_THRESHOLD - TRANSITION_WIDTH) {
+   272→        // Fully white
+   273→        r = 255; g = 255; b = 255;
+   274→      } else if (smoothLum > LUM_THRESHOLD + TRANSITION_WIDTH) {
+   275→        // Fully dark
+   276→        r = 17; g = 17; b = 17;
+   277→      } else {
+   278→        // Transition zone — smooth gray interpolation
+   279→        const t = (smoothLum - (LUM_THRESHOLD - TRANSITION_WIDTH)) / (2 * TRANSITION_WIDTH);
+   280→        r = Math.round(255 + (17 - 255) * t);
+   281→        g = Math.round(255 + (17 - 255) * t);
+   282→        b = Math.round(255 + (17 - 255) * t);
+   283→      }
+   284→
+   285→      txt.style.color = `rgb(${r},${g},${b})`;
+   286→      colorRaf = requestAnimationFrame(tick);
+   287→    };
+   288→
+   289→    colorRaf = requestAnimationFrame(tick);
+   290→    return () => cancelAnimationFrame(colorRaf);
+   291→  }, []);
+   292→
+   293→  useEffect(() => {
+   294→    const canvas = canvasRef.current;
+   295→    if (!canvas) return;
+   296→    const ctx = canvas.getContext("2d");
+   297→    if (!ctx) return;
+   298→
+   299→    const reducedMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+   300→    reducedRef.current = reducedMotionMQ.matches;
+   301→
+   302→    const resize = () => {
+   303→      const ratio = window.devicePixelRatio || 1;
+   304→      const w = window.innerWidth;
+   305→      const h = window.innerHeight;
+   306→      canvas.width = Math.floor(w * ratio);
+   307→      canvas.height = Math.floor(h * ratio);
+   308→      canvas.style.width = `${w}px`;
+   309→      canvas.style.height = `${h}px`;
+   310→      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+   311→      sizeRef.current = { w, h };
+   312→    };
+   313→
+   314→    resize();
+   315→    window.addEventListener("resize", resize);
+   316→
+   317→    const animate = () => {
+   318→      const { w, h } = sizeRef.current;
+   319→      ctx.clearRect(0, 0, w, h);
+   320→
+   321→      // Ambient particles (rising from bottom)
+   322→      if (
+   323→        !reducedRef.current &&
+   324→        particlesRef.current.length < 100 &&
+   325→        Math.random() > 0.62
+   326→      ) {
+   327→        particlesRef.current.push(createParticle(Math.random() * w, h + 20));
+   328→      }
+   329→
+   330→      particlesRef.current = particlesRef.current.filter((p) => p.age < p.life);
+   331→
+   332→      for (const p of particlesRef.current) {
+   333→        p.age += 1;
+   334→        p.x += p.vx + Math.sin(p.age * p.wobbleSpeed) * p.wobble;
+   335→        p.y += p.vy;
+   336→        p.vy += p.gravity;
+   337→        p.spin += 0.02;
+   338→        drawParticle(ctx, p);
+   339→      }
+   340→
+   341→      rafRef.current = requestAnimationFrame(animate);
+   342→    };
+   343→
+   344→    animate();
+   345→
+   346→    const onMotionChange = (e: MediaQueryListEvent) => {
+   347→      reducedRef.current = e.matches;
+   348→    };
+   349→    reducedMotionMQ.addEventListener("change", onMotionChange);
+   350→
+   351→    const onMouseMove = (e: MouseEvent) => {
+   352→      mouseRef.current.x = e.clientX;
+   353→      mouseRef.current.y = e.clientY;
+   354→      if (reducedRef.current) return;
+   355→      const now = performance.now();
+   356→      if (now - mouseRef.current.last < 40) return; // throttle ~25fps
+   357→      mouseRef.current.last = now;
+   358→      particlesRef.current.push(
+   359→        createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
+   360→      );
+   361→    };
+   362→
+   363→    window.addEventListener("mousemove", onMouseMove);
+   364→
+   365→    return () => {
+   366→      window.removeEventListener("resize", resize);
+   367→      window.removeEventListener("mousemove", onMouseMove);
+   368→      reducedMotionMQ.removeEventListener("change", onMotionChange);
+   369→      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+   370→    };
+   371→  }, []);
+   372→
+   373→  const burstHearts = useCallback(() => {
+   374→    const { w, h } = sizeRef.current;
+   375→    const cx = w / 2;
+   376→    const cy = h * 0.38;
+   377→    for (let i = 0; i < 80; i++) {
+   378→      particlesRef.current.push(createParticle(cx, cy, { burst: true }));
+   379→    }
+   380→  }, []);
+   381→
+   382→  const burstConfetti = useCallback(() => {
+   383→    const { w, h } = sizeRef.current;
+   384→    const cx = w / 2;
+   385→    const cy = h * 0.35;
+   386→    for (let i = 0; i < 60; i++) {
+   387→      particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
+   388→    }
+   389→  }, []);
+   390→
+   391→  const openWish = useCallback(() => {
+   392→    setIsOpen(true);
+   393→    burstHearts();
+   394→    window.setTimeout(burstConfetti, 200);
+   395→  }, [burstHearts, burstConfetti]);
+   396→
+   397→  const closeWish = useCallback(() => setIsOpen(false), []);
+   398→
+   399→  useEffect(() => {
+   400→    const onKey = (e: KeyboardEvent) => {
+   401→      if (e.key === "Escape" && isOpen) closeWish();
+   402→    };
+   403→    window.addEventListener("keydown", onKey);
+   404→    return () => window.removeEventListener("keydown", onKey);
+   405→  }, [isOpen, closeWish]);
+   406→
+   407→  // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
+   408→  useEffect(() => {
+   409→    const cursor = cursorRef.current;
+   410→    if (!cursor) return;
+   411→
+   412→    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+   413→      cursor.style.display = "none";
+   414→      return;
+   415→    }
+   416→
+   417→    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   418→    const target = { x: -200, y: -200 };
+   419→    const current = { x: -200, y: -200 };
+   420→    const velocity = { x: 0, y: 0 };
+   421→    let hasMoved = false;
+   422→    let raf = 0;
+   423→
+   424→    const onMove = (e: MouseEvent) => {
+   425→      target.x = e.clientX;
+   426→      target.y = e.clientY;
+   427→      if (!hasMoved) {
+   428→        hasMoved = true;
+   429→        current.x = e.clientX;
+   430→        current.y = e.clientY;
+   431→        cursor.classList.remove("is-hidden");
+   432→      }
+   433→      const el = e.target as HTMLElement | null;
+   434→      if (el && el.closest("button, a, [role='button']")) {
+   435→        cursor.classList.add("is-active");
+   436→      } else {
+   437→        cursor.classList.remove("is-active");
+   438→      }
+   439→    };
+   440→    const onDown = () => {
+   441→      cursor.classList.add("is-pressed");
+   442→      // Emit sparkle burst on click from wand tip position
+   443→      if (!reduced) {
+   444→        const tipX = current.x;
+   445→        const tipY = current.y;
+   446→        for (let i = 0; i < 6; i++) {
+   447→          particlesRef.current.push(createParticle(tipX, tipY, { trail: true }));
+   448→        }
+   449→      }
+   450→    };
+   451→    const onUp = () => cursor.classList.remove("is-pressed");
+   452→    const onLeave = () => cursor.classList.add("is-hidden");
+   453→    const onEnter = () => {
+   454→      if (hasMoved) cursor.classList.remove("is-hidden");
+   455→    };
+   456→
+   457→    const tick = () => {
+   458→      if (reduced) {
+   459→        current.x = target.x;
+   460→        current.y = target.y;
+   461→      } else {
+   462→        const prevX = current.x;
+   463→        const prevY = current.y;
+   464→        current.x += (target.x - current.x) * 0.28;
+   465→        current.y += (target.y - current.y) * 0.28;
+   466→        velocity.x = current.x - prevX;
+   467→        velocity.y = current.y - prevY;
+   468→      }
+   469→
+   470→      // Velocity-based tilt: wand leans in direction of movement
+   471→      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+   472→      let tiltAngle = -8; // default rest angle
+   473→      if (speed > 1.5) {
+   474→        const moveAngle = Math.atan2(velocity.y, velocity.x) * (180 / Math.PI);
+   475→        // Map movement direction to wand tilt (subtle lean)
+   476→        tiltAngle = -8 + velocity.x * 0.8;
+   477→        tiltAngle = Math.max(-30, Math.min(20, tiltAngle));
+   478→      }
+   479→      cursor.style.transform = `translate3d(${current.x - 7}px, ${
+   480→        current.y - 7
+   481→      }px, 0)`;
+   482→      // Apply velocity tilt via CSS custom property
+   483→      cursor.style.setProperty("--wand-tilt", `${tiltAngle}deg`);
+   484→      raf = requestAnimationFrame(tick);
+   485→    };
+   486→
+   487→    window.addEventListener("mousemove", onMove, { passive: true });
+   488→    window.addEventListener("mousedown", onDown);
+   489→    window.addEventListener("mouseup", onUp);
+   490→    document.addEventListener("mouseleave", onLeave);
+   491→    document.addEventListener("mouseenter", onEnter);
+   492→    raf = requestAnimationFrame(tick);
+   493→
+   494→    return () => {
+   495→      window.removeEventListener("mousemove", onMove);
+   496→      window.removeEventListener("mousedown", onDown);
+   497→      window.removeEventListener("mouseup", onUp);
+   498→      document.removeEventListener("mouseleave", onLeave);
+   499→      document.removeEventListener("mouseenter", onEnter);
+   500→      cancelAnimationFrame(raf);
+   501→    };
+   502→  }, []);
+   503→
+   504→  return (
+   505→    <div className={`gift-root ${isOpen ? "wish-is-open" : ""}`}>
+   506→      <div ref={cursorRef} className="magic-cursor is-hidden" aria-hidden="true">
+   507→        <svg className="magic-wand" width="48" height="48" viewBox="0 0 90 90" fill="none">
+   508→          <defs>
+   509→            <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
+   510→              <stop offset="0%" stopColor="#d4a056" />
+   511→              <stop offset="15%" stopColor="#b8863a" />
+   512→              <stop offset="30%" stopColor="#a0722e" />
+   513→              <stop offset="50%" stopColor="#7a5420" />
+   514→              <stop offset="70%" stopColor="#5c3d14" />
+   515→              <stop offset="85%" stopColor="#3d280a" />
+   516→              <stop offset="100%" stopColor="#2a1b06" />
+   517→            </linearGradient>
+   518→            <linearGradient id="wandShaftHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+   519→              <stop offset="0%" stopColor="#e8c47a" />
+   520→              <stop offset="40%" stopColor="#c9a050" />
+   521→              <stop offset="100%" stopColor="#8b6914" />
+   522→            </linearGradient>
+   523→            <linearGradient id="wandHandle" x1="0%" y1="0%" x2="100%" y2="100%">
+   524→              <stop offset="0%" stopColor="#4a3520" />
+   525→              <stop offset="30%" stopColor="#3a2818" />
+   526→              <stop offset="60%" stopColor="#2a1c10" />
+   527→              <stop offset="100%" stopColor="#1a0f08" />
+   528→            </linearGradient>
+   529→            <linearGradient id="handleWrap" x1="0%" y1="0%" x2="100%" y2="100%">
+   530→              <stop offset="0%" stopColor="#8b6914" />
+   531→              <stop offset="50%" stopColor="#6b4f10" />
+   532→              <stop offset="100%" stopColor="#4a3520" />
+   533→            </linearGradient>
+   534→            <radialGradient id="wandTipCore" cx="50%" cy="50%" r="50%">
+   535→              <stop offset="0%" stopColor="#ffffff" />
+   536→              <stop offset="30%" stopColor="#fffbe6" />
+   537→              <stop offset="55%" stopColor="#ffe066" />
+   538→              <stop offset="75%" stopColor="#ffb347" />
+   539→              <stop offset="100%" stopColor="#ff8c72" stopOpacity="0.6" />
+   540→            </radialGradient>
+   541→            <radialGradient id="wandOuterGlow" cx="50%" cy="50%" r="50%">
+   542→              <stop offset="0%" stopColor="rgba(255,240,180,0.6)" />
+   543→              <stop offset="30%" stopColor="rgba(255,200,91,0.35)" />
+   544→              <stop offset="55%" stopColor="rgba(255,140,114,0.15)" />
+   545→              <stop offset="80%" stopColor="rgba(227,79,111,0.06)" />
+   546→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   547→            </radialGradient>
+   548→            <radialGradient id="wandAmbientGlow" cx="50%" cy="50%" r="50%">
+   549→              <stop offset="0%" stopColor="rgba(245,200,91,0.25)" />
+   550→              <stop offset="40%" stopColor="rgba(255,140,114,0.1)" />
+   551→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   552→            </radialGradient>
+   553→            <filter id="wandGlow" x="-100%" y="-100%" width="300%" height="300%">
+   554→              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+   555→              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
+   556→              <feMerge>
+   557→                <feMergeNode in="blur2" />
+   558→                <feMergeNode in="blur1" />
+   559→                <feMergeNode in="SourceGraphic" />
+   560→              </feMerge>
+   561→            </filter>
+   562→            <filter id="wandGlowStrong" x="-150%" y="-150%" width="400%" height="400%">
+   563→              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1" />
+   564→              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+   565→              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur3" />
+   566→              <feMerge>
+   567→                <feMergeNode in="blur3" />
+   568→                <feMergeNode in="blur2" />
+   569→                <feMergeNode in="blur1" />
+   570→                <feMergeNode in="SourceGraphic" />
+   571→              </feMerge>
+   572→            </filter>
+   573→            <pattern id="woodGrain" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+   574→              <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(90,60,20,0.15)" strokeWidth="0.5" />
+   575→              <line x1="2" y1="0" x2="2" y2="4" stroke="rgba(60,40,10,0.1)" strokeWidth="0.3" />
+   576→            </pattern>
+   577→          </defs>
+   578→          {/* Ambient glow */}
+   579→          <circle className="wand-ambient" cx="14" cy="14" r="32" fill="url(#wandAmbientGlow)" />
+   580→          {/* Outer aura */}
+   581→          <circle className="wand-aura" cx="14" cy="14" r="20" fill="url(#wandOuterGlow)" />
+   582→          {/* Shaft shadow */}
+   583→          <line x1="16" y1="16" x2="72" y2="72" stroke="rgba(20,10,5,0.3)" strokeWidth="7" strokeLinecap="round" />
+   584→          {/* Main shaft */}
+   585→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaft)" strokeWidth="5.5" strokeLinecap="round" />
+   586→          {/* Wood grain overlay */}
+   587→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#woodGrain)" strokeWidth="5" strokeLinecap="round" />
+   588→          {/* Highlight stripe */}
+   589→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaftHighlight)" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+   590→          {/* Edge highlight */}
+   591→          <line x1="13.5" y1="13.5" x2="69" y2="69" stroke="rgba(232,196,122,0.3)" strokeWidth="1" strokeLinecap="round" />
+   592→          {/* Ferrule ring */}
+   593→          <circle cx="56" cy="56" r="4.5" fill="#5c3d14" stroke="#3d280a" strokeWidth="1" />
+   594→          <circle cx="56" cy="56" r="3" fill="#6b4f10" opacity="0.6" />
+   595→          {/* Handle shadow */}
+   596→          <line x1="62" y1="62" x2="82" y2="82" stroke="rgba(10,5,2,0.5)" strokeWidth="11" strokeLinecap="round" />
+   597→          {/* Handle */}
+   598→          <line x1="60" y1="60" x2="80" y2="80" stroke="url(#wandHandle)" strokeWidth="9" strokeLinecap="round" />
+   599→          {/* Handle texture */}
+   600→          <line x1="60" y1="60" x2="80" y2="80" stroke="rgba(100,70,30,0.3)" strokeWidth="3" strokeLinecap="round" />
+   601→          {/* Gold grip wraps */}
+   602→          <line x1="63" y1="63" x2="65" y2="65" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   603→          <line x1="68" y1="68" x2="70" y2="70" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   604→          <line x1="73" y1="73" x2="75" y2="75" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   605→          {/* Pommel */}
+   606→          <circle cx="82" cy="82" r="5" fill="#2a1b06" stroke="#1a0f08" strokeWidth="1" />
+   607→          <circle cx="82" cy="82" r="3.5" fill="#3d280a" opacity="0.7" />
+   608→          <circle cx="81" cy="81" r="1.5" fill="rgba(139,105,20,0.4)" />
+   609→          {/* Inner halo */}
+   610→          <circle className="wand-halo" cx="14" cy="14" r="8" fill="url(#wandTipCore)" filter="url(#wandGlow)" />
+   611→          {/* Core point */}
+   612→          <circle className="wand-core" cx="14" cy="14" r="3" fill="white" opacity="0.95" />
+   613→          {/* Star tip */}
+   614→          <path
+   615→            className="wand-star"
+   616→            d="M 14,4 L 15.5,10.5 L 22,11 L 17,14.5 L 18.5,21 L 14,17.5 L 9.5,21 L 11,14.5 L 6,11 L 12.5,10.5 Z"
+   617→            fill="url(#wandTipCore)"
+   618→            filter="url(#wandGlowStrong)"
+   619→          />
+   620→          {/* Sparkle dots */}
+   621→          <circle className="sparkle-dot sd-1" cx="4" cy="8" r="1.2" fill="#fff7ad" />
+   622→          <circle className="sparkle-dot sd-2" cx="24" cy="6" r="0.9" fill="#ffffff" />
+   623→          <circle className="sparkle-dot sd-3" cx="6" cy="22" r="1.0" fill="#ff8c72" />
+   624→          <circle className="sparkle-dot sd-4" cx="22" cy="20" r="0.7" fill="#f5c85b" />
+   625→          <circle className="sparkle-dot sd-5" cx="14" cy="0" r="0.8" fill="#ffffff" />
+   626→          <circle className="sparkle-dot sd-6" cx="0" cy="14" r="0.6" fill="#ffe066" />
+   627→          <circle className="sparkle-dot sd-7" cx="28" cy="14" r="0.5" fill="#fff7ad" />
+   628→          <circle className="sparkle-dot sd-8" cx="8" cy="28" r="0.7" fill="#ff8c72" />
+   629→          {/* Magic rays */}
+   630→          <line className="magic-ray mr-1" x1="14" y1="14" x2="2" y2="2" stroke="rgba(255,240,180,0.3)" strokeWidth="0.5" />
+   631→          <line className="magic-ray mr-2" x1="14" y1="14" x2="26" y2="2" stroke="rgba(255,240,180,0.25)" strokeWidth="0.5" />
+   632→          <line className="magic-ray mr-3" x1="14" y1="14" x2="2" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   633→          <line className="magic-ray mr-4" x1="14" y1="14" x2="26" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   634→          {/* Hover ring */}
+   635→          <circle className="hover-ring" cx="14" cy="14" r="16" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
+   636→        </svg>
+   637→      </div>
+   638→
+   639→      {/* Frost blobs */}
+   640→      <div className="frost-blob frost-blob-1" aria-hidden="true" />
+   641→      <div className="frost-blob frost-blob-2" aria-hidden="true" />
+   642→      <div className="frost-blob frost-blob-3" aria-hidden="true" />
+   643→      <div className="frost-blob frost-blob-4" aria-hidden="true" />
+   644→      <div className="frost-blob frost-blob-5" aria-hidden="true" />
+   645→
+   646→      <canvas ref={canvasRef} className="sparkle-canvas" aria-hidden="true" />
+   647→
+   648→      <div className="stars-layer" aria-hidden="true">
+   649→        <span className="star star--1" />
+   650→        <span className="star star--2" />
+   651→        <span className="star star--3" />
+   652→        <span className="star star--4" />
+   653→        <span className="star star--5" />
+   654→        <span className="star star--6" />
+   655→        <span className="star star--7" />
+   656→        <span className="star star--8" />
+   657→        <span className="star star--9" />
+   658→        <span className="star star--10" />
+   659→        <span className="star star--11" />
+   660→        <span className="star star--12" />
+   661→      </div>
+   662→
+   663→      <main className="page-shell">
+   664→        <button
+   665→          ref={buttonRef}
+   666→          type="button"
+   667→          className="open-button"
+   668→          onClick={openWish}
+   669→          aria-haspopup="dialog"
+   670→          aria-expanded={isOpen}
+   671→          aria-controls="wishPopup"
+   672→        >
+   673→          <span className="button-glass" />
+   674→          <span className="button-light-orb orb-1" />
+   675→          <span className="button-light-orb orb-2" />
+   676→          <span className="button-light-orb orb-3" />
+   677→          <span className="button-glow-ring" />
+   678→          <span ref={buttonTextRef} className="button-text">Tap Here</span>
+   679→        </button>
+   680→      </main>
+   681→
+   682→      <section
+   683→        id="wishPopup"
+   684→        className={`wish-popup ${isOpen ? "open" : ""}`}
+   685→        aria-label="Birthday wish"
+   686→        aria-hidden={!isOpen}
+   687→        onClick={(e) => {
+   688→          if (e.target === e.currentTarget) closeWish();
+   689→        }}
+   690→      >
+   691→        <div
+   692→          className="popup-card"
+   693→          role="dialog"
+   694→          aria-modal="true"
+   695→          aria-labelledby="wishTitle"
+   696→        >
+   697→          <button
+   698→            type="button"
+   699→            className="close-button"
+   700→            onClick={closeWish}
+   701→            aria-label="Close birthday wish"
+   702→          >
+   703→            <svg
+   704→              width="14"
+   705→              height="14"
+   706→              viewBox="0 0 14 14"
+   707→              fill="none"
+   708→              stroke="currentColor"
+   709→              strokeWidth="2"
+   710→              strokeLinecap="round"
+   711→              aria-hidden="true"
+   712→            >
+   713→              <line x1="1" y1="1" x2="13" y2="13" />
+   714→              <line x1="13" y1="1" x2="1" y2="13" />
+   715→            </svg>
+   716→          </button>
+   717→
+   718→          <div className="cake-scene" aria-hidden="true">
+   719→            <div className="balloon balloon-one" />
+   720→            <div className="balloon balloon-two" />
+   721→            <div className="balloon balloon-three" />
+   722→            <div className="balloon balloon-four" />
+   723→            <div className="cake">
+   724→              <div className="candles">
+   725→                <span />
+   726→                <span />
+   727→                <span />
+   728→              </div>
+   729→              <div className="cake-top" />
+   730→              <div className="cake-mid" />
+   731→              <div className="cake-bottom" />
+   732→              <div className="plate" />
+   733→            </div>
+   734→            <div className="confetti-burst" />
+   735→          </div>
+   736→
+   737→          <div className="wish-copy">
+   738→            <h1 id="wishTitle" className="display-title reveal reveal--2">
+   739→              <span className="title-line">Happy Birthday</span>
+   740→              <span className="name-accent">Nuha</span>
+   741→            </h1>
+   742→            <p className="wish-note reveal reveal--3">
+   743→              I hope your day feels as beautiful as the way you make my world feel.
+   744→              You are my favorite smile, my soft place, and my sweetest reason to
+   745→              believe in magic. May this new year bring you peace, confidence,
+   746→              beautiful surprises, and everything your heart has been quietly
+   747→              wishing for. I will keep cheering for you, choosing you, and loving
+   748→              you in every little way I can.
+   749→            </p>
+   750→            <p className="signature reveal reveal--5">
+   751→              I&thinsp;♥&thinsp;U
+   752→            </p>
+   753→          </div>
+   754→        </div>
+   755→      </section>
+   756→
+   757→      <footer className="gift-footer">
+   758→        <div className="footer-box">
+   759→          <span className="footer-ornament footer-ornament-left">✦</span>
+   760→          <span className="footer-text">Made with <span className="heart-dot">♥</span> just for you</span>
+   761→          <span className="footer-ornament footer-ornament-right">✦</span>
+   762→        </div>
+   763→      </footer>
+   764→    </div>
+   765→  );
+   766→}
+   767→
