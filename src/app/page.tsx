@@ -193,6 +193,7 @@ export default function GiftPage() {
   const cursorRef = useRef<HTMLDivElement | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [showCake, setShowCake] = useState(false); // shows cake after Tap Here
   const [cutProgress, setCutProgress] = useState(0);
   const [isCutting, setIsCutting] = useState(false);
   const [isCutComplete, setIsCutComplete] = useState(false);
@@ -318,7 +319,7 @@ export default function GiftPage() {
       cakeArea.removeEventListener("touchmove", onTouchMove);
       cakeArea.removeEventListener("touchend", onTouchEnd);
     };
-  }, [isCutComplete]);
+  }, [isCutComplete, showCake]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -691,6 +692,23 @@ export default function GiftPage() {
       </div>
 
       <main className="page-shell">
+        {!showCake ? (
+          <button
+            type="button"
+            className="open-button"
+            onClick={() => setShowCake(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            aria-controls="wishPopup"
+          >
+            <span className="button-glass" />
+            <span className="button-light-orb orb-1" />
+            <span className="button-light-orb orb-2" />
+            <span className="button-light-orb orb-3" />
+            <span className="button-glow-ring" />
+            <span className="button-text">Tap Here</span>
+          </button>
+        ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
           {/* Header */}
           <div className="cut-header">
@@ -786,6 +804,7 @@ export default function GiftPage() {
             </div>
           </div>
         </div>
+        )}
       </main>
 
       <section
