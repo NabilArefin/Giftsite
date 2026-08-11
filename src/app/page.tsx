@@ -692,102 +692,104 @@ export default function GiftPage() {
 
       <main className="page-shell">
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
-          <div className="cut-instructions">
-            <p className="cut-title">Drag across the cake to cut it</p>
-            <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+          {/* Header */}
+          <div className="cut-header">
+            <h2 className="cut-header-title">Cake Time</h2>
+            <p className="cut-header-subtitle">Cut the cake and make a wish</p>
           </div>
 
-          <div
-            ref={cakeAreaRef}
-            className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
-          >
-            {/* Cut line visual */}
-            <div className="cut-line">
-              <div className="cut-line-fill" style={{ width: `${cutProgress * 100}%` }} />
-              <div className="cut-line-glow" style={{ left: `${cutProgress * 100}%` }} />
+          {/* Cake Card */}
+          <div className="cut-card">
+            <div className="cut-instructions">
+              <span className="cut-label">DRAG HERE</span>
+              <p className="cut-title">Drag across the cake to cut it</p>
+              <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
             </div>
 
-            {/* Cake SVG */}
-            <svg className="cut-cake-svg" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Plate */}
-              <ellipse cx="200" cy="272" rx="170" ry="18" fill="#e8d5c0" stroke="#d4b896" strokeWidth="2" />
-              <ellipse cx="200" cy="268" rx="155" ry="12" fill="#f5e6d3" />
+            <div
+              ref={cakeAreaRef}
+              className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
+            >
+              {/* Cut line visual */}
+              <div className="cut-line">
+                <div className="cut-line-fill" style={{ width: `${cutProgress * 100}%` }} />
+                <div className="cut-line-glow" style={{ left: `${cutProgress * 100}%` }} />
+              </div>
 
-              {/* Bottom layer */}
-              <rect x="60" y="200" width="280" height="68" rx="12" fill="#e8a0b0" />
-              <rect x="60" y="200" width="280" height="10" rx="5" fill="#f0b8c8" />
-              <rect x="60" y="200" width="280" height="68" rx="12" fill="url(#cakeBottomGrad)" />
-              {/* Bottom layer decorations */}
-              <circle cx="100" cy="234" r="4" fill="#f5c85b" opacity="0.7" />
-              <circle cx="150" cy="230" r="3" fill="#ff8c72" opacity="0.6" />
-              <circle cx="200" cy="236" r="4" fill="#f5c85b" opacity="0.7" />
-              <circle cx="250" cy="230" r="3" fill="#ff8c72" opacity="0.6" />
-              <circle cx="300" cy="234" r="4" fill="#f5c85b" opacity="0.7" />
+              {/* 3D Cake SVG */}
+              <svg className="cut-cake-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Plate shadow */}
+                <ellipse cx="160" cy="256" rx="130" ry="14" fill="rgba(0,0,0,0.08)" />
+                {/* Plate */}
+                <ellipse cx="160" cy="250" rx="125" ry="13" fill="#f5e6d3" stroke="#e8d5c0" strokeWidth="1.5" />
 
-              {/* Middle layer */}
-              <rect x="80" y="140" width="240" height="64" rx="10" fill="#f0c0d0" />
-              <rect x="80" y="140" width="240" height="8" rx="4" fill="#f8d0dc" />
-              <rect x="80" y="140" width="240" height="64" rx="10" fill="url(#cakeMidGrad)" />
-              {/* Mid layer decorations */}
-              <circle cx="120" cy="172" r="3" fill="#e34f6f" opacity="0.5" />
-              <circle cx="200" cy="174" r="3" fill="#e34f6f" opacity="0.5" />
-              <circle cx="280" cy="172" r="3" fill="#e34f6f" opacity="0.5" />
+                {/* Bottom tier - side */}
+                <path d="M55 185 L55 230 Q55 248 160 248 Q265 248 265 230 L265 185 Q265 203 160 203 Q55 203 55 185Z" fill="#d4567a" />
+                {/* Bottom tier - top ellipse */}
+                <ellipse cx="160" cy="185" rx="105" ry="18" fill="#e8688e" />
+                {/* Bottom tier - highlight */}
+                <ellipse cx="160" cy="183" rx="90" ry="12" fill="#f08aa4" opacity="0.4" />
+                {/* Bottom tier decorations */}
+                <circle cx="90" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
+                <circle cx="130" cy="215" r="2.5" fill="#fff" opacity="0.3" />
+                <circle cx="160" cy="218" r="3" fill="#f5c85b" opacity="0.6" />
+                <circle cx="190" cy="215" r="2.5" fill="#fff" opacity="0.3" />
+                <circle cx="230" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
 
-              {/* Top layer */}
-              <rect x="100" y="82" width="200" height="62" rx="8" fill="#f8d8e4" />
-              <rect x="100" y="82" width="200" height="7" rx="3.5" fill="#fff0f4" />
-              <rect x="100" y="82" width="200" height="62" rx="8" fill="url(#cakeTopGrad)" />
-              {/* Frosting drips */}
-              <path d="M110 82 Q115 95 110 105 Q108 98 110 82" fill="#fff0f4" opacity="0.8" />
-              <path d="M160 82 Q163 100 158 112 Q155 102 160 82" fill="#fff0f4" opacity="0.8" />
-              <path d="M200 82 Q203 95 198 108 Q195 98 200 82" fill="#fff0f4" opacity="0.8" />
-              <path d="M240 82 Q243 98 238 110 Q235 100 240 82" fill="#fff0f4" opacity="0.8" />
-              <path d="M290 82 Q293 92 288 102 Q285 95 290 82" fill="#fff0f4" opacity="0.8" />
+                {/* Top tier - side */}
+                <path d="M80 120 L80 180 Q80 198 160 198 Q240 198 240 180 L240 120 Q240 138 160 138 Q80 138 80 120Z" fill="#fff0f4" />
+                {/* Top tier - top ellipse */}
+                <ellipse cx="160" cy="120" rx="80" ry="15" fill="#fff5f8" />
+                {/* Top tier - frosting drips */}
+                <path d="M95 120 Q97 132 93 140 Q90 133 95 120" fill="#fff" opacity="0.7" />
+                <path d="M125 120 Q127 135 123 145 Q120 136 125 120" fill="#fff" opacity="0.7" />
+                <path d="M160 120 Q162 130 158 138 Q155 130 160 120" fill="#fff" opacity="0.7" />
+                <path d="M195 120 Q197 133 193 142 Q190 134 195 120" fill="#fff" opacity="0.7" />
+                <path d="M225 120 Q227 128 223 135 Q220 129 225 120" fill="#fff" opacity="0.7" />
+                {/* Top tier - shading */}
+                <ellipse cx="160" cy="118" rx="65" ry="9" fill="#fff" opacity="0.3" />
 
-              {/* Candles */}
-              <rect x="175" y="42" width="6" height="42" rx="3" fill="#f5c85b" />
-              <rect x="197" y="36" width="6" height="48" rx="3" fill="#e34f6f" />
-              <rect x="219" y="42" width="6" height="42" rx="3" fill="#7b61ff" />
-              {/* Flames */}
-              <ellipse cx="178" cy="38" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="178" cy="36" rx="2.5" ry="5" fill="#fff7ad" />
-              <ellipse cx="200" cy="32" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="200" cy="30" rx="2.5" ry="5" fill="#fff7ad" />
-              <ellipse cx="222" cy="38" rx="5" ry="8" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="222" cy="36" rx="2.5" ry="5" fill="#fff7ad" />
+                {/* Candles */}
+                <rect x="148" y="75" width="5" height="47" rx="2.5" fill="#f5c85b" />
+                <rect x="157" y="70" width="5" height="52" rx="2.5" fill="#e34f6f" />
+                <rect x="166" y="75" width="5" height="47" rx="2.5" fill="#7b61ff" />
+                {/* Flames */}
+                <ellipse cx="150.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+                <ellipse cx="150.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
+                <ellipse cx="159.5" cy="66" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+                <ellipse cx="159.5" cy="64" rx="2" ry="4" fill="#fff7ad" />
+                <ellipse cx="168.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+                <ellipse cx="168.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
 
-              {/* Gradients */}
-              <defs>
-                <linearGradient id="cakeBottomGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f0b8c8" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#d08098" stopOpacity="0.3" />
-                </linearGradient>
-                <linearGradient id="cakeMidGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f8d0dc" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#e0a0b8" stopOpacity="0.3" />
-                </linearGradient>
-                <linearGradient id="cakeTopGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#fff0f4" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#f0c0d0" stopOpacity="0.3" />
-                </linearGradient>
-              </defs>
-            </svg>
+                {/* Sprinkles on top tier */}
+                <rect x="110" y="115" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(30 112 116)" />
+                <rect x="135" y="112" width="4" height="1.5" rx="0.75" fill="#7b61ff" opacity="0.5" transform="rotate(-20 137 113)" />
+                <rect x="180" y="113" width="4" height="1.5" rx="0.75" fill="#f5c85b" opacity="0.5" transform="rotate(45 182 114)" />
+                <rect x="205" y="116" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(-35 207 117)" />
+              </svg>
 
-            {/* Cut zone highlight overlay */}
-            <div className="cut-zone-highlight" />
+              {/* Cut zone highlight overlay */}
+              <div className="cut-zone-highlight" />
 
-            {/* Cake split animation (appears when cut is complete) */}
-            <div className="cake-split-left" style={{ transform: isCutComplete ? "translateX(-30px) rotate(-3deg)" : "translateX(0)" }} />
-            <div className="cake-split-right" style={{ transform: isCutComplete ? "translateX(30px) rotate(3deg)" : "translateX(0)" }} />
-          </div>
-
-          {/* Progress bar */}
-          <div className="cut-progress-container">
-            <div className="cut-progress-bar">
-              <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
-              <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 20}%` }} />
+              {/* Cake split animation */}
+              <div className="cake-split-left" style={{ transform: isCutComplete ? "translateX(-25px) rotate(-2deg)" : "translateX(0)" }} />
+              <div className="cake-split-right" style={{ transform: isCutComplete ? "translateX(25px) rotate(2deg)" : "translateX(0)" }} />
             </div>
-            <span className="cut-progress-text">{Math.round(cutProgress * 100)}%</span>
+
+            {/* Progress bar */}
+            <div className="cut-progress-section">
+              <span className="cut-progress-label">Cut Progress</span>
+              <div className="cut-progress-bar">
+                <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+                <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+              </div>
+              <span className="cut-progress-status">
+                {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
+                {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
+                {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
+                {cutProgress >= 1 && " · Complete!"}
+              </span>
+            </div>
           </div>
         </div>
       </main>
