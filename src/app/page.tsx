@@ -208,7 +208,7 @@ export default function GiftPage() {
     const cakeArea = cakeAreaRef.current;
     if (!cakeArea) return;
 
-    const SEGMENTS = 40; // divide cake width into segments
+    const SEGMENTS = 20; // divide cake width into segments (lower = easier to cut)
     cutTrackRef.current = new Array(SEGMENTS).fill(0);
 
     const getProgress = () => {
@@ -222,9 +222,9 @@ export default function GiftPage() {
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
-      // Check if pointer is within the cut zone (middle band of cake)
-      const cutZoneTop = rect.height * 0.35;
-      const cutZoneBottom = rect.height * 0.65;
+      // Check if pointer is within the cut zone (wider band for easier cutting)
+      const cutZoneTop = rect.height * 0.25;
+      const cutZoneBottom = rect.height * 0.75;
       if (y < cutZoneTop || y > cutZoneBottom) return;
       if (x < 0 || x > rect.width) return;
 
@@ -262,8 +262,8 @@ export default function GiftPage() {
     const onMouseDown = (e: MouseEvent) => {
       const rect = cakeArea.getBoundingClientRect();
       const y = e.clientY - rect.top;
-      const cutZoneTop = rect.height * 0.35;
-      const cutZoneBottom = rect.height * 0.65;
+      const cutZoneTop = rect.height * 0.25;
+      const cutZoneBottom = rect.height * 0.75;
       if (y >= cutZoneTop && y <= cutZoneBottom) {
         isDraggingRef.current = true;
         handleMove(e.clientX, e.clientY);
@@ -283,8 +283,8 @@ export default function GiftPage() {
       const touch = e.touches[0];
       const rect = cakeArea.getBoundingClientRect();
       const y = touch.clientY - rect.top;
-      const cutZoneTop = rect.height * 0.35;
-      const cutZoneBottom = rect.height * 0.65;
+      const cutZoneTop = rect.height * 0.25;
+      const cutZoneBottom = rect.height * 0.75;
       if (y >= cutZoneTop && y <= cutZoneBottom) {
         isDraggingRef.current = true;
         handleMove(touch.clientX, touch.clientY);
@@ -710,12 +710,6 @@ export default function GiftPage() {
               ref={cakeAreaRef}
               className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
             >
-              {/* Cut line visual */}
-              <div className="cut-line">
-                <div className="cut-line-fill" style={{ width: `${cutProgress * 100}%` }} />
-                <div className="cut-line-glow" style={{ left: `${cutProgress * 100}%` }} />
-              </div>
-
               {/* 3D Cake SVG */}
               <svg className="cut-cake-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
                 {/* Plate shadow */}
