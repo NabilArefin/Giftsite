@@ -804,6 +804,13 @@ export default function GiftPage() {
             </svg>
           </button>
 
+          <div className="wish-balloons" aria-hidden="true">
+            <div className="balloon balloon-left-one" />
+            <div className="balloon balloon-left-two" />
+            <div className="balloon balloon-right-one" />
+            <div className="balloon balloon-right-two" />
+          </div>
+
           <div className="wish-copy">
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               <span className="title-line">Happy Birthday</span>

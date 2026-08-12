@@ -1424,6 +1424,70 @@
   background: #1a7aaa;
 }
 
+/* Wish card balloons - 2 left, 2 right */
+.wish-balloons {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.balloon-left-one {
+  background: radial-gradient(at 35% 30%, #ffffff73 0%, #ffffff14 40%, #0000 65%), radial-gradient(#e84060 0%, #c42848 50%, #9a1e38 100%);
+  width: 52px;
+  height: 64px;
+  top: 8px;
+  left: 4%;
+  box-shadow: inset -6px -8px 14px #00000026, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
+}
+
+.balloon-left-one:before {
+  background: #9a1e38;
+}
+
+.balloon-left-two {
+  background: radial-gradient(at 35% 30%, #ffffff80 0%, #ffffff1a 40%, #0000 65%), radial-gradient(#f5c85b 0%, #e0a830 50%, #c89020 100%);
+  width: 44px;
+  height: 54px;
+  animation: 4.6s ease-in-out -2.8s infinite floatGentle;
+  top: 32px;
+  left: 14%;
+  box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
+}
+
+.balloon-left-two:before {
+  background: #c89020;
+}
+
+.balloon-right-one {
+  background: radial-gradient(at 35% 30%, #ffffff73 0%, #ffffff14 40%, #0000 65%), radial-gradient(#6dd4a8 0%, #3db880 50%, #2a9a68 100%);
+  width: 52px;
+  height: 64px;
+  animation-delay: -1.4s;
+  top: 12px;
+  right: 4%;
+  box-shadow: inset -6px -8px 14px #0000001f, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
+}
+
+.balloon-right-one:before {
+  background: #2a9a68;
+}
+
+.balloon-right-two {
+  background: radial-gradient(at 35% 30%, #ffffff80 0%, #ffffff1a 40%, #0000 65%), radial-gradient(#4db8e0 0%, #2898c8 50%, #1a7aaa 100%);
+  width: 44px;
+  height: 54px;
+  animation: 4.6s ease-in-out -1.2s infinite floatGentle;
+  top: 36px;
+  right: 14%;
+  box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
+}
+
+.balloon-right-two:before {
+  background: #1a7aaa;
+}
+
 .cake {
   z-index: 2;
   filter: drop-shadow(0 12px 32px #3e203038);
