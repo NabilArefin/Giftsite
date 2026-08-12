@@ -460,6 +460,178 @@
   transform: scale(0.995);
 }
 
+/* CSS Cake visual inside the cut area (reuses .cake-top, .cake-mid, .cake-bottom, .plate, .candles) */
+.cut-cake-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 20px #3e203038);
+}
+
+.cut-cake-visual .candles {
+  z-index: 2;
+  gap: 18px;
+  display: flex;
+  position: absolute;
+  bottom: 62%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.cut-cake-visual .candles span {
+  background: linear-gradient(90deg, #c8a090 0%, #e8d0c4 18%, #f5e8e0 35%, #fff5f0 50%, #f5e8e0 65%, #e0c8bc 82%, #c8a090 100%);
+  border-radius: 3px 3px 4px 4px;
+  width: 9px;
+  height: 34px;
+  position: relative;
+  box-shadow: inset -1px 0 2px #00000014, inset 1px 0 2px #0000000a, 0 1px 3px #00000026;
+}
+
+.cut-cake-visual .candles span:after {
+  content: "";
+  background: linear-gradient(#f5e8e0 0%, #e8d0c4 100%);
+  border-radius: 3px 3px 2px 2px;
+  width: 4px;
+  height: 10px;
+  position: absolute;
+  top: 6px;
+  left: -1.5px;
+  box-shadow: inset 0 1px 1px #fff6;
+}
+
+.cut-cake-visual .candles span:before {
+  content: "";
+  filter: blur(.3px);
+  background: radial-gradient(at 50% 75%, #6ea8e0 0%, #8eb8e8 8%, #fff 14%, #fffde0 20%, #fff176 30%, #ffbf37 45%, #ff8a3c 60%, #ff46144d 80%, #0000 100%);
+  width: 18px;
+  height: 28px;
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translate(-50%);
+  animation: 1.8s ease-in-out infinite flicker;
+}
+
+.cut-cake-visual .cake-top,
+.cut-cake-visual .cake-mid,
+.cut-cake-visual .cake-bottom {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.cut-cake-visual .cake-top {
+  background: linear-gradient(#f5e0b8 0%, #e8c88a 18%, #d4a96a 45%, #c49555 75%, #b88545 100%);
+  border-radius: 14px 14px 10px 10px;
+  width: 42%;
+  height: 40px;
+  bottom: 52%;
+  box-shadow: inset 0 2px 4px #ffffff4d, inset 0 -3px 6px #0000001a, inset -4px 0 8px #0000000d, inset 4px 0 8px #0000000d, 0 4px #b88545, 0 6px #a07038;
+}
+
+.cut-cake-visual .cake-top:before {
+  content: "";
+  background: linear-gradient(#fffdf7 0%, #faf0e0 50%, #f0dfc5 100%);
+  border-radius: 14px 14px 4px 4px;
+  height: 12px;
+  position: absolute;
+  top: 0;
+  left: -3px;
+  right: -3px;
+  box-shadow: inset 0 1px 2px #ffffffe6, inset 0 -1px 2px #c8aa7833;
+}
+
+.cut-cake-visual .cake-top:after {
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(6px 14px at 18% 0, #faf0e0 70%, #0000 71%), radial-gradient(8px 20px at 42% 0, #faf0e0 70%, #0000 71%), radial-gradient(5px 10px at 65% 0, #faf0e0 70%, #0000 71%), radial-gradient(7px 16px at 86% 0, #faf0e0 70%, #0000 71%);
+  height: 100%;
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+}
+
+.cut-cake-visual .cake-mid {
+  background: linear-gradient(#8b6340 0%, #6b4226 18%, #5a3520 45%, #4a2c1a 75%, #3e2215 100%);
+  border-radius: 16px 16px 12px 12px;
+  width: 56%;
+  height: 56px;
+  bottom: 26%;
+  box-shadow: inset 0 2px 4px #ffffff1f, inset 0 -4px 8px #00000026, inset -5px 0 10px #00000014, inset 5px 0 10px #00000014, 0 5px #3e2215, 0 8px #2c1507;
+}
+
+.cut-cake-visual .cake-mid:before {
+  content: "";
+  background: linear-gradient(#5c3317 0%, #4a2810 50%, #3a1e0a 100%);
+  border-radius: 16px 16px 4px 4px;
+  height: 14px;
+  position: absolute;
+  top: 0;
+  left: -4px;
+  right: -4px;
+  box-shadow: inset 0 1px 2px #ffffff1a, inset 0 -1px 2px #0000004d;
+}
+
+.cut-cake-visual .cake-mid:after {
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(7px 18px at 12% 0, #4a2810 70%, #0000 71%), radial-gradient(9px 24px at 30% 0, #4a2810 70%, #0000 71%), radial-gradient(6px 12px at 52% 0, #4a2810 70%, #0000 71%), radial-gradient(8px 20px at 72% 0, #4a2810 70%, #0000 71%), radial-gradient(7px 16px at 90% 0, #4a2810 70%, #0000 71%);
+  height: 100%;
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+}
+
+.cut-cake-visual .cake-bottom {
+  background: linear-gradient(#a04040 0%, #8b2e2e 18%, #7a2525 45%, #6a1e1e 75%, #5c1818 100%);
+  border-radius: 18px 18px 14px 14px;
+  width: 70%;
+  height: 60px;
+  bottom: 2%;
+  box-shadow: inset 0 2px 4px #ffffff1f, inset 0 -5px 10px #00000026, inset -6px 0 12px #00000012, inset 6px 0 12px #00000012, 0 6px #5c1818, 0 10px #4a1212;
+}
+
+.cut-cake-visual .cake-bottom:before {
+  content: "";
+  background: linear-gradient(#fffef8 0%, #faf2e0 50%, #f0e0c8 100%);
+  border-radius: 18px 18px 4px 4px;
+  height: 14px;
+  position: absolute;
+  top: 0;
+  left: -4px;
+  right: -4px;
+  box-shadow: inset 0 1px 2px #ffffffe6, inset 0 -1px 2px #c8aa7826;
+}
+
+.cut-cake-visual .cake-bottom:after {
+  content: "";
+  pointer-events: none;
+  background: radial-gradient(8px 22px at 10% 0, #faf2e0 70%, #0000 71%), radial-gradient(10px 28px at 28% 0, #faf2e0 70%, #0000 71%), radial-gradient(6px 14px at 48% 0, #faf2e0 70%, #0000 71%), radial-gradient(9px 24px at 66% 0, #faf2e0 70%, #0000 71%), radial-gradient(7px 18px at 82% 0, #faf2e0 70%, #0000 71%), radial-gradient(8px 20px at 95% 0, #faf2e0 70%, #0000 71%);
+  height: 100%;
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+}
+
+.cut-cake-visual .plate {
+  background: linear-gradient(#fffffff2 0%, #f8f4f8eb 40%, #f0ecf0e0 100%);
+  border-radius: 50%;
+  width: 76%;
+  height: 20px;
+  position: absolute;
+  bottom: -8%;
+  left: 50%;
+  transform: translate(-50%);
+  box-shadow: 0 12px 24px #3e203038, 0 4px 8px #3e20301f, inset 0 1px 2px #fff9, inset 0 -2px 4px #0000000a, 0 0 0 1px #c8b4be4d;
+}
+
 .cut-cake-svg {
   position: absolute;
   inset: 0;

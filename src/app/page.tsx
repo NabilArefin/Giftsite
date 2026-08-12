@@ -728,6 +728,19 @@ export default function GiftPage() {
               ref={cakeAreaRef}
               className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
             >
+              {/* CSS Cake (from wish card) */}
+              <div className="cut-cake-visual">
+                <div className="candles">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <div className="cake-top" />
+                <div className="cake-mid" />
+                <div className="cake-bottom" />
+                <div className="plate" />
+              </div>
+
               {/* Cut zone highlight overlay */}
               <div className="cut-zone-highlight" />
 
