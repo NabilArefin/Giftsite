@@ -639,13 +639,13 @@
   height: 100%;
 }
 
-/* Cut zone highlight - the swipable area across the middle */
+/* Cut zone highlight - the swipable area across the cake */
 .cut-zone-highlight {
   position: absolute;
-  top: 25%;
-  bottom: 25%;
-  left: 8%;
-  right: 8%;
+  top: 18%;
+  bottom: 10%;
+  left: 12%;
+  right: 12%;
   border: 2px dashed rgba(139, 26, 74, 0.3);
   border-radius: 10px;
   background: linear-gradient(90deg,
@@ -1073,9 +1073,9 @@
   scrollbar-width: none;
   border: 1px solid #fff6;
   border-radius: 32px;
-  grid-template-columns: minmax(260px, .78fr) minmax(0, 1fr);
+  grid-template-columns: minmax(80px, .22fr) minmax(0, 1fr) minmax(80px, .22fr);
   align-items: center;
-  gap: clamp(1rem, 4vw, 3rem);
+  gap: clamp(.5rem, 2vw, 1.5rem);
   padding: clamp(1rem, 4vw, 2.8rem);
   display: grid;
   position: relative;
@@ -1424,21 +1424,27 @@
   background: #1a7aaa;
 }
 
-/* Wish card balloons - 2 left, 2 right */
-.wish-balloons {
+/* Wish card balloons - left and right side columns */
+.wish-balloons-left,
+.wish-balloons-right {
   position: relative;
-  width: 100%;
-  height: 120px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 40px;
   pointer-events: none;
+}
+
+.wish-balloons-left .balloon,
+.wish-balloons-right .balloon {
+  position: relative;
 }
 
 .balloon-left-one {
   background: radial-gradient(at 35% 30%, #ffffff73 0%, #ffffff14 40%, #0000 65%), radial-gradient(#e84060 0%, #c42848 50%, #9a1e38 100%);
   width: 52px;
   height: 64px;
-  top: 8px;
-  left: 4%;
   box-shadow: inset -6px -8px 14px #00000026, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
 }
 
@@ -1451,8 +1457,6 @@
   width: 44px;
   height: 54px;
   animation: 4.6s ease-in-out -2.8s infinite floatGentle;
-  top: 32px;
-  left: 14%;
   box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
 }
 
@@ -1465,8 +1469,6 @@
   width: 52px;
   height: 64px;
   animation-delay: -1.4s;
-  top: 12px;
-  right: 4%;
   box-shadow: inset -6px -8px 14px #0000001f, inset 4px 6px 10px #ffffff14, 0 4px 12px #0000001a;
 }
 
@@ -1479,8 +1481,6 @@
   width: 44px;
   height: 54px;
   animation: 4.6s ease-in-out -1.2s infinite floatGentle;
-  top: 36px;
-  right: 14%;
   box-shadow: inset -5px -7px 12px #0000001f, inset 3px 5px 8px #ffffff14, 0 3px 10px #00000014;
 }
 
@@ -1874,8 +1874,8 @@
     overflow: hidden;
   }
   .popup-card {
-    grid-template-columns: 1fr;
-    gap: .5rem;
+    grid-template-columns: minmax(50px, .15fr) minmax(0, 1fr) minmax(50px, .15fr);
+    gap: .3rem;
   }
   .cake-scene,
   .wish-cake-scene {

@@ -209,12 +209,24 @@ export default function GiftPage() {
     const cakeArea = cakeAreaRef.current;
     if (!cakeArea) return;
 
-    const SEGMENTS = 20; // divide cake width into segments (lower = easier to cut)
+    const SEGMENTS = 20; // divide cake width into segments
     cutTrackRef.current = new Array(SEGMENTS).fill(0);
+    let maxContiguous = 0; // track longest continuous streak
 
     const getProgress = () => {
-      const covered = cutTrackRef.current.filter((v) => v > 0).length;
-      return covered / SEGMENTS;
+      // Find the longest contiguous run of cut segments
+      let current = 0;
+      let best = 0;
+      for (let i = 0; i < SEGMENTS; i++) {
+        if (cutTrackRef.current[i] > 0) {
+          current++;
+          if (current > best) best = current;
+        } else {
+          current = 0;
+        }
+      }
+      // If the contiguous line covers 60%+ of the width, it's a full cut
+      return Math.min(1, (best / SEGMENTS) / 0.6);
     };
 
     const handleMove = (clientX: number, clientY: number) => {
@@ -223,9 +235,9 @@ export default function GiftPage() {
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
-      // Check if pointer is within the cut zone (wider band for easier cutting)
-      const cutZoneTop = rect.height * 0.25;
-      const cutZoneBottom = rect.height * 0.75;
+      // Check if pointer is within the cut zone (covers the cake body)
+      const cutZoneTop = rect.height * 0.18;
+      const cutZoneBottom = rect.height * 0.90;
       if (y < cutZoneTop || y > cutZoneBottom) return;
       if (x < 0 || x > rect.width) return;
 
@@ -804,11 +816,9 @@ export default function GiftPage() {
             </svg>
           </button>
 
-          <div className="wish-balloons" aria-hidden="true">
+          <div className="wish-balloons-left" aria-hidden="true">
             <div className="balloon balloon-left-one" />
             <div className="balloon balloon-left-two" />
-            <div className="balloon balloon-right-one" />
-            <div className="balloon balloon-right-two" />
           </div>
 
           <div className="wish-copy">
@@ -827,6 +837,11 @@ export default function GiftPage() {
             <p className="signature reveal reveal--5">
               I&thinsp;♥&thinsp;U
             </p>
+          </div>
+
+          <div className="wish-balloons-right" aria-hidden="true">
+            <div className="balloon balloon-right-one" />
+            <div className="balloon balloon-right-two" />
           </div>
         </div>
       </section>
