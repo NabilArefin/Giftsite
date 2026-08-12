@@ -211,10 +211,10 @@ export default function GiftPage() {
 
     const SEGMENTS = 20; // divide cake width into segments
     cutTrackRef.current = new Array(SEGMENTS).fill(0);
-    let maxContiguous = 0; // track longest continuous streak
 
     const getProgress = () => {
       // Find the longest contiguous run of cut segments
+      // A single line covering just 40%+ of the width = full cut
       let current = 0;
       let best = 0;
       for (let i = 0; i < SEGMENTS; i++) {
@@ -225,8 +225,7 @@ export default function GiftPage() {
           current = 0;
         }
       }
-      // If the contiguous line covers 60%+ of the width, it's a full cut
-      return Math.min(1, (best / SEGMENTS) / 0.6);
+      return Math.min(1, (best / SEGMENTS) / 0.4);
     };
 
     const handleMove = (clientX: number, clientY: number) => {
@@ -722,20 +721,14 @@ export default function GiftPage() {
           </button>
         ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
-          {/* Header */}
-          <div className="cut-header">
-            <h2 className="cut-header-title">Cake Time</h2>
-            <p className="cut-header-subtitle">Cut the cake and make a wish</p>
-          </div>
-
-          {/* Cake Card */}
-          <div className="cut-card">
-            <div className="cut-instructions">
-              <span className="cut-label">DRAG HERE</span>
-              <p className="cut-title">Drag across the cake to cut it</p>
-              <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+          <div className="cut-main-card">
+            {/* Header */}
+            <div className="cut-header">
+              <h2 className="cut-header-title">Cake Time</h2>
+              <p className="cut-header-subtitle">Cut the cake and make a wish</p>
             </div>
 
+            {/* Cake area */}
             <div
               ref={cakeAreaRef}
               className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
@@ -755,25 +748,29 @@ export default function GiftPage() {
 
               {/* Cut zone highlight overlay */}
               <div className="cut-zone-highlight" />
-
-              {/* Cake split animation */}
-              <div className="cake-split-left" style={{ transform: isCutComplete ? "translateX(-25px) rotate(-2deg)" : "translateX(0)" }} />
-              <div className="cake-split-right" style={{ transform: isCutComplete ? "translateX(25px) rotate(2deg)" : "translateX(0)" }} />
             </div>
 
-            {/* Progress bar */}
-            <div className="cut-progress-section">
-              <span className="cut-progress-label">Cut Progress</span>
-              <div className="cut-progress-bar">
-                <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
-                <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+            {/* Instructions & Progress in a separate frame */}
+            <div className="cut-info-frame">
+              <div className="cut-instructions">
+                <span className="cut-label">DRAG HERE</span>
+                <p className="cut-title">Drag across the cake to cut it</p>
+                <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
               </div>
-              <span className="cut-progress-status">
-                {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
-                {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
-                {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
-                {cutProgress >= 1 && " · Complete!"}
-              </span>
+
+              <div className="cut-progress-section">
+                <span className="cut-progress-label">Cut Progress</span>
+                <div className="cut-progress-bar">
+                  <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+                  <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+                </div>
+                <span className="cut-progress-status">
+                  {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
+                  {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
+                  {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
+                  {cutProgress >= 1 && " · Complete!"}
+                </span>
+              </div>
             </div>
           </div>
         </div>
