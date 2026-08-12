@@ -1,0 +1,895 @@
+     1→"use client";
+     2→
+     3→import { useCallback, useEffect, useRef, useState } from "react";
+     4→import "./gift.css";
+     5→
+     6→type ParticleShape = "heart" | "dot" | "star" | "circle" | "square";
+     7→
+     8→type Particle = {
+     9→  x: number;
+    10→  y: number;
+    11→  vx: number;
+    12→  vy: number;
+    13→  size: number;
+    14→  life: number;
+    15→  age: number;
+    16→  color: string;
+    17→  shape: ParticleShape;
+    18→  spin: number;
+    19→  gravity: number;
+    20→  wobble: number;
+    21→  wobbleSpeed: number;
+    22→};
+    23→
+    24→type CreateOptions = {
+    25→  burst?: boolean;
+    26→  trail?: boolean;
+    27→  confetti?: boolean;
+    28→};
+    29→
+    30→const PALETTE = ["#e34f6f", "#ff8c72", "#f5c85b", "#9ed7c1", "#7b61ff", "#ffffff"];
+    31→const AMBIENT_PALETTE = PALETTE.slice(0, PALETTE.length - 1); // exclude white for ambient
+    32→
+    33→function createParticle(x: number, y: number, opts: CreateOptions = {}): Particle {
+    34→  const isBurst = opts.burst || false;
+    35→  const isTrail = opts.trail || false;
+    36→  const isConfetti = opts.confetti || false;
+    37→
+    38→  const angle = Math.random() * Math.PI * 2;
+    39→  let speed: number;
+    40→  if (isBurst) {
+    41→    speed = 2.4 + Math.random() * 4.6;
+    42→  } else if (isTrail) {
+    43→    speed = 0.3 + Math.random() * 0.8;
+    44→  } else {
+    45→    speed = 0.4 + Math.random() * 1.4;
+    46→  }
+    47→
+    48→  const shapes: ParticleShape[] = isConfetti
+    49→    ? ["star", "circle", "square"]
+    50→    : ["heart", "dot"];
+    51→
+    52→  return {
+    53→    x,
+    54→    y,
+    55→    vx: isConfetti
+    56→      ? Math.cos(angle) * (1 + Math.random() * 3)
+    57→      : Math.cos(angle) * speed,
+    58→    vy: isConfetti
+    59→      ? Math.sin(angle) * (1 + Math.random() * 3) - 2
+    60→      : Math.sin(angle) * speed - (isBurst ? 2 : 0),
+    61→    size: isBurst
+    62→      ? 5 + Math.random() * 7
+    63→      : isTrail
+    64→        ? 1.5 + Math.random() * 3
+    65→        : isConfetti
+    66→          ? 3 + Math.random() * 5
+    67→          : 2 + Math.random() * 4,
+    68→    life: isBurst
+    69→      ? 90 + Math.random() * 50
+    70→      : isTrail
+    71→        ? 40 + Math.random() * 40
+    72→        : isConfetti
+    73→          ? 100 + Math.random() * 80
+    74→          : 140 + Math.random() * 120,
+    75→    age: 0,
+    76→    color: isConfetti
+    77→      ? PALETTE[Math.floor(Math.random() * PALETTE.length)]
+    78→      : AMBIENT_PALETTE[Math.floor(Math.random() * AMBIENT_PALETTE.length)],
+    79→    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    80→    spin: Math.random() * Math.PI,
+    81→    gravity: isConfetti ? 0.06 : isTrail ? 0.01 : 0.018,
+    82→    wobble: isConfetti ? 0.08 : 0,
+    83→    wobbleSpeed: 0.05 + Math.random() * 0.05,
+    84→  };
+    85→}
+    86→
+    87→function drawHeart(
+    88→  ctx: CanvasRenderingContext2D,
+    89→  x: number,
+    90→  y: number,
+    91→  size: number,
+    92→  color: string,
+    93→  alpha: number,
+    94→  spin: number,
+    95→) {
+    96→  ctx.save();
+    97→  ctx.translate(x, y);
+    98→  ctx.rotate(spin);
+    99→  ctx.scale(size / 18, size / 18);
+   100→  ctx.globalAlpha = alpha;
+   101→  ctx.fillStyle = color;
+   102→  ctx.beginPath();
+   103→  ctx.moveTo(0, 6);
+   104→  ctx.bezierCurveTo(-16, -4, -8, -18, 0, -9);
+   105→  ctx.bezierCurveTo(8, -18, 16, -4, 0, 6);
+   106→  ctx.fill();
+   107→  ctx.restore();
+   108→}
+   109→
+   110→function drawStar(
+   111→  ctx: CanvasRenderingContext2D,
+   112→  x: number,
+   113→  y: number,
+   114→  size: number,
+   115→  color: string,
+   116→  alpha: number,
+   117→  spin: number,
+   118→) {
+   119→  ctx.save();
+   120→  ctx.translate(x, y);
+   121→  ctx.rotate(spin);
+   122→  ctx.globalAlpha = alpha;
+   123→  ctx.fillStyle = color;
+   124→  ctx.beginPath();
+   125→  for (let i = 0; i < 5; i++) {
+   126→    const outerAngle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+   127→    const innerAngle = outerAngle + (2 * Math.PI) / 10;
+   128→    if (i === 0) {
+   129→      ctx.moveTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   130→    } else {
+   131→      ctx.lineTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   132→    }
+   133→    ctx.lineTo(
+   134→      Math.cos(innerAngle) * size * 0.45,
+   135→      Math.sin(innerAngle) * size * 0.45,
+   136→    );
+   137→  }
+   138→  ctx.closePath();
+   139→  ctx.fill();
+   140→  ctx.restore();
+   141→}
+   142→
+   143→function drawSquare(
+   144→  ctx: CanvasRenderingContext2D,
+   145→  x: number,
+   146→  y: number,
+   147→  size: number,
+   148→  color: string,
+   149→  alpha: number,
+   150→  spin: number,
+   151→) {
+   152→  ctx.save();
+   153→  ctx.translate(x, y);
+   154→  ctx.rotate(spin);
+   155→  ctx.globalAlpha = alpha;
+   156→  ctx.fillStyle = color;
+   157→  ctx.fillRect(-size / 2, -size / 2, size, size);
+   158→  ctx.restore();
+   159→}
+   160→
+   161→function drawParticle(ctx: CanvasRenderingContext2D, p: Particle) {
+   162→  const alpha = Math.max(0, 1 - p.age / p.life);
+   163→  if (alpha <= 0) return;
+   164→
+   165→  switch (p.shape) {
+   166→    case "heart":
+   167→      drawHeart(ctx, p.x, p.y, p.size * 2.2, p.color, alpha, p.spin);
+   168→      break;
+   169→    case "star":
+   170→      drawStar(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   171→      break;
+   172→    case "square":
+   173→      drawSquare(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   174→      break;
+   175→    default: {
+   176→      ctx.globalAlpha = alpha;
+   177→      ctx.fillStyle = p.color;
+   178→      ctx.beginPath();
+   179→      ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2);
+   180→      ctx.fill();
+   181→      ctx.globalAlpha = 1;
+   182→    }
+   183→  }
+   184→}
+   185→
+   186→export default function GiftPage() {
+   187→  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+   188→  const particlesRef = useRef<Particle[]>([]);
+   189→  const rafRef = useRef<number | null>(null);
+   190→  const sizeRef = useRef({ w: 0, h: 0 });
+   191→  const mouseRef = useRef({ x: -100, y: -100, last: 0 });
+   192→  const reducedRef = useRef(false);
+   193→  const cursorRef = useRef<HTMLDivElement | null>(null);
+   194→
+   195→  const [isOpen, setIsOpen] = useState(false);
+   196→  const [showCake, setShowCake] = useState(false); // shows cake after Tap Here
+   197→  const [cutProgress, setCutProgress] = useState(0);
+   198→  const [isCutting, setIsCutting] = useState(false);
+   199→  const [isCutComplete, setIsCutComplete] = useState(false);
+   200→
+   201→  const cakeAreaRef = useRef<HTMLDivElement | null>(null);
+   202→  const cutTrackRef = useRef<number[]>([]); // tracks horizontal coverage
+   203→  const isDraggingRef = useRef(false);
+   204→
+   205→
+   206→  // ── Cake cutting interaction ──
+   207→  // Track drag across the cake to compute cut progress
+   208→  useEffect(() => {
+   209→    const cakeArea = cakeAreaRef.current;
+   210→    if (!cakeArea) return;
+   211→
+   212→    const SEGMENTS = 20; // divide cake width into segments (lower = easier to cut)
+   213→    cutTrackRef.current = new Array(SEGMENTS).fill(0);
+   214→
+   215→    const getProgress = () => {
+   216→      const covered = cutTrackRef.current.filter((v) => v > 0).length;
+   217→      return covered / SEGMENTS;
+   218→    };
+   219→
+   220→    const handleMove = (clientX: number, clientY: number) => {
+   221→      if (!isDraggingRef.current || isCutComplete) return;
+   222→      const rect = cakeArea.getBoundingClientRect();
+   223→      const x = clientX - rect.left;
+   224→      const y = clientY - rect.top;
+   225→
+   226→      // Check if pointer is within the cut zone (wider band for easier cutting)
+   227→      const cutZoneTop = rect.height * 0.25;
+   228→      const cutZoneBottom = rect.height * 0.75;
+   229→      if (y < cutZoneTop || y > cutZoneBottom) return;
+   230→      if (x < 0 || x > rect.width) return;
+   231→
+   232→      // Mark segment as cut
+   233→      const segIndex = Math.floor((x / rect.width) * SEGMENTS);
+   234→      if (segIndex >= 0 && segIndex < SEGMENTS) {
+   235→        cutTrackRef.current[segIndex] = 1;
+   236→      }
+   237→
+   238→      const progress = getProgress();
+   239→      setCutProgress(progress);
+   240→      setIsCutting(true);
+   241→
+   242→      if (progress >= 0.95 && !isCutComplete) {
+   243→        setCutProgress(1);
+   244→        setIsCutComplete(true);
+   245→        // Trigger the wish after a short delay for the split animation
+   246→        setTimeout(() => {
+   247→          setIsOpen(true);
+   248→          // Burst hearts and confetti inline
+   249→          const { w, h } = sizeRef.current;
+   250→          const cx = w / 2;
+   251→          for (let i = 0; i < 80; i++) {
+   252→            particlesRef.current.push(createParticle(cx, h * 0.38, { burst: true }));
+   253→          }
+   254→          window.setTimeout(() => {
+   255→            for (let i = 0; i < 60; i++) {
+   256→              particlesRef.current.push(createParticle(cx, h * 0.35, { confetti: true }));
+   257→            }
+   258→          }, 200);
+   259→        }, 800);
+   260→      }
+   261→    };
+   262→
+   263→    const onMouseDown = (e: MouseEvent) => {
+   264→      const rect = cakeArea.getBoundingClientRect();
+   265→      const y = e.clientY - rect.top;
+   266→      const cutZoneTop = rect.height * 0.25;
+   267→      const cutZoneBottom = rect.height * 0.75;
+   268→      if (y >= cutZoneTop && y <= cutZoneBottom) {
+   269→        isDraggingRef.current = true;
+   270→        handleMove(e.clientX, e.clientY);
+   271→      }
+   272→    };
+   273→
+   274→    const onMouseMove = (e: MouseEvent) => {
+   275→      handleMove(e.clientX, e.clientY);
+   276→    };
+   277→
+   278→    const onMouseUp = () => {
+   279→      isDraggingRef.current = false;
+   280→      setIsCutting(false);
+   281→    };
+   282→
+   283→    const onTouchStart = (e: TouchEvent) => {
+   284→      const touch = e.touches[0];
+   285→      const rect = cakeArea.getBoundingClientRect();
+   286→      const y = touch.clientY - rect.top;
+   287→      const cutZoneTop = rect.height * 0.25;
+   288→      const cutZoneBottom = rect.height * 0.75;
+   289→      if (y >= cutZoneTop && y <= cutZoneBottom) {
+   290→        isDraggingRef.current = true;
+   291→        handleMove(touch.clientX, touch.clientY);
+   292→      }
+   293→    };
+   294→
+   295→    const onTouchMove = (e: TouchEvent) => {
+   296→      if (!isDraggingRef.current) return;
+   297→      e.preventDefault();
+   298→      const touch = e.touches[0];
+   299→      handleMove(touch.clientX, touch.clientY);
+   300→    };
+   301→
+   302→    const onTouchEnd = () => {
+   303→      isDraggingRef.current = false;
+   304→      setIsCutting(false);
+   305→    };
+   306→
+   307→    cakeArea.addEventListener("mousedown", onMouseDown);
+   308→    window.addEventListener("mousemove", onMouseMove);
+   309→    window.addEventListener("mouseup", onMouseUp);
+   310→    cakeArea.addEventListener("touchstart", onTouchStart, { passive: true });
+   311→    cakeArea.addEventListener("touchmove", onTouchMove, { passive: false });
+   312→    cakeArea.addEventListener("touchend", onTouchEnd);
+   313→
+   314→    return () => {
+   315→      cakeArea.removeEventListener("mousedown", onMouseDown);
+   316→      window.removeEventListener("mousemove", onMouseMove);
+   317→      window.removeEventListener("mouseup", onMouseUp);
+   318→      cakeArea.removeEventListener("touchstart", onTouchStart);
+   319→      cakeArea.removeEventListener("touchmove", onTouchMove);
+   320→      cakeArea.removeEventListener("touchend", onTouchEnd);
+   321→    };
+   322→  }, [isCutComplete, showCake]);
+   323→
+   324→  useEffect(() => {
+   325→    const canvas = canvasRef.current;
+   326→    if (!canvas) return;
+   327→    const ctx = canvas.getContext("2d");
+   328→    if (!ctx) return;
+   329→
+   330→    const reducedMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+   331→    reducedRef.current = reducedMotionMQ.matches;
+   332→
+   333→    const resize = () => {
+   334→      const ratio = window.devicePixelRatio || 1;
+   335→      const w = window.innerWidth;
+   336→      const h = window.innerHeight;
+   337→      canvas.width = Math.floor(w * ratio);
+   338→      canvas.height = Math.floor(h * ratio);
+   339→      canvas.style.width = `${w}px`;
+   340→      canvas.style.height = `${h}px`;
+   341→      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+   342→      sizeRef.current = { w, h };
+   343→    };
+   344→
+   345→    resize();
+   346→    window.addEventListener("resize", resize);
+   347→
+   348→    const animate = () => {
+   349→      const { w, h } = sizeRef.current;
+   350→      ctx.clearRect(0, 0, w, h);
+   351→
+   352→      // Ambient particles (rising from bottom)
+   353→      if (
+   354→        !reducedRef.current &&
+   355→        particlesRef.current.length < 100 &&
+   356→        Math.random() > 0.62
+   357→      ) {
+   358→        particlesRef.current.push(createParticle(Math.random() * w, h + 20));
+   359→      }
+   360→
+   361→      particlesRef.current = particlesRef.current.filter((p) => p.age < p.life);
+   362→
+   363→      for (const p of particlesRef.current) {
+   364→        p.age += 1;
+   365→        p.x += p.vx + Math.sin(p.age * p.wobbleSpeed) * p.wobble;
+   366→        p.y += p.vy;
+   367→        p.vy += p.gravity;
+   368→        p.spin += 0.02;
+   369→        drawParticle(ctx, p);
+   370→      }
+   371→
+   372→      rafRef.current = requestAnimationFrame(animate);
+   373→    };
+   374→
+   375→    animate();
+   376→
+   377→    const onMotionChange = (e: MediaQueryListEvent) => {
+   378→      reducedRef.current = e.matches;
+   379→    };
+   380→    reducedMotionMQ.addEventListener("change", onMotionChange);
+   381→
+   382→    const onMouseMove = (e: MouseEvent) => {
+   383→      mouseRef.current.x = e.clientX;
+   384→      mouseRef.current.y = e.clientY;
+   385→      if (reducedRef.current) return;
+   386→      const now = performance.now();
+   387→      if (now - mouseRef.current.last < 40) return; // throttle ~25fps
+   388→      mouseRef.current.last = now;
+   389→      particlesRef.current.push(
+   390→        createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
+   391→      );
+   392→    };
+   393→
+   394→    window.addEventListener("mousemove", onMouseMove);
+   395→
+   396→    return () => {
+   397→      window.removeEventListener("resize", resize);
+   398→      window.removeEventListener("mousemove", onMouseMove);
+   399→      reducedMotionMQ.removeEventListener("change", onMotionChange);
+   400→      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+   401→    };
+   402→  }, []);
+   403→
+   404→  const burstHearts = useCallback(() => {
+   405→    const { w, h } = sizeRef.current;
+   406→    const cx = w / 2;
+   407→    const cy = h * 0.38;
+   408→    for (let i = 0; i < 80; i++) {
+   409→      particlesRef.current.push(createParticle(cx, cy, { burst: true }));
+   410→    }
+   411→  }, []);
+   412→
+   413→  const burstConfetti = useCallback(() => {
+   414→    const { w, h } = sizeRef.current;
+   415→    const cx = w / 2;
+   416→    const cy = h * 0.35;
+   417→    for (let i = 0; i < 60; i++) {
+   418→      particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
+   419→    }
+   420→  }, []);
+   421→
+   422→  const openWish = useCallback(() => {
+   423→    setIsOpen(true);
+   424→    burstHearts();
+   425→    window.setTimeout(burstConfetti, 200);
+   426→  }, [burstHearts, burstConfetti]);
+   427→
+   428→  const closeWish = useCallback(() => setIsOpen(false), []);
+   429→
+   430→  useEffect(() => {
+   431→    const onKey = (e: KeyboardEvent) => {
+   432→      if (e.key === "Escape" && isOpen) closeWish();
+   433→    };
+   434→    window.addEventListener("keydown", onKey);
+   435→    return () => window.removeEventListener("keydown", onKey);
+   436→  }, [isOpen, closeWish]);
+   437→
+   438→  // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
+   439→  useEffect(() => {
+   440→    const cursor = cursorRef.current;
+   441→    if (!cursor) return;
+   442→
+   443→    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+   444→      cursor.style.display = "none";
+   445→      return;
+   446→    }
+   447→
+   448→    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   449→    const target = { x: -200, y: -200 };
+   450→    const current = { x: -200, y: -200 };
+   451→    const velocity = { x: 0, y: 0 };
+   452→    let hasMoved = false;
+   453→    let raf = 0;
+   454→
+   455→    const onMove = (e: MouseEvent) => {
+   456→      target.x = e.clientX;
+   457→      target.y = e.clientY;
+   458→      if (!hasMoved) {
+   459→        hasMoved = true;
+   460→        current.x = e.clientX;
+   461→        current.y = e.clientY;
+   462→        cursor.classList.remove("is-hidden");
+   463→      }
+   464→      const el = e.target as HTMLElement | null;
+   465→      if (el && el.closest("button, a, [role='button']")) {
+   466→        cursor.classList.add("is-active");
+   467→      } else {
+   468→        cursor.classList.remove("is-active");
+   469→      }
+   470→    };
+   471→    const onDown = () => {
+   472→      cursor.classList.add("is-pressed");
+   473→      // Emit sparkle burst on click from wand tip position
+   474→      if (!reduced) {
+   475→        const tipX = current.x;
+   476→        const tipY = current.y;
+   477→        for (let i = 0; i < 6; i++) {
+   478→          particlesRef.current.push(createParticle(tipX, tipY, { trail: true }));
+   479→        }
+   480→      }
+   481→    };
+   482→    const onUp = () => cursor.classList.remove("is-pressed");
+   483→    const onLeave = () => cursor.classList.add("is-hidden");
+   484→    const onEnter = () => {
+   485→      if (hasMoved) cursor.classList.remove("is-hidden");
+   486→    };
+   487→
+   488→    const tick = () => {
+   489→      if (reduced) {
+   490→        current.x = target.x;
+   491→        current.y = target.y;
+   492→      } else {
+   493→        const prevX = current.x;
+   494→        const prevY = current.y;
+   495→        current.x += (target.x - current.x) * 0.28;
+   496→        current.y += (target.y - current.y) * 0.28;
+   497→        velocity.x = current.x - prevX;
+   498→        velocity.y = current.y - prevY;
+   499→      }
+   500→
+   501→      // Velocity-based tilt: wand leans in direction of movement
+   502→      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+   503→      let tiltAngle = -8; // default rest angle
+   504→      if (speed > 1.5) {
+   505→        const moveAngle = Math.atan2(velocity.y, velocity.x) * (180 / Math.PI);
+   506→        // Map movement direction to wand tilt (subtle lean)
+   507→        tiltAngle = -8 + velocity.x * 0.8;
+   508→        tiltAngle = Math.max(-30, Math.min(20, tiltAngle));
+   509→      }
+   510→      cursor.style.transform = `translate3d(${current.x - 7}px, ${
+   511→        current.y - 7
+   512→      }px, 0)`;
+   513→      // Apply velocity tilt via CSS custom property
+   514→      cursor.style.setProperty("--wand-tilt", `${tiltAngle}deg`);
+   515→      raf = requestAnimationFrame(tick);
+   516→    };
+   517→
+   518→    window.addEventListener("mousemove", onMove, { passive: true });
+   519→    window.addEventListener("mousedown", onDown);
+   520→    window.addEventListener("mouseup", onUp);
+   521→    document.addEventListener("mouseleave", onLeave);
+   522→    document.addEventListener("mouseenter", onEnter);
+   523→    raf = requestAnimationFrame(tick);
+   524→
+   525→    return () => {
+   526→      window.removeEventListener("mousemove", onMove);
+   527→      window.removeEventListener("mousedown", onDown);
+   528→      window.removeEventListener("mouseup", onUp);
+   529→      document.removeEventListener("mouseleave", onLeave);
+   530→      document.removeEventListener("mouseenter", onEnter);
+   531→      cancelAnimationFrame(raf);
+   532→    };
+   533→  }, []);
+   534→
+   535→  return (
+   536→    <div className={`gift-root ${isOpen ? "wish-is-open" : ""}`}>
+   537→      <div ref={cursorRef} className="magic-cursor is-hidden" aria-hidden="true">
+   538→        <svg className="magic-wand" width="48" height="48" viewBox="0 0 90 90" fill="none">
+   539→          <defs>
+   540→            <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
+   541→              <stop offset="0%" stopColor="#d4a056" />
+   542→              <stop offset="15%" stopColor="#b8863a" />
+   543→              <stop offset="30%" stopColor="#a0722e" />
+   544→              <stop offset="50%" stopColor="#7a5420" />
+   545→              <stop offset="70%" stopColor="#5c3d14" />
+   546→              <stop offset="85%" stopColor="#3d280a" />
+   547→              <stop offset="100%" stopColor="#2a1b06" />
+   548→            </linearGradient>
+   549→            <linearGradient id="wandShaftHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+   550→              <stop offset="0%" stopColor="#e8c47a" />
+   551→              <stop offset="40%" stopColor="#c9a050" />
+   552→              <stop offset="100%" stopColor="#8b6914" />
+   553→            </linearGradient>
+   554→            <linearGradient id="wandHandle" x1="0%" y1="0%" x2="100%" y2="100%">
+   555→              <stop offset="0%" stopColor="#4a3520" />
+   556→              <stop offset="30%" stopColor="#3a2818" />
+   557→              <stop offset="60%" stopColor="#2a1c10" />
+   558→              <stop offset="100%" stopColor="#1a0f08" />
+   559→            </linearGradient>
+   560→            <linearGradient id="handleWrap" x1="0%" y1="0%" x2="100%" y2="100%">
+   561→              <stop offset="0%" stopColor="#8b6914" />
+   562→              <stop offset="50%" stopColor="#6b4f10" />
+   563→              <stop offset="100%" stopColor="#4a3520" />
+   564→            </linearGradient>
+   565→            <radialGradient id="wandTipCore" cx="50%" cy="50%" r="50%">
+   566→              <stop offset="0%" stopColor="#ffffff" />
+   567→              <stop offset="30%" stopColor="#fffbe6" />
+   568→              <stop offset="55%" stopColor="#ffe066" />
+   569→              <stop offset="75%" stopColor="#ffb347" />
+   570→              <stop offset="100%" stopColor="#ff8c72" stopOpacity="0.6" />
+   571→            </radialGradient>
+   572→            <radialGradient id="wandOuterGlow" cx="50%" cy="50%" r="50%">
+   573→              <stop offset="0%" stopColor="rgba(255,240,180,0.6)" />
+   574→              <stop offset="30%" stopColor="rgba(255,200,91,0.35)" />
+   575→              <stop offset="55%" stopColor="rgba(255,140,114,0.15)" />
+   576→              <stop offset="80%" stopColor="rgba(227,79,111,0.06)" />
+   577→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   578→            </radialGradient>
+   579→            <radialGradient id="wandAmbientGlow" cx="50%" cy="50%" r="50%">
+   580→              <stop offset="0%" stopColor="rgba(245,200,91,0.25)" />
+   581→              <stop offset="40%" stopColor="rgba(255,140,114,0.1)" />
+   582→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   583→            </radialGradient>
+   584→            <filter id="wandGlow" x="-100%" y="-100%" width="300%" height="300%">
+   585→              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+   586→              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
+   587→              <feMerge>
+   588→                <feMergeNode in="blur2" />
+   589→                <feMergeNode in="blur1" />
+   590→                <feMergeNode in="SourceGraphic" />
+   591→              </feMerge>
+   592→            </filter>
+   593→            <filter id="wandGlowStrong" x="-150%" y="-150%" width="400%" height="400%">
+   594→              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1" />
+   595→              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+   596→              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur3" />
+   597→              <feMerge>
+   598→                <feMergeNode in="blur3" />
+   599→                <feMergeNode in="blur2" />
+   600→                <feMergeNode in="blur1" />
+   601→                <feMergeNode in="SourceGraphic" />
+   602→              </feMerge>
+   603→            </filter>
+   604→            <pattern id="woodGrain" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+   605→              <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(90,60,20,0.15)" strokeWidth="0.5" />
+   606→              <line x1="2" y1="0" x2="2" y2="4" stroke="rgba(60,40,10,0.1)" strokeWidth="0.3" />
+   607→            </pattern>
+   608→          </defs>
+   609→          {/* Ambient glow */}
+   610→          <circle className="wand-ambient" cx="14" cy="14" r="32" fill="url(#wandAmbientGlow)" />
+   611→          {/* Outer aura */}
+   612→          <circle className="wand-aura" cx="14" cy="14" r="20" fill="url(#wandOuterGlow)" />
+   613→          {/* Shaft shadow */}
+   614→          <line x1="16" y1="16" x2="72" y2="72" stroke="rgba(20,10,5,0.3)" strokeWidth="7" strokeLinecap="round" />
+   615→          {/* Main shaft */}
+   616→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaft)" strokeWidth="5.5" strokeLinecap="round" />
+   617→          {/* Wood grain overlay */}
+   618→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#woodGrain)" strokeWidth="5" strokeLinecap="round" />
+   619→          {/* Highlight stripe */}
+   620→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaftHighlight)" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+   621→          {/* Edge highlight */}
+   622→          <line x1="13.5" y1="13.5" x2="69" y2="69" stroke="rgba(232,196,122,0.3)" strokeWidth="1" strokeLinecap="round" />
+   623→          {/* Ferrule ring */}
+   624→          <circle cx="56" cy="56" r="4.5" fill="#5c3d14" stroke="#3d280a" strokeWidth="1" />
+   625→          <circle cx="56" cy="56" r="3" fill="#6b4f10" opacity="0.6" />
+   626→          {/* Handle shadow */}
+   627→          <line x1="62" y1="62" x2="82" y2="82" stroke="rgba(10,5,2,0.5)" strokeWidth="11" strokeLinecap="round" />
+   628→          {/* Handle */}
+   629→          <line x1="60" y1="60" x2="80" y2="80" stroke="url(#wandHandle)" strokeWidth="9" strokeLinecap="round" />
+   630→          {/* Handle texture */}
+   631→          <line x1="60" y1="60" x2="80" y2="80" stroke="rgba(100,70,30,0.3)" strokeWidth="3" strokeLinecap="round" />
+   632→          {/* Gold grip wraps */}
+   633→          <line x1="63" y1="63" x2="65" y2="65" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   634→          <line x1="68" y1="68" x2="70" y2="70" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   635→          <line x1="73" y1="73" x2="75" y2="75" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   636→          {/* Pommel */}
+   637→          <circle cx="82" cy="82" r="5" fill="#2a1b06" stroke="#1a0f08" strokeWidth="1" />
+   638→          <circle cx="82" cy="82" r="3.5" fill="#3d280a" opacity="0.7" />
+   639→          <circle cx="81" cy="81" r="1.5" fill="rgba(139,105,20,0.4)" />
+   640→          {/* Inner halo */}
+   641→          <circle className="wand-halo" cx="14" cy="14" r="8" fill="url(#wandTipCore)" filter="url(#wandGlow)" />
+   642→          {/* Core point */}
+   643→          <circle className="wand-core" cx="14" cy="14" r="3" fill="white" opacity="0.95" />
+   644→          {/* Star tip */}
+   645→          <path
+   646→            className="wand-star"
+   647→            d="M 14,4 L 15.5,10.5 L 22,11 L 17,14.5 L 18.5,21 L 14,17.5 L 9.5,21 L 11,14.5 L 6,11 L 12.5,10.5 Z"
+   648→            fill="url(#wandTipCore)"
+   649→            filter="url(#wandGlowStrong)"
+   650→          />
+   651→          {/* Sparkle dots */}
+   652→          <circle className="sparkle-dot sd-1" cx="4" cy="8" r="1.2" fill="#fff7ad" />
+   653→          <circle className="sparkle-dot sd-2" cx="24" cy="6" r="0.9" fill="#ffffff" />
+   654→          <circle className="sparkle-dot sd-3" cx="6" cy="22" r="1.0" fill="#ff8c72" />
+   655→          <circle className="sparkle-dot sd-4" cx="22" cy="20" r="0.7" fill="#f5c85b" />
+   656→          <circle className="sparkle-dot sd-5" cx="14" cy="0" r="0.8" fill="#ffffff" />
+   657→          <circle className="sparkle-dot sd-6" cx="0" cy="14" r="0.6" fill="#ffe066" />
+   658→          <circle className="sparkle-dot sd-7" cx="28" cy="14" r="0.5" fill="#fff7ad" />
+   659→          <circle className="sparkle-dot sd-8" cx="8" cy="28" r="0.7" fill="#ff8c72" />
+   660→          {/* Magic rays */}
+   661→          <line className="magic-ray mr-1" x1="14" y1="14" x2="2" y2="2" stroke="rgba(255,240,180,0.3)" strokeWidth="0.5" />
+   662→          <line className="magic-ray mr-2" x1="14" y1="14" x2="26" y2="2" stroke="rgba(255,240,180,0.25)" strokeWidth="0.5" />
+   663→          <line className="magic-ray mr-3" x1="14" y1="14" x2="2" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   664→          <line className="magic-ray mr-4" x1="14" y1="14" x2="26" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   665→          {/* Hover ring */}
+   666→          <circle className="hover-ring" cx="14" cy="14" r="16" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
+   667→        </svg>
+   668→      </div>
+   669→
+   670→      {/* Frost blobs */}
+   671→      <div className="frost-blob frost-blob-1" aria-hidden="true" />
+   672→      <div className="frost-blob frost-blob-2" aria-hidden="true" />
+   673→      <div className="frost-blob frost-blob-3" aria-hidden="true" />
+   674→      <div className="frost-blob frost-blob-4" aria-hidden="true" />
+   675→      <div className="frost-blob frost-blob-5" aria-hidden="true" />
+   676→
+   677→      <canvas ref={canvasRef} className="sparkle-canvas" aria-hidden="true" />
+   678→
+   679→      <div className="stars-layer" aria-hidden="true">
+   680→        <span className="star star--1" />
+   681→        <span className="star star--2" />
+   682→        <span className="star star--3" />
+   683→        <span className="star star--4" />
+   684→        <span className="star star--5" />
+   685→        <span className="star star--6" />
+   686→        <span className="star star--7" />
+   687→        <span className="star star--8" />
+   688→        <span className="star star--9" />
+   689→        <span className="star star--10" />
+   690→        <span className="star star--11" />
+   691→        <span className="star star--12" />
+   692→      </div>
+   693→
+   694→      <main className="page-shell">
+   695→        {!showCake ? (
+   696→          <button
+   697→            type="button"
+   698→            className="open-button"
+   699→            onClick={() => setShowCake(true)}
+   700→            aria-haspopup="dialog"
+   701→            aria-expanded={isOpen}
+   702→            aria-controls="wishPopup"
+   703→          >
+   704→            <span className="button-glass" />
+   705→            <span className="button-light-orb orb-1" />
+   706→            <span className="button-light-orb orb-2" />
+   707→            <span className="button-light-orb orb-3" />
+   708→            <span className="button-glow-ring" />
+   709→            <span className="button-text">Tap Here</span>
+   710→          </button>
+   711→        ) : (
+   712→        <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
+   713→          {/* Header */}
+   714→          <div className="cut-header">
+   715→            <h2 className="cut-header-title">Cake Time</h2>
+   716→            <p className="cut-header-subtitle">Cut the cake and make a wish</p>
+   717→          </div>
+   718→
+   719→          {/* Cake Card */}
+   720→          <div className="cut-card">
+   721→            <div className="cut-instructions">
+   722→              <span className="cut-label">DRAG HERE</span>
+   723→              <p className="cut-title">Drag across the cake to cut it</p>
+   724→              <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+   725→            </div>
+   726→
+   727→            <div
+   728→              ref={cakeAreaRef}
+   729→              className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
+   730→            >
+   731→              {/* 3D Cake SVG */}
+   732→              <svg className="cut-cake-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+   733→                {/* Plate shadow */}
+   734→                <ellipse cx="160" cy="256" rx="130" ry="14" fill="rgba(0,0,0,0.08)" />
+   735→                {/* Plate */}
+   736→                <ellipse cx="160" cy="250" rx="125" ry="13" fill="#f5e6d3" stroke="#e8d5c0" strokeWidth="1.5" />
+   737→
+   738→                {/* Bottom tier - side */}
+   739→                <path d="M55 185 L55 230 Q55 248 160 248 Q265 248 265 230 L265 185 Q265 203 160 203 Q55 203 55 185Z" fill="#d4567a" />
+   740→                {/* Bottom tier - top ellipse */}
+   741→                <ellipse cx="160" cy="185" rx="105" ry="18" fill="#e8688e" />
+   742→                {/* Bottom tier - highlight */}
+   743→                <ellipse cx="160" cy="183" rx="90" ry="12" fill="#f08aa4" opacity="0.4" />
+   744→                {/* Bottom tier decorations */}
+   745→                <circle cx="90" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
+   746→                <circle cx="130" cy="215" r="2.5" fill="#fff" opacity="0.3" />
+   747→                <circle cx="160" cy="218" r="3" fill="#f5c85b" opacity="0.6" />
+   748→                <circle cx="190" cy="215" r="2.5" fill="#fff" opacity="0.3" />
+   749→                <circle cx="230" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
+   750→
+   751→                {/* Top tier - side */}
+   752→                <path d="M80 120 L80 180 Q80 198 160 198 Q240 198 240 180 L240 120 Q240 138 160 138 Q80 138 80 120Z" fill="#fff0f4" />
+   753→                {/* Top tier - top ellipse */}
+   754→                <ellipse cx="160" cy="120" rx="80" ry="15" fill="#fff5f8" />
+   755→                {/* Top tier - frosting drips */}
+   756→                <path d="M95 120 Q97 132 93 140 Q90 133 95 120" fill="#fff" opacity="0.7" />
+   757→                <path d="M125 120 Q127 135 123 145 Q120 136 125 120" fill="#fff" opacity="0.7" />
+   758→                <path d="M160 120 Q162 130 158 138 Q155 130 160 120" fill="#fff" opacity="0.7" />
+   759→                <path d="M195 120 Q197 133 193 142 Q190 134 195 120" fill="#fff" opacity="0.7" />
+   760→                <path d="M225 120 Q227 128 223 135 Q220 129 225 120" fill="#fff" opacity="0.7" />
+   761→                {/* Top tier - shading */}
+   762→                <ellipse cx="160" cy="118" rx="65" ry="9" fill="#fff" opacity="0.3" />
+   763→
+   764→                {/* Candles */}
+   765→                <rect x="148" y="75" width="5" height="47" rx="2.5" fill="#f5c85b" />
+   766→                <rect x="157" y="70" width="5" height="52" rx="2.5" fill="#e34f6f" />
+   767→                <rect x="166" y="75" width="5" height="47" rx="2.5" fill="#7b61ff" />
+   768→                {/* Flames */}
+   769→                <ellipse cx="150.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+   770→                <ellipse cx="150.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
+   771→                <ellipse cx="159.5" cy="66" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+   772→                <ellipse cx="159.5" cy="64" rx="2" ry="4" fill="#fff7ad" />
+   773→                <ellipse cx="168.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
+   774→                <ellipse cx="168.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
+   775→
+   776→                {/* Sprinkles on top tier */}
+   777→                <rect x="110" y="115" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(30 112 116)" />
+   778→                <rect x="135" y="112" width="4" height="1.5" rx="0.75" fill="#7b61ff" opacity="0.5" transform="rotate(-20 137 113)" />
+   779→                <rect x="180" y="113" width="4" height="1.5" rx="0.75" fill="#f5c85b" opacity="0.5" transform="rotate(45 182 114)" />
+   780→                <rect x="205" y="116" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(-35 207 117)" />
+   781→              </svg>
+   782→
+   783→              {/* Cut zone highlight overlay */}
+   784→              <div className="cut-zone-highlight" />
+   785→
+   786→              {/* Cake split animation */}
+   787→              <div className="cake-split-left" style={{ transform: isCutComplete ? "translateX(-25px) rotate(-2deg)" : "translateX(0)" }} />
+   788→              <div className="cake-split-right" style={{ transform: isCutComplete ? "translateX(25px) rotate(2deg)" : "translateX(0)" }} />
+   789→            </div>
+   790→
+   791→            {/* Progress bar */}
+   792→            <div className="cut-progress-section">
+   793→              <span className="cut-progress-label">Cut Progress</span>
+   794→              <div className="cut-progress-bar">
+   795→                <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+   796→                <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+   797→              </div>
+   798→              <span className="cut-progress-status">
+   799→                {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
+   800→                {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
+   801→                {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
+   802→                {cutProgress >= 1 && " · Complete!"}
+   803→              </span>
+   804→            </div>
+   805→          </div>
+   806→        </div>
+   807→        )}
+   808→      </main>
+   809→
+   810→      <section
+   811→        id="wishPopup"
+   812→        className={`wish-popup ${isOpen ? "open" : ""}`}
+   813→        aria-label="Birthday wish"
+   814→        aria-hidden={!isOpen}
+   815→        onClick={(e) => {
+   816→          if (e.target === e.currentTarget) closeWish();
+   817→        }}
+   818→      >
+   819→        <div
+   820→          className="popup-card"
+   821→          role="dialog"
+   822→          aria-modal="true"
+   823→          aria-labelledby="wishTitle"
+   824→        >
+   825→          <button
+   826→            type="button"
+   827→            className="close-button"
+   828→            onClick={closeWish}
+   829→            aria-label="Close birthday wish"
+   830→          >
+   831→            <svg
+   832→              width="14"
+   833→              height="14"
+   834→              viewBox="0 0 14 14"
+   835→              fill="none"
+   836→              stroke="currentColor"
+   837→              strokeWidth="2"
+   838→              strokeLinecap="round"
+   839→              aria-hidden="true"
+   840→            >
+   841→              <line x1="1" y1="1" x2="13" y2="13" />
+   842→              <line x1="13" y1="1" x2="1" y2="13" />
+   843→            </svg>
+   844→          </button>
+   845→
+   846→          <div className="cake-scene" aria-hidden="true">
+   847→            <div className="balloon balloon-one" />
+   848→            <div className="balloon balloon-two" />
+   849→            <div className="balloon balloon-three" />
+   850→            <div className="balloon balloon-four" />
+   851→            <div className="cake">
+   852→              <div className="candles">
+   853→                <span />
+   854→                <span />
+   855→                <span />
+   856→              </div>
+   857→              <div className="cake-top" />
+   858→              <div className="cake-mid" />
+   859→              <div className="cake-bottom" />
+   860→              <div className="plate" />
+   861→            </div>
+   862→            <div className="confetti-burst" />
+   863→          </div>
+   864→
+   865→          <div className="wish-copy">
+   866→            <h1 id="wishTitle" className="display-title reveal reveal--2">
+   867→              <span className="title-line">Happy Birthday</span>
+   868→              <span className="name-accent">Nuha</span>
+   869→            </h1>
+   870→            <p className="wish-note reveal reveal--3">
+   871→              I hope your day feels as beautiful as the way you make my world feel.
+   872→              You are my favorite smile, my soft place, and my sweetest reason to
+   873→              believe in magic. May this new year bring you peace, confidence,
+   874→              beautiful surprises, and everything your heart has been quietly
+   875→              wishing for. I will keep cheering for you, choosing you, and loving
+   876→              you in every little way I can.
+   877→            </p>
+   878→            <p className="signature reveal reveal--5">
+   879→              I&thinsp;♥&thinsp;U
+   880→            </p>
+   881→          </div>
+   882→        </div>
+   883→      </section>
+   884→
+   885→      <footer className="gift-footer">
+   886→        <div className="footer-box">
+   887→          <span className="footer-ornament footer-ornament-left">✦</span>
+   888→          <span className="footer-text">Made with <span className="heart-dot">♥</span> just for you</span>
+   889→          <span className="footer-ornament footer-ornament-right">✦</span>
+   890→        </div>
+   891→      </footer>
+   892→    </div>
+   893→  );
+   894→}
+   895→
