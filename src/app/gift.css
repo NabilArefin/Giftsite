@@ -49,6 +49,19 @@
   position: fixed;
 }
 
+/* Hide 3 frost blobs on mobile to reduce GPU load */
+@media (max-width: 768px) {
+  .frost-blob {
+    filter: blur(60px);
+    opacity: .4;
+  }
+  .frost-blob-3,
+  .frost-blob-4,
+  .frost-blob-5 {
+    display: none;
+  }
+}
+
 .frost-blob-1 {
   background: #7b61ff4d;
   width: 45vmax;
@@ -377,11 +390,9 @@
 
 .cut-main-card {
   background: linear-gradient(145deg, #fffffff2, #fff7fced);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  backdrop-filter: blur(20px) saturate(1.4);
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 40px rgba(139, 26, 74, 0.1), 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px #ffffff80 inset;
+  box-shadow: 0 8px 40px rgba(139, 26, 74, 0.1), 0 2px 12px rgba(0, 0, 0, 0.04);
   padding: clamp(1.4rem, 3vw, 2.2rem);
   display: flex;
   flex-direction: column;
@@ -840,7 +851,6 @@
   cursor: pointer;
   transition: border-radius .35s var(--ease-expressive), transform .35s var(--ease-expressive), box-shadow .35s var(--ease-expressive), filter .2s ease;
   animation: pulseButton 1.8s var(--ease-expressive) infinite, colorShift 6s ease-in-out infinite;
-  -webkit-backdrop-filter: blur(2px);
   background-size: 300% 300%;
   border: 1.5px solid #ffffff40;
   border-radius: 48px;
@@ -1063,7 +1073,6 @@
 
 .wish-popup {
   z-index: 3;
-  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .42s var(--ease-expressive);
@@ -1081,11 +1090,10 @@
 }
 
 .popup-card {
-  background: linear-gradient(145deg, #fffffff2, #fff7fced), var(--surface);
+  background: linear-gradient(145deg, #fffffff6, #fff7fced), var(--surface);
   width: min(980px, 100%);
   max-height: calc(100vh - 1.5rem);
-  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset, 0 0 24px #7b61ff0a inset;
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset;
   transition: transform .48s var(--ease-spring), box-shadow .5s var(--ease-expressive);
   scrollbar-width: none;
   border: 1px solid #fff6;
@@ -1229,8 +1237,7 @@
 .wish-note {
   color: #3d2236;
   letter-spacing: .01em;
-  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.05);
-  background: radial-gradient(at 0 0, #ffdce666 0%, #0000 50%), radial-gradient(at 100% 100%, #ffe6d24d 0%, #0000 50%), radial-gradient(#ffffff59 0%, #0000 70%), linear-gradient(145deg, #fff6, #fff8fa40);
+  background: radial-gradient(at 0 0, #ffdce666 0%, #0000 50%), radial-gradient(at 100% 100%, #ffe6d24d 0%, #0000 50%), linear-gradient(145deg, #fff6, #fff8fa40);
   border: 1px solid #ffffff73;
   border-radius: 20px;
   margin: 0 0 1rem;
@@ -1709,7 +1716,6 @@
 }
 
 .footer-box {
-  -webkit-backdrop-filter: blur(12px);
   background: #ffffff59;
   border: 1px solid #e34f6f26;
   border-radius: 999px;
@@ -2254,6 +2260,80 @@
   to {
     transform: scale(1) rotate(360deg);
   }
+}
+
+/* ── Mobile Performance Optimizations ── */
+@media (max-width: 768px) {
+  /* Reduce expensive filter effects */
+  .gift-root {
+    background: linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
+  }
+
+  /* Simpler button animation on mobile */
+  .open-button {
+    animation: pulseButton 2.4s var(--ease-expressive) infinite;
+  }
+  .button-light-orb {
+    animation-duration: 4s;
+  }
+  .button-glow-ring {
+    animation: none;
+  }
+
+  /* Reduce star particles */
+  .star {
+    animation-duration: 6s;
+  }
+  .star:nth-child(n+7) {
+    display: none;
+  }
+
+  /* Simpler balloon animations */
+  .balloon {
+    animation-duration: 6s;
+  }
+  .balloon:after {
+    height: 50px;
+  }
+
+  /* Reduce canvas overlay complexity */
+  .sparkle-canvas {
+    opacity: 0.6;
+  }
+
+  /* Simpler popup transitions */
+  .popup-card {
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .wish-popup {
+    transition: opacity .25s ease;
+  }
+
+  /* Smaller footer */
+  .gift-footer {
+    padding: .4rem 0;
+  }
+  .footer-box {
+    padding: .3rem .8rem;
+    font-size: .7rem;
+  }
+}
+
+/* GPU acceleration hints for animated elements */
+.balloon,
+.open-button,
+.popup-card,
+.cut-main-card,
+.magic-cursor,
+.frost-blob {
+  will-change: transform;
+}
+
+/* Contain layout for stable sections */
+.cut-main-card,
+.popup-card,
+.wish-copy {
+  contain: layout style;
 }
 
 @media (prefers-reduced-motion: reduce) {

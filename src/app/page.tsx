@@ -342,7 +342,9 @@ export default function GiftPage() {
     reducedRef.current = reducedMotionMQ.matches;
 
     const resize = () => {
-      const ratio = window.devicePixelRatio || 1;
+      const rawRatio = window.devicePixelRatio || 1;
+      // Cap pixel ratio at 2 to save GPU on high-DPI mobile
+      const ratio = Math.min(rawRatio, 2);
       const w = window.innerWidth;
       const h = window.innerHeight;
       canvas.width = Math.floor(w * ratio);
@@ -360,11 +362,14 @@ export default function GiftPage() {
       const { w, h } = sizeRef.current;
       ctx.clearRect(0, 0, w, h);
 
-      // Ambient particles (rising from bottom)
+      // Ambient particles (rising from bottom) — fewer on mobile
+      const isMobile = w < 768;
+      const maxParticles = isMobile ? 30 : 80;
+      const spawnChance = isMobile ? 0.88 : 0.62;
       if (
         !reducedRef.current &&
-        particlesRef.current.length < 100 &&
-        Math.random() > 0.62
+        particlesRef.current.length < maxParticles &&
+        Math.random() > spawnChance
       ) {
         particlesRef.current.push(createParticle(Math.random() * w, h + 20));
       }
@@ -395,11 +400,13 @@ export default function GiftPage() {
       mouseRef.current.y = e.clientY;
       if (reducedRef.current) return;
       const now = performance.now();
-      if (now - mouseRef.current.last < 40) return; // throttle ~25fps
+      if (now - mouseRef.current.last < 60) return; // throttle ~16fps for trail
       mouseRef.current.last = now;
-      particlesRef.current.push(
-        createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
-      );
+      if (particlesRef.current.length < 120) {
+        particlesRef.current.push(
+          createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
+        );
+      }
     };
 
     window.addEventListener("mousemove", onMouseMove);
@@ -416,7 +423,8 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.38;
-    for (let i = 0; i < 80; i++) {
+    const count = w < 768 ? 30 : 60;
+    for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { burst: true }));
     }
   }, []);
@@ -425,7 +433,8 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.35;
-    for (let i = 0; i < 60; i++) {
+    const count = w < 768 ? 20 : 40;
+    for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
     }
   }, []);
