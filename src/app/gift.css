@@ -403,30 +403,43 @@
   gap: 1rem;
   width: 100%;
   position: relative;
+  animation: cardEntrance 0.5s var(--ease-spring) both;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .cut-close-button {
-  color: #71324a;
-  width: 2.5rem;
-  height: 2.5rem;
+  color: #8b1a4a;
+  width: 2rem;
+  height: 2rem;
   font: inherit;
   cursor: pointer;
-  transition: transform .25s var(--ease-expressive), background .25s var(--ease-expressive);
+  transition: transform .2s var(--ease-expressive), background .2s var(--ease-expressive), color .2s ease;
   z-index: 10;
-  background: #ffe8efd9;
-  border: none;
+  background: rgba(255, 232, 239, 0.5);
+  border: 1px solid rgba(227, 79, 111, 0.12);
   border-radius: 50%;
   place-items: center;
   display: grid;
   position: absolute;
-  top: .75rem;
-  right: .75rem;
+  top: .65rem;
+  right: .65rem;
 }
 
 .cut-close-button:hover {
   background: #ffd7e2;
-  transform: rotate(90deg) scale(1.12);
-  box-shadow: 0 0 16px #e34f6f4d;
+  color: #e34f6f;
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 12px #e34f6f30;
 }
 
 .cut-close-button svg {
@@ -471,6 +484,75 @@
 
 .cut-instructions {
   text-align: center;
+}
+
+.cut-step-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cut-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b1a4a, #e34f6f);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cut-step-text {
+  font-family: var(--font-germania), "Germania One", cursive;
+  font-size: clamp(0.95rem, 3vw, 1.3rem);
+  color: #1a1a1a;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.cut-swipe-hint,
+.cut-success-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(139, 26, 74, 0.06);
+  margin-bottom: 0.3rem;
+}
+
+.cut-swipe-hint .swipe-icon {
+  color: #8b1a4a;
+  opacity: 0.6;
+  animation: swipeHintBounce 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.cut-hint-text {
+  font-size: clamp(0.65rem, 1.5vw, 0.78rem);
+  color: #666;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+.cut-success-hint {
+  background: rgba(227, 79, 111, 0.08);
+}
+
+.cut-success-icon {
+  font-size: 1rem;
+  animation: gentlePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes swipeHintBounce {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
 }
 
 .cut-label {
@@ -745,17 +827,30 @@
 
 /* When cutting is in progress, calm the highlight */
 .cake-cut-area.is-cutting .cut-zone-highlight {
-  border-color: rgba(139, 26, 74, 0.12);
+  border-color: rgba(227, 79, 111, 0.25);
+  border-style: solid;
   animation: none;
+  background: linear-gradient(90deg,
+    rgba(227, 79, 111, 0.06) 0%,
+    rgba(227, 79, 111, 0.1) 50%,
+    rgba(227, 79, 111, 0.06) 100%
+  );
+  box-shadow: inset 0 0 20px rgba(227, 79, 111, 0.05);
 }
 
 /* Progress section */
 .cut-progress-section {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
   width: 100%;
   max-width: 300px;
+}
+
+.cut-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .cut-progress-label {
@@ -797,8 +892,22 @@
   font-size: 0.72rem;
   color: #8b1a4a;
   letter-spacing: 0.02em;
-  font-weight: 500;
+  font-weight: 600;
   text-align: right;
+}
+
+.cut-progress-msg {
+  font-size: 0.68rem;
+  color: #888;
+  letter-spacing: 0.01em;
+  text-align: center;
+  margin-top: 0.1rem;
+  transition: color 0.3s ease;
+}
+
+.cut-progress-done {
+  color: #e34f6f;
+  font-weight: 600;
 }
 
 /* Cut complete state */
@@ -814,6 +923,19 @@
 
 .cut-section.cut-complete .cut-progress-status {
   color: #e34f6f;
+}
+
+.cut-section.cut-complete .cut-main-card {
+  animation: cutCompleteGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes cutCompleteGlow {
+  from {
+    box-shadow: 0 8px 32px rgba(227, 79, 111, 0.12), 0 2px 8px rgba(0, 0, 0, 0.03);
+  }
+  to {
+    box-shadow: 0 8px 40px rgba(227, 79, 111, 0.2), 0 0 32px rgba(227, 79, 111, 0.08);
+  }
 }
 
 /* ── Responsive: Mobile ── */
@@ -880,9 +1002,11 @@
 }
 
 .open-button:focus-visible,
-.close-button:focus-visible {
+.close-button:focus-visible,
+.cut-close-button:focus-visible {
   outline-offset: 4px;
-  outline: 3px solid #2a1b296b;
+  outline: 2px solid #e34f6f80;
+  box-shadow: 0 0 0 6px #e34f6f20;
 }
 
 .button-glass {
@@ -964,6 +1088,20 @@
   font-family: var(--font-updock), "Updock", cursive;
   letter-spacing: .04em;
   color: #fff;
+  transition: color 0.12s ease;
+  position: relative;
+  display: block;
+}
+
+.button-subtitle {
+  z-index: 4;
+  display: block;
+  font-family: var(--font-body);
+  font-size: clamp(.72rem, 1.8vw, .88rem);
+  font-weight: 400;
+  letter-spacing: .06em;
+  color: #ffffffb8;
+  margin-top: .15em;
   transition: color 0.12s ease;
   position: relative;
 }
@@ -1124,27 +1262,28 @@
 }
 
 .close-button {
-  color: #71324a;
-  width: 2.5rem;
-  height: 2.5rem;
+  color: #8b1a4a;
+  width: 2rem;
+  height: 2rem;
   font: inherit;
   cursor: pointer;
-  transition: transform .25s var(--ease-expressive), background .25s var(--ease-expressive);
+  transition: transform .2s var(--ease-expressive), background .2s var(--ease-expressive), color .2s ease;
   z-index: 10;
-  background: #ffe8efd9;
-  border: 1px solid #e34f6f33;
+  background: rgba(255, 232, 239, 0.5);
+  border: 1px solid rgba(227, 79, 111, 0.12);
   border-radius: 50%;
   place-items: center;
   display: grid;
   position: absolute;
-  top: .75rem;
-  right: .75rem;
+  top: .65rem;
+  right: .65rem;
 }
 
 .close-button:hover {
   background: #ffd7e2;
-  transform: rotate(90deg) scale(1.12);
-  box-shadow: 0 0 16px #e34f6f4d;
+  color: #e34f6f;
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 12px #e34f6f30;
 }
 
 .close-button svg {
@@ -1228,6 +1367,13 @@
   font-weight: 400;
   display: inline-block;
   color: #d4a020;
+}
+
+.title-emoji {
+  display: block;
+  font-size: .35em;
+  margin-top: .2em;
+  animation: gentlePulse 3s ease-in-out infinite;
 }
 
 
@@ -1722,8 +1868,8 @@
 }
 
 .footer-box {
-  background: #ffffff4d;
-  border: 1px solid #e34f6f20;
+  background: #ffffff40;
+  border: 1px solid #e34f6f18;
   border-radius: 999px;
   align-items: center;
   gap: .5rem;
@@ -1731,13 +1877,15 @@
   display: inline-flex;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px #e34f6f10, inset 0 1px #ffffff60;
+  box-shadow: 0 2px 8px #e34f6f0a;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .footer-box:before {
   content: "";
   pointer-events: none;
-  background: linear-gradient(135deg, #f5c85b14 0%, #e34f6f0f 50%, #7b61ff14 100%);
+  background: linear-gradient(135deg, #f5c85b0d 0%, #e34f6f08 50%, #7b61ff0d 100%);
   border-radius: 999px;
   position: absolute;
   inset: 0;

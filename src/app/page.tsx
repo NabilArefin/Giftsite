@@ -743,6 +743,7 @@ export default function GiftPage() {
             <span className="button-light-orb orb-3" />
             <span className="button-glow-ring" />
             <span className="button-text">Tap Here</span>
+            <span className="button-subtitle">to unwrap your surprise 🎂</span>
           </button>
         ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
@@ -783,9 +784,28 @@ export default function GiftPage() {
             {/* Instructions, Cake & Progress in a rounded box */}
             <div className="cut-info-frame">
               <div className="cut-instructions">
-                <span className="cut-label">DRAG HERE</span>
-                <p className="cut-title">Drag across the cake to cut it</p>
-                <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+                <div className="cut-step-row">
+                  <span className="cut-step-num">1</span>
+                  <span className="cut-step-text">Swipe across the cake</span>
+                </div>
+                {!isCutComplete && (
+                  <div className="cut-swipe-hint">
+                    <svg className="swipe-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M4 2v2" />
+                      <path d="M12 22a2 2 0 0 1-2-2" />
+                      <path d="M9 2v2" />
+                      <path d="M14 2v2" />
+                    </svg>
+                    <span className="cut-hint-text">Drag through the highlighted area</span>
+                  </div>
+                )}
+                {isCutComplete && (
+                  <div className="cut-success-hint">
+                    <span className="cut-success-icon">✨</span>
+                    <span className="cut-hint-text">Cake cut! Making a wish...</span>
+                  </div>
+                )}
               </div>
 
               {/* Cake area */}
@@ -811,17 +831,20 @@ export default function GiftPage() {
               </div>
 
               <div className="cut-progress-section">
-                <span className="cut-progress-label">Cut Progress</span>
+                <div className="cut-progress-row">
+                  <span className="cut-progress-label">Progress</span>
+                  <span className="cut-progress-status">
+                    {Math.round(cutProgress * 100)}%
+                  </span>
+                </div>
                 <div className="cut-progress-bar">
                   <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
                   <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
                 </div>
-                <span className="cut-progress-status">
-                  {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
-                  {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
-                  {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
-                  {cutProgress >= 1 && " · Complete!"}
-                </span>
+                {cutProgress > 0 && cutProgress < 0.5 && <span className="cut-progress-msg">Keep going — you're doing great!</span>}
+                {cutProgress >= 0.5 && cutProgress < 0.85 && <span className="cut-progress-msg">Almost there!</span>}
+                {cutProgress >= 0.85 && cutProgress < 1 && <span className="cut-progress-msg">Nearly done! ✨</span>}
+                {cutProgress >= 1 && <span className="cut-progress-msg cut-progress-done">Complete! 🎉</span>}
               </div>
             </div>
           </div>
@@ -874,6 +897,7 @@ export default function GiftPage() {
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               <span className="title-line">Happy Birthday</span>
               <span className="name-accent">Nuha</span>
+              <span className="title-emoji reveal reveal--4">🎂</span>
             </h1>
             <p className="wish-note reveal reveal--3">
               I hope your day feels as beautiful as the way you make my world feel.
