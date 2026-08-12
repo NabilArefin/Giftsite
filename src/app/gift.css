@@ -1333,14 +1333,6 @@
   line-height: 1.15;
 }
 
-.title-sparkle {
-  display: inline-block;
-  font-size: 0.5em;
-  vertical-align: middle;
-  margin: 0 0.15em;
-  animation: sparkleTwinkle 2s ease-in-out infinite;
-}
-
 .title-line {
   display: block;
   background: linear-gradient(135deg, #2a0f24 5%, #6b1d4a 15%, var(--rose) 30%, #d4628a 42%, var(--violet) 50%, #c46298 58%, var(--rose) 70%, #6b1d4a 85%, #2a0f24 95%);
@@ -1451,17 +1443,6 @@
   }
   50% {
     transform: scale(1.03);
-  }
-}
-
-@keyframes sparkleTwinkle {
-  0%, to {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(0.85);
   }
 }
 
