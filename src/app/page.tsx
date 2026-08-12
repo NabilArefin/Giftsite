@@ -259,11 +259,13 @@ export default function GiftPage() {
           // Burst hearts and confetti inline
           const { w, h } = sizeRef.current;
           const cx = w / 2;
-          for (let i = 0; i < 80; i++) {
+          const burstCount = window.innerWidth < 768 ? 25 : 80;
+          for (let i = 0; i < burstCount; i++) {
             particlesRef.current.push(createParticle(cx, h * 0.38, { burst: true }));
           }
+          const confettiCount = window.innerWidth < 768 ? 15 : 60;
           window.setTimeout(() => {
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < confettiCount; i++) {
               particlesRef.current.push(createParticle(cx, h * 0.35, { confetti: true }));
             }
           }, 200);
@@ -358,14 +360,27 @@ export default function GiftPage() {
     resize();
     window.addEventListener("resize", resize);
 
-    const animate = () => {
+    // Throttle frame rate on mobile to reduce GPU load
+    let lastFrameTime = 0;
+    const isMobileDevice = window.innerWidth < 768;
+    const frameInterval = isMobileDevice ? 33 : 16; // ~30fps on mobile, ~60fps on desktop
+
+    const animate = (timestamp: number) => {
+      // Frame throttling — skip frames that arrive too soon
+      const delta = timestamp - lastFrameTime;
+      if (delta < frameInterval) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = timestamp - (delta % frameInterval);
+
       const { w, h } = sizeRef.current;
       ctx.clearRect(0, 0, w, h);
 
       // Ambient particles (rising from bottom) — fewer on mobile
       const isMobile = w < 768;
-      const maxParticles = isMobile ? 30 : 80;
-      const spawnChance = isMobile ? 0.88 : 0.62;
+      const maxParticles = isMobile ? 18 : 80;
+      const spawnChance = isMobile ? 0.93 : 0.62;
       if (
         !reducedRef.current &&
         particlesRef.current.length < maxParticles &&
@@ -400,9 +415,10 @@ export default function GiftPage() {
       mouseRef.current.y = e.clientY;
       if (reducedRef.current) return;
       const now = performance.now();
-      if (now - mouseRef.current.last < 60) return; // throttle ~16fps for trail
+      if (now - mouseRef.current.last < 80) return; // throttle trail particles
       mouseRef.current.last = now;
-      if (particlesRef.current.length < 120) {
+      const maxTrail = isMobileDevice ? 40 : 120;
+      if (particlesRef.current.length < maxTrail) {
         particlesRef.current.push(
           createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
         );
@@ -423,7 +439,7 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.38;
-    const count = w < 768 ? 30 : 60;
+    const count = w < 768 ? 18 : 60;
     for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { burst: true }));
     }
@@ -433,7 +449,7 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.35;
-    const count = w < 768 ? 20 : 40;
+    const count = w < 768 ? 12 : 40;
     for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
     }

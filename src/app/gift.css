@@ -23,12 +23,13 @@
   --surface: #fffbfeeb;
   --surface-high: #fffffff5;
   --outline: #58405424;
-  --shadow: 0 24px 70px #3e203033;
+  --shadow: 0 20px 60px #3e203028;
   --ease-expressive: cubic-bezier(.2, 0, 0, 1);
   --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
   --font-display: var(--font-display), "Playfair Display", Georgia, "Times New Roman", serif;
   --font-body: var(--font-body), "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--ink);
   font-family: var(--font-body);
   background: linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
@@ -37,6 +38,8 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .frost-blob {
@@ -389,15 +392,15 @@
 }
 
 .cut-main-card {
-  background: linear-gradient(145deg, #fffffff2, #fff7fced);
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 40px rgba(139, 26, 74, 0.1), 0 2px 12px rgba(0, 0, 0, 0.04);
-  padding: clamp(1.4rem, 3vw, 2.2rem);
+  background: linear-gradient(145deg, #fffffff4, #fff7fcee);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 32px rgba(139, 26, 74, 0.09), 0 2px 8px rgba(0, 0, 0, 0.03);
+  padding: clamp(1.2rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1rem;
   width: 100%;
   position: relative;
 }
@@ -437,30 +440,31 @@
 
 .cut-header-title {
   font-family: var(--font-germania), "Germania One", cursive;
-  font-size: clamp(2rem, 6vw, 2.8rem);
+  font-size: clamp(1.8rem, 5.5vw, 2.6rem);
   color: #8b1a4a;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.2rem;
   letter-spacing: 0.02em;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .cut-header-subtitle {
-  font-size: clamp(0.82rem, 2vw, 0.95rem);
+  font-size: clamp(0.78rem, 1.8vw, 0.9rem);
   color: var(--muted);
   margin: 0;
   letter-spacing: 0.01em;
+  line-height: 1.4;
 }
 
 /* Info frame: separate rounded rectangle for instructions & progress */
 .cut-info-frame {
-  background: rgba(255, 240, 245, 0.6);
-  border-radius: 16px;
-  border: 1px solid rgba(227, 79, 111, 0.12);
-  padding: clamp(0.8rem, 2vw, 1.2rem);
+  background: rgba(255, 240, 245, 0.55);
+  border-radius: 14px;
+  border: 1px solid rgba(227, 79, 111, 0.1);
+  padding: clamp(0.7rem, 2vw, 1.1rem);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.7rem;
   width: 100%;
   max-width: 320px;
 }
@@ -481,20 +485,21 @@
 
 .cut-title {
   font-family: var(--font-germania), "Germania One", cursive;
-  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  font-size: clamp(0.95rem, 3vw, 1.35rem);
   color: #1a1a1a;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.25rem;
   letter-spacing: 0.01em;
   white-space: nowrap;
   font-weight: 400;
+  line-height: 1.2;
 }
 
 .cut-subtitle {
-  font-size: clamp(0.72rem, 1.8vw, 0.85rem);
-  color: #666;
+  font-size: clamp(0.68rem, 1.6vw, 0.8rem);
+  color: #777;
   margin: 0;
   letter-spacing: 0.01em;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .cake-cut-area {
@@ -762,35 +767,34 @@
 }
 
 .cut-progress-bar {
-  height: 5px;
-  background: rgba(139, 26, 74, 0.08);
-  border-radius: 3px;
+  height: 4px;
+  background: rgba(139, 26, 74, 0.07);
+  border-radius: 2px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .cut-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #ff5722, #e34f6f, #8b1a4a);
-  border-radius: 3px;
-  transition: width 0.15s ease;
+  border-radius: 2px;
+  transition: width 0.12s ease;
   position: relative;
 }
 
 .cut-progress-shimmer {
   position: absolute;
   top: 0;
-  width: 30px;
+  width: 24px;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  border-radius: 3px;
-  transition: left 0.15s ease;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 2px;
+  transition: left 0.12s ease;
   pointer-events: none;
 }
 
 .cut-progress-status {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #8b1a4a;
   letter-spacing: 0.02em;
   font-weight: 500;
@@ -1091,14 +1095,15 @@
 }
 
 .popup-card {
-  background: linear-gradient(145deg, #fffffff6, #fff7fced), var(--surface);
+  background: linear-gradient(145deg, #fffffff7, #fff7fcee), var(--surface);
   width: min(980px, 100%);
   max-height: calc(100vh - 1.5rem);
-  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset;
-  transition: transform .48s var(--ease-spring), box-shadow .5s var(--ease-expressive);
+  max-height: calc(100dvh - 1.5rem);
+  box-shadow: var(--shadow), 0 0 0 1px #ffffff70 inset;
+  transition: transform .42s var(--ease-spring), box-shadow .45s var(--ease-expressive);
   scrollbar-width: none;
-  border: 1px solid #fff6;
-  border-radius: 32px;
+  border: 1px solid #fff5;
+  border-radius: 28px;
   grid-template-columns: minmax(80px, .22fr) minmax(0, 1fr) minmax(80px, .22fr);
   align-items: center;
   gap: clamp(.5rem, 2vw, 1.5rem);
@@ -1106,7 +1111,7 @@
   display: grid;
   position: relative;
   overflow: hidden;
-  transform: translateY(28px) scale(.92);
+  transform: translateY(24px) scale(.94);
 }
 
 .popup-card::-webkit-scrollbar {
@@ -1114,7 +1119,7 @@
 }
 
 .wish-popup.open .popup-card {
-  box-shadow: var(--shadow), 0 0 0 1px #ffffff80 inset, 0 0 40px #7b61ff14, 0 0 80px #e34f6f0d;
+  box-shadow: var(--shadow), 0 0 0 1px #ffffff70 inset, 0 0 32px #7b61ff12, 0 0 64px #e34f6f0a;
   transform: translateY(0) scale(1);
 }
 
@@ -1195,8 +1200,8 @@
   font-family: var(--font-germania), "Germania One", cursive;
   text-align: center;
   letter-spacing: .02em;
-  margin: 0 0 .8rem;
-  font-size: clamp(2.8rem, 7.5vw, 6.2rem);
+  margin: 0 0 .7rem;
+  font-size: clamp(2.6rem, 7vw, 5.8rem);
   font-style: normal;
   font-weight: 400;
   line-height: 1.15;
@@ -1238,53 +1243,53 @@
 .wish-note {
   color: #3d2236;
   letter-spacing: .01em;
-  background: radial-gradient(at 0 0, #ffdce666 0%, #0000 50%), radial-gradient(at 100% 100%, #ffe6d24d 0%, #0000 50%), linear-gradient(145deg, #fff6, #fff8fa40);
-  border: 1px solid #ffffff73;
-  border-radius: 20px;
-  margin: 0 0 1rem;
-  padding: 1.3rem 1.4rem 1.3rem 1.5rem;
-  font-size: clamp(.9rem, 1.6vw, 1.02rem);
-  line-height: 1.65;
-  animation: 6s ease-in-out infinite glassShimmer;
+  background: radial-gradient(at 0 0, #ffdce655 0%, #0000 50%), radial-gradient(at 100% 100%, #ffe6d240 0%, #0000 50%), linear-gradient(145deg, #fff5, #fff8fa38);
+  border: 1px solid #ffffff66;
+  border-radius: 18px;
+  margin: 0 0 .8rem;
+  padding: 1.1rem 1.2rem 1.1rem 1.3rem;
+  font-size: clamp(.88rem, 1.5vw, 1rem);
+  line-height: 1.6;
+  animation: 8s ease-in-out infinite glassShimmer;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #fff3, 0 0 40px #e34f6f0a;
+  box-shadow: 0 6px 24px #3e203012, 0 2px 6px #e34f6f0a, inset 0 1px 1px #ffffffd0, inset 0 -1px 1px #ffffff40, 0 0 32px #e34f6f08;
 }
 
 .wish-note:before {
   content: "\201C";
   color: var(--rose);
-  opacity: .18;
+  opacity: .15;
   pointer-events: none;
-  text-shadow: 0 0 16px #ffc8dc4d, 0 0 32px #c8b4ff1a;
+  text-shadow: 0 0 12px #ffc8dc40;
   font-family: Georgia, Times New Roman, serif;
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   line-height: 1;
   position: absolute;
-  top: -6px;
-  left: 10px;
+  top: -4px;
+  left: 8px;
 }
 
 .wish-note:after {
   content: "\201D";
   color: var(--rose);
-  opacity: .18;
+  opacity: .15;
   pointer-events: none;
-  text-shadow: 0 0 20px #ffc8dc66, 0 0 40px #c8b4ff26;
+  text-shadow: 0 0 12px #ffc8dc50;
   font-family: Georgia, Times New Roman, serif;
-  font-size: 2.8rem;
+  font-size: 2.4rem;
   line-height: 1;
   position: absolute;
-  bottom: -12px;
-  right: 14px;
+  bottom: -10px;
+  right: 12px;
 }
 
 @keyframes glassShimmer {
   0%, to {
-    box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #fff3, 0 0 40px #e34f6f0a;
+    box-shadow: 0 6px 24px #3e203012, 0 2px 6px #e34f6f0a, inset 0 1px 1px #ffffffd0, inset 0 -1px 1px #ffffff40, 0 0 32px #e34f6f08;
   }
   50% {
-    box-shadow: 0 8px 32px #3e203014, 0 2px 8px #e34f6f0d, inset 0 1px 2px #ffffffe6, inset 0 -1px 1px #ffffff4d, inset 1px 0 1px #ffffff80, inset -1px 0 1px #ffffff80, 0 0 0 1px #ffffff59, 0 0 60px #e34f6f14, 0 0 80px #7b61ff08;
+    box-shadow: 0 6px 24px #3e203012, 0 2px 6px #e34f6f0a, inset 0 1px 1px #ffffffd0, inset 0 -1px 1px #ffffff40, 0 0 48px #e34f6f10, 0 0 64px #7b61ff06;
   }
 }
 
@@ -1295,13 +1300,13 @@
   background: linear-gradient(135deg, #c43058 0%, var(--rose) 15%, var(--coral) 35%, var(--gold) 50%, var(--coral) 65%, var(--rose) 85%, #c43058 100%);
   -webkit-text-fill-color: transparent;
   color: #0000;
-  animation: gentlePulse 3s var(--ease-expressive) infinite, signatureShimmer 4s ease-in-out infinite;
-  filter: drop-shadow(0 2px 8px #e34f6f40) drop-shadow(0 0 14px #e34f6f14);
+  animation: gentlePulse 4s var(--ease-expressive) infinite, signatureShimmer 5s ease-in-out infinite;
+  filter: drop-shadow(0 2px 6px #e34f6f36) drop-shadow(0 0 10px #e34f6f10);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   margin: 0;
-  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+  font-size: clamp(1.5rem, 4vw, 2.6rem);
   font-style: normal;
 }
 
@@ -1717,16 +1722,16 @@
 }
 
 .footer-box {
-  background: #ffffff59;
-  border: 1px solid #e34f6f26;
+  background: #ffffff4d;
+  border: 1px solid #e34f6f20;
   border-radius: 999px;
   align-items: center;
-  gap: .6rem;
-  padding: .45rem 1.2rem;
+  gap: .5rem;
+  padding: .4rem 1rem;
   display: inline-flex;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 12px #e34f6f14, 0 1px 3px #7b61ff0f, inset 0 1px #ffffff80;
+  box-shadow: 0 2px 8px #e34f6f10, inset 0 1px #ffffff60;
 }
 
 .footer-box:before {
@@ -2265,49 +2270,95 @@
 
 /* ── Mobile Performance Optimizations ── */
 @media (max-width: 768px) {
-  /* Reduce expensive filter effects */
+  /* Simpler background — no gradient repaint */
   .gift-root {
-    background: linear-gradient(135deg, #fff6ef 0%, #ffe6ef 42%, #eef8ff 100%);
+    background: #fff4ef;
   }
 
-  /* Simpler button animation on mobile */
+  /* Drastically simplify open button — single animation, no glow ring */
   .open-button {
-    animation: pulseButton 2.4s var(--ease-expressive) infinite;
+    animation: pulseButton 2.8s var(--ease-expressive) infinite;
+    box-shadow: 0 12px 36px #7b61ff36, 0 8px 24px #e34f6f36, inset 0 1px #ffffff30;
   }
-  .button-light-orb {
-    animation-duration: 4s;
+  .open-button:hover {
+    box-shadow: 0 16px 44px #7b61ff42, 0 12px 32px #e34f6f42, inset 0 1px #ffffff40;
   }
+  .button-glass,
+  .button-light-orb,
   .button-glow-ring {
-    animation: none;
-  }
-
-  /* Reduce star particles */
-  .star {
-    animation-duration: 6s;
-  }
-  .star:nth-child(n+7) {
     display: none;
   }
 
-  /* Simpler balloon animations */
+  /* Hide most stars — keep only 4 */
+  .star:nth-child(n+5) {
+    display: none;
+  }
+  .star {
+    animation-duration: 8s;
+    box-shadow: 0 0 4px #f5c85b40;
+  }
+
+  /* Slow down balloon float, shorten strings */
   .balloon {
-    animation-duration: 6s;
+    animation-duration: 7s;
   }
   .balloon:after {
-    height: 50px;
+    height: 44px;
   }
 
-  /* Reduce canvas overlay complexity */
+  /* Reduce canvas opacity — fewer particles rendered visually */
   .sparkle-canvas {
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
-  /* Simpler popup transitions */
+  /* Simpler popup — no spring, shorter transitions */
   .popup-card {
-    transition: transform .3s ease, box-shadow .3s ease;
+    transition: transform .28s ease-out, opacity .28s ease-out;
+    box-shadow: 0 12px 48px #3e203044, 0 0 0 1px #ffffff60 inset;
   }
   .wish-popup {
-    transition: opacity .25s ease;
+    transition: opacity .22s ease;
+  }
+
+  /* Simpler wish-note — remove animated box-shadow shimmer */
+  .wish-note {
+    animation: none;
+    box-shadow: 0 4px 16px #3e203018, inset 0 1px 1px #ffffffcc;
+  }
+
+  /* Simpler signature — no pulse, just shimmer */
+  .signature {
+    animation: signatureShimmer 4s ease-in-out infinite;
+  }
+
+  /* Simpler title shimmer — slower, less repaint */
+  .title-line {
+    animation-duration: 8s;
+  }
+
+  /* Simpler footer ornaments — slower glow */
+  .footer-ornament {
+    animation-duration: 4s;
+  }
+  .gift-footer .heart-dot {
+    animation-duration: 2s;
+  }
+
+  /* Simpler cake glow */
+  .cake-scene:before,
+  .wish-cake-scene:before {
+    animation-duration: 6s;
+  }
+
+  /* Simpler cut zone pulse — slower */
+  .cut-zone-highlight {
+    animation: cutZonePulse 4s ease-in-out infinite;
+  }
+
+  /* Simpler candle flicker — slower, saves compositing */
+  .candles span:before,
+  .cut-cake-visual .candles span:before {
+    animation-duration: 2.4s;
   }
 
   /* Smaller footer */
@@ -2317,6 +2368,25 @@
   .footer-box {
     padding: .3rem .8rem;
     font-size: .7rem;
+    box-shadow: 0 1px 6px #e34f6f0d;
+  }
+}
+
+/* Very small screens — further reductions */
+@media (max-width: 400px) {
+  .frost-blob-2 {
+    display: none;
+  }
+  .star {
+    display: none;
+  }
+  .sparkle-canvas {
+    opacity: 0.35;
+  }
+  .open-button {
+    min-width: min(280px, 90vw);
+    min-height: 4rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -2326,17 +2396,21 @@
 .popup-card,
 .cut-main-card,
 .magic-cursor,
-.frost-blob {
+.frost-blob,
+.cake-cut-area {
   will-change: transform;
 }
 
 /* Contain layout for stable sections */
 .cut-main-card,
 .popup-card,
-.wish-copy {
+.wish-copy,
+.cut-info-frame,
+.cake-cut-area {
   contain: layout style;
 }
 
+/* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   .gift-root *,
   .gift-root :before,
