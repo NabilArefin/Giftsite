@@ -743,7 +743,7 @@ export default function GiftPage() {
             <span className="button-light-orb orb-3" />
             <span className="button-glow-ring" />
             <span className="button-text">Tap Here</span>
-            <span className="button-subtitle">to unwrap your surprise 🎂</span>
+
           </button>
         ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
@@ -785,7 +785,6 @@ export default function GiftPage() {
             <div className="cut-info-frame">
               <div className="cut-instructions">
                 <div className="cut-step-row">
-                  <span className="cut-step-num">1</span>
                   <span className="cut-step-text">Swipe across the cake</span>
                 </div>
                 {!isCutComplete && (
@@ -803,7 +802,7 @@ export default function GiftPage() {
                 {isCutComplete && (
                   <div className="cut-success-hint">
                     <span className="cut-success-icon">✨</span>
-                    <span className="cut-hint-text">Cake cut! Making a wish...</span>
+                    <span className="cut-hint-text">Making a wish...</span>
                   </div>
                 )}
               </div>
