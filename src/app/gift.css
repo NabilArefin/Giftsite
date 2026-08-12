@@ -388,6 +388,35 @@
   align-items: center;
   gap: 1.2rem;
   width: 100%;
+  position: relative;
+}
+
+.cut-close-button {
+  color: #71324a;
+  width: 2.5rem;
+  height: 2.5rem;
+  font: inherit;
+  cursor: pointer;
+  transition: transform .25s var(--ease-expressive), background .25s var(--ease-expressive);
+  z-index: 10;
+  background: #ffe8efd9;
+  border: none;
+  border-radius: 50%;
+  place-items: center;
+  display: grid;
+  position: absolute;
+  top: .75rem;
+  right: .75rem;
+}
+
+.cut-close-button:hover {
+  background: #ffd7e2;
+  transform: rotate(90deg) scale(1.12);
+  box-shadow: 0 0 16px #e34f6f4d;
+}
+
+.cut-close-button svg {
+  pointer-events: none;
 }
 
 .cut-header {

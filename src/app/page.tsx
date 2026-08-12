@@ -722,10 +722,44 @@ export default function GiftPage() {
         ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
           <div className="cut-main-card">
+            {/* Close / Exit button */}
+            <button
+              type="button"
+              className="cut-close-button"
+              onClick={() => {
+                setShowCake(false);
+                setCutProgress(0);
+                setIsCutting(false);
+                setIsCutComplete(false);
+              }}
+              aria-label="Close cake time"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="1" y1="1" x2="13" y2="13" />
+                <line x1="13" y1="1" x2="1" y2="13" />
+              </svg>
+            </button>
+
             {/* Header */}
             <div className="cut-header">
               <h2 className="cut-header-title">Cake Time</h2>
               <p className="cut-header-subtitle">Cut the cake and make a wish</p>
+            </div>
+
+            {/* Instructions */}
+            <div className="cut-instructions">
+              <span className="cut-label">DRAG HERE</span>
+              <p className="cut-title">Drag across the cake to cut it</p>
+              <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
             </div>
 
             {/* Cake area */}
@@ -750,14 +784,8 @@ export default function GiftPage() {
               <div className="cut-zone-highlight" />
             </div>
 
-            {/* Instructions & Progress in a separate frame */}
+            {/* Progress bar */}
             <div className="cut-info-frame">
-              <div className="cut-instructions">
-                <span className="cut-label">DRAG HERE</span>
-                <p className="cut-title">Drag across the cake to cut it</p>
-                <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
-              </div>
-
               <div className="cut-progress-section">
                 <span className="cut-progress-label">Cut Progress</span>
                 <div className="cut-progress-bar">
