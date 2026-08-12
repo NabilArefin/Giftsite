@@ -804,64 +804,6 @@ export default function GiftPage() {
             </svg>
           </button>
 
-          <div className="wish-cake-scene" aria-hidden="true">
-            <div className="balloon balloon-one" />
-            <div className="balloon balloon-two" />
-            <div className="balloon balloon-three" />
-            <div className="balloon balloon-four" />
-            <svg className="wish-cake-svg" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Plate shadow */}
-              <ellipse cx="160" cy="256" rx="130" ry="14" fill="rgba(0,0,0,0.08)" />
-              {/* Plate */}
-              <ellipse cx="160" cy="250" rx="125" ry="13" fill="#f5e6d3" stroke="#e8d5c0" strokeWidth="1.5" />
-
-              {/* Bottom tier - side */}
-              <path d="M55 185 L55 230 Q55 248 160 248 Q265 248 265 230 L265 185 Q265 203 160 203 Q55 203 55 185Z" fill="#d4567a" />
-              {/* Bottom tier - top ellipse */}
-              <ellipse cx="160" cy="185" rx="105" ry="18" fill="#e8688e" />
-              {/* Bottom tier - highlight */}
-              <ellipse cx="160" cy="183" rx="90" ry="12" fill="#f08aa4" opacity="0.4" />
-              {/* Bottom tier decorations */}
-              <circle cx="90" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
-              <circle cx="130" cy="215" r="2.5" fill="#fff" opacity="0.3" />
-              <circle cx="160" cy="218" r="3" fill="#f5c85b" opacity="0.6" />
-              <circle cx="190" cy="215" r="2.5" fill="#fff" opacity="0.3" />
-              <circle cx="230" cy="210" r="3" fill="#f5c85b" opacity="0.6" />
-
-              {/* Top tier - side */}
-              <path d="M80 120 L80 180 Q80 198 160 198 Q240 198 240 180 L240 120 Q240 138 160 138 Q80 138 80 120Z" fill="#fff0f4" />
-              {/* Top tier - top ellipse */}
-              <ellipse cx="160" cy="120" rx="80" ry="15" fill="#fff5f8" />
-              {/* Top tier - frosting drips */}
-              <path d="M95 120 Q97 132 93 140 Q90 133 95 120" fill="#fff" opacity="0.7" />
-              <path d="M125 120 Q127 135 123 145 Q120 136 125 120" fill="#fff" opacity="0.7" />
-              <path d="M160 120 Q162 130 158 138 Q155 130 160 120" fill="#fff" opacity="0.7" />
-              <path d="M195 120 Q197 133 193 142 Q190 134 195 120" fill="#fff" opacity="0.7" />
-              <path d="M225 120 Q227 128 223 135 Q220 129 225 120" fill="#fff" opacity="0.7" />
-              {/* Top tier - shading */}
-              <ellipse cx="160" cy="118" rx="65" ry="9" fill="#fff" opacity="0.3" />
-
-              {/* Candles */}
-              <rect x="148" y="75" width="5" height="47" rx="2.5" fill="#f5c85b" />
-              <rect x="157" y="70" width="5" height="52" rx="2.5" fill="#e34f6f" />
-              <rect x="166" y="75" width="5" height="47" rx="2.5" fill="#7b61ff" />
-              {/* Flames */}
-              <ellipse cx="150.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="150.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
-              <ellipse cx="159.5" cy="66" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="159.5" cy="64" rx="2" ry="4" fill="#fff7ad" />
-              <ellipse cx="168.5" cy="71" rx="4" ry="7" fill="#ffda6b" opacity="0.9" />
-              <ellipse cx="168.5" cy="69" rx="2" ry="4" fill="#fff7ad" />
-
-              {/* Sprinkles on top tier */}
-              <rect x="110" y="115" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(30 112 116)" />
-              <rect x="135" y="112" width="4" height="1.5" rx="0.75" fill="#7b61ff" opacity="0.5" transform="rotate(-20 137 113)" />
-              <rect x="180" y="113" width="4" height="1.5" rx="0.75" fill="#f5c85b" opacity="0.5" transform="rotate(45 182 114)" />
-              <rect x="205" y="116" width="4" height="1.5" rx="0.75" fill="#e34f6f" opacity="0.5" transform="rotate(-35 207 117)" />
-            </svg>
-            <div className="confetti-burst" />
-          </div>
-
           <div className="wish-copy">
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               <span className="title-line">Happy Birthday</span>
