@@ -755,11 +755,27 @@ export default function GiftPage() {
               <p className="cut-header-subtitle">Cut the cake and make a wish</p>
             </div>
 
-            {/* Instructions */}
-            <div className="cut-instructions">
-              <span className="cut-label">DRAG HERE</span>
-              <p className="cut-title">Drag across the cake to cut it</p>
-              <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+            {/* Instructions & Progress in a rounded box */}
+            <div className="cut-info-frame">
+              <div className="cut-instructions">
+                <span className="cut-label">DRAG HERE</span>
+                <p className="cut-title">Drag across the cake to cut it</p>
+                <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+              </div>
+
+              <div className="cut-progress-section">
+                <span className="cut-progress-label">Cut Progress</span>
+                <div className="cut-progress-bar">
+                  <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+                  <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+                </div>
+                <span className="cut-progress-status">
+                  {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
+                  {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
+                  {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
+                  {cutProgress >= 1 && " · Complete!"}
+                </span>
+              </div>
             </div>
 
             {/* Cake area */}
@@ -782,23 +798,6 @@ export default function GiftPage() {
 
               {/* Cut zone highlight overlay */}
               <div className="cut-zone-highlight" />
-            </div>
-
-            {/* Progress bar */}
-            <div className="cut-info-frame">
-              <div className="cut-progress-section">
-                <span className="cut-progress-label">Cut Progress</span>
-                <div className="cut-progress-bar">
-                  <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
-                  <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
-                </div>
-                <span className="cut-progress-status">
-                  {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
-                  {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
-                  {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
-                  {cutProgress >= 1 && " · Complete!"}
-                </span>
-              </div>
             </div>
           </div>
         </div>
