@@ -755,12 +755,34 @@ export default function GiftPage() {
               <p className="cut-header-subtitle">Cut the cake and make a wish</p>
             </div>
 
-            {/* Instructions & Progress in a rounded box */}
+            {/* Instructions, Cake & Progress in a rounded box */}
             <div className="cut-info-frame">
               <div className="cut-instructions">
                 <span className="cut-label">DRAG HERE</span>
                 <p className="cut-title">Drag across the cake to cut it</p>
                 <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+              </div>
+
+              {/* Cake area */}
+              <div
+                ref={cakeAreaRef}
+                className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
+              >
+                {/* CSS Cake (from wish card) */}
+                <div className="cut-cake-visual">
+                  <div className="candles">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <div className="cake-top" />
+                  <div className="cake-mid" />
+                  <div className="cake-bottom" />
+                  <div className="plate" />
+                </div>
+
+                {/* Cut zone highlight overlay */}
+                <div className="cut-zone-highlight" />
               </div>
 
               <div className="cut-progress-section">
@@ -776,28 +798,6 @@ export default function GiftPage() {
                   {cutProgress >= 1 && " · Complete!"}
                 </span>
               </div>
-            </div>
-
-            {/* Cake area */}
-            <div
-              ref={cakeAreaRef}
-              className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
-            >
-              {/* CSS Cake (from wish card) */}
-              <div className="cut-cake-visual">
-                <div className="candles">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div className="cake-top" />
-                <div className="cake-mid" />
-                <div className="cake-bottom" />
-                <div className="plate" />
-              </div>
-
-              {/* Cut zone highlight overlay */}
-              <div className="cut-zone-highlight" />
             </div>
           </div>
         </div>
