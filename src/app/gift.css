@@ -467,6 +467,7 @@
 
 .cut-instructions {
   text-align: center;
+  container-type: inline-size;
 }
 
 .cut-label {
@@ -481,7 +482,7 @@
 
 .cut-title {
   font-family: var(--font-germania), "Germania One", cursive;
-  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  font-size: clamp(0.7rem, 5cqw, 1.5rem);
   color: #1a1a1a;
   margin: 0 0 0.3rem;
   letter-spacing: 0.01em;
