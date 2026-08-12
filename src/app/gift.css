@@ -1137,6 +1137,35 @@
   position: absolute;
 }
 
+/* Wish card cake scene - replaces CSS cake with SVG cake */
+.wish-cake-scene {
+  place-items: center;
+  min-height: 300px;
+  display: grid;
+  position: relative;
+  overflow: hidden;
+}
+
+.wish-cake-scene:before {
+  content: "";
+  aspect-ratio: 1;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, #ffbf3714 0%, #e34f6f0a 40%, #0000 70%);
+  border-radius: 50%;
+  width: min(280px, 60vw);
+  animation: 4s ease-in-out infinite cakeGlow;
+  position: absolute;
+}
+
+.wish-cake-svg {
+  z-index: 1;
+  width: min(260px, 55vw);
+  height: auto;
+  animation: gentlePulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 8px 20px rgba(212, 86, 122, 0.2));
+}
+
 .balloon {
   z-index: 1;
   border-radius: 50% / 42% 42% 58% 58%;
@@ -1612,13 +1641,17 @@
     grid-template-columns: 1fr;
     gap: .5rem;
   }
-  .cake-scene {
+  .cake-scene,
+  .wish-cake-scene {
     min-height: 230px;
   }
   .cake {
     transform-origin: bottom;
     margin-top: 8px;
     transform: scale(.62);
+  }
+  .wish-cake-svg {
+    width: min(200px, 50vw);
   }
   .balloon {
     width: 48px;
@@ -1644,7 +1677,8 @@
   .popup-card {
     padding: .9rem;
   }
-  .cake-scene {
+  .cake-scene,
+  .wish-cake-scene {
     min-height: 190px;
   }
   .display-title {
@@ -1668,7 +1702,8 @@
     gap: clamp(.75rem, 2vw, 1.5rem);
     padding: clamp(.85rem, 2vw, 1.4rem);
   }
-  .cake-scene {
+  .cake-scene,
+  .wish-cake-scene {
     min-height: 300px;
   }
   .cake {
@@ -1691,7 +1726,8 @@
 }
 
 @media (max-height: 600px) {
-  .cake-scene {
+  .cake-scene,
+  .wish-cake-scene {
     min-height: 220px;
   }
   .cake {
