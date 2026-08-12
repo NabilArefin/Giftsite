@@ -1,0 +1,892 @@
+     1→"use client";
+     2→
+     3→import { useCallback, useEffect, useRef, useState } from "react";
+     4→import "./gift.css";
+     5→
+     6→type ParticleShape = "heart" | "dot" | "star" | "circle" | "square";
+     7→
+     8→type Particle = {
+     9→  x: number;
+    10→  y: number;
+    11→  vx: number;
+    12→  vy: number;
+    13→  size: number;
+    14→  life: number;
+    15→  age: number;
+    16→  color: string;
+    17→  shape: ParticleShape;
+    18→  spin: number;
+    19→  gravity: number;
+    20→  wobble: number;
+    21→  wobbleSpeed: number;
+    22→};
+    23→
+    24→type CreateOptions = {
+    25→  burst?: boolean;
+    26→  trail?: boolean;
+    27→  confetti?: boolean;
+    28→};
+    29→
+    30→const PALETTE = ["#e34f6f", "#ff8c72", "#f5c85b", "#9ed7c1", "#7b61ff", "#ffffff"];
+    31→const AMBIENT_PALETTE = PALETTE.slice(0, PALETTE.length - 1); // exclude white for ambient
+    32→
+    33→function createParticle(x: number, y: number, opts: CreateOptions = {}): Particle {
+    34→  const isBurst = opts.burst || false;
+    35→  const isTrail = opts.trail || false;
+    36→  const isConfetti = opts.confetti || false;
+    37→
+    38→  const angle = Math.random() * Math.PI * 2;
+    39→  let speed: number;
+    40→  if (isBurst) {
+    41→    speed = 2.4 + Math.random() * 4.6;
+    42→  } else if (isTrail) {
+    43→    speed = 0.3 + Math.random() * 0.8;
+    44→  } else {
+    45→    speed = 0.4 + Math.random() * 1.4;
+    46→  }
+    47→
+    48→  const shapes: ParticleShape[] = isConfetti
+    49→    ? ["star", "circle", "square"]
+    50→    : ["heart", "dot"];
+    51→
+    52→  return {
+    53→    x,
+    54→    y,
+    55→    vx: isConfetti
+    56→      ? Math.cos(angle) * (1 + Math.random() * 3)
+    57→      : Math.cos(angle) * speed,
+    58→    vy: isConfetti
+    59→      ? Math.sin(angle) * (1 + Math.random() * 3) - 2
+    60→      : Math.sin(angle) * speed - (isBurst ? 2 : 0),
+    61→    size: isBurst
+    62→      ? 5 + Math.random() * 7
+    63→      : isTrail
+    64→        ? 1.5 + Math.random() * 3
+    65→        : isConfetti
+    66→          ? 3 + Math.random() * 5
+    67→          : 2 + Math.random() * 4,
+    68→    life: isBurst
+    69→      ? 90 + Math.random() * 50
+    70→      : isTrail
+    71→        ? 40 + Math.random() * 40
+    72→        : isConfetti
+    73→          ? 100 + Math.random() * 80
+    74→          : 140 + Math.random() * 120,
+    75→    age: 0,
+    76→    color: isConfetti
+    77→      ? PALETTE[Math.floor(Math.random() * PALETTE.length)]
+    78→      : AMBIENT_PALETTE[Math.floor(Math.random() * AMBIENT_PALETTE.length)],
+    79→    shape: shapes[Math.floor(Math.random() * shapes.length)],
+    80→    spin: Math.random() * Math.PI,
+    81→    gravity: isConfetti ? 0.06 : isTrail ? 0.01 : 0.018,
+    82→    wobble: isConfetti ? 0.08 : 0,
+    83→    wobbleSpeed: 0.05 + Math.random() * 0.05,
+    84→  };
+    85→}
+    86→
+    87→function drawHeart(
+    88→  ctx: CanvasRenderingContext2D,
+    89→  x: number,
+    90→  y: number,
+    91→  size: number,
+    92→  color: string,
+    93→  alpha: number,
+    94→  spin: number,
+    95→) {
+    96→  ctx.save();
+    97→  ctx.translate(x, y);
+    98→  ctx.rotate(spin);
+    99→  ctx.scale(size / 18, size / 18);
+   100→  ctx.globalAlpha = alpha;
+   101→  ctx.fillStyle = color;
+   102→  ctx.beginPath();
+   103→  ctx.moveTo(0, 6);
+   104→  ctx.bezierCurveTo(-16, -4, -8, -18, 0, -9);
+   105→  ctx.bezierCurveTo(8, -18, 16, -4, 0, 6);
+   106→  ctx.fill();
+   107→  ctx.restore();
+   108→}
+   109→
+   110→function drawStar(
+   111→  ctx: CanvasRenderingContext2D,
+   112→  x: number,
+   113→  y: number,
+   114→  size: number,
+   115→  color: string,
+   116→  alpha: number,
+   117→  spin: number,
+   118→) {
+   119→  ctx.save();
+   120→  ctx.translate(x, y);
+   121→  ctx.rotate(spin);
+   122→  ctx.globalAlpha = alpha;
+   123→  ctx.fillStyle = color;
+   124→  ctx.beginPath();
+   125→  for (let i = 0; i < 5; i++) {
+   126→    const outerAngle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+   127→    const innerAngle = outerAngle + (2 * Math.PI) / 10;
+   128→    if (i === 0) {
+   129→      ctx.moveTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   130→    } else {
+   131→      ctx.lineTo(Math.cos(outerAngle) * size, Math.sin(outerAngle) * size);
+   132→    }
+   133→    ctx.lineTo(
+   134→      Math.cos(innerAngle) * size * 0.45,
+   135→      Math.sin(innerAngle) * size * 0.45,
+   136→    );
+   137→  }
+   138→  ctx.closePath();
+   139→  ctx.fill();
+   140→  ctx.restore();
+   141→}
+   142→
+   143→function drawSquare(
+   144→  ctx: CanvasRenderingContext2D,
+   145→  x: number,
+   146→  y: number,
+   147→  size: number,
+   148→  color: string,
+   149→  alpha: number,
+   150→  spin: number,
+   151→) {
+   152→  ctx.save();
+   153→  ctx.translate(x, y);
+   154→  ctx.rotate(spin);
+   155→  ctx.globalAlpha = alpha;
+   156→  ctx.fillStyle = color;
+   157→  ctx.fillRect(-size / 2, -size / 2, size, size);
+   158→  ctx.restore();
+   159→}
+   160→
+   161→function drawParticle(ctx: CanvasRenderingContext2D, p: Particle) {
+   162→  const alpha = Math.max(0, 1 - p.age / p.life);
+   163→  if (alpha <= 0) return;
+   164→
+   165→  switch (p.shape) {
+   166→    case "heart":
+   167→      drawHeart(ctx, p.x, p.y, p.size * 2.2, p.color, alpha, p.spin);
+   168→      break;
+   169→    case "star":
+   170→      drawStar(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   171→      break;
+   172→    case "square":
+   173→      drawSquare(ctx, p.x, p.y, p.size, p.color, alpha, p.spin);
+   174→      break;
+   175→    default: {
+   176→      ctx.globalAlpha = alpha;
+   177→      ctx.fillStyle = p.color;
+   178→      ctx.beginPath();
+   179→      ctx.arc(p.x, p.y, Math.max(0.5, p.size), 0, Math.PI * 2);
+   180→      ctx.fill();
+   181→      ctx.globalAlpha = 1;
+   182→    }
+   183→  }
+   184→}
+   185→
+   186→export default function GiftPage() {
+   187→  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+   188→  const particlesRef = useRef<Particle[]>([]);
+   189→  const rafRef = useRef<number | null>(null);
+   190→  const sizeRef = useRef({ w: 0, h: 0 });
+   191→  const mouseRef = useRef({ x: -100, y: -100, last: 0 });
+   192→  const reducedRef = useRef(false);
+   193→  const cursorRef = useRef<HTMLDivElement | null>(null);
+   194→
+   195→  const [isOpen, setIsOpen] = useState(false);
+   196→  const [showCake, setShowCake] = useState(false); // shows cake after Tap Here
+   197→  const [cutProgress, setCutProgress] = useState(0);
+   198→  const [isCutting, setIsCutting] = useState(false);
+   199→  const [isCutComplete, setIsCutComplete] = useState(false);
+   200→
+   201→  const cakeAreaRef = useRef<HTMLDivElement | null>(null);
+   202→  const cutTrackRef = useRef<number[]>([]); // tracks horizontal coverage
+   203→  const isDraggingRef = useRef(false);
+   204→
+   205→
+   206→  // ── Cake cutting interaction ──
+   207→  // Track drag across the cake to compute cut progress
+   208→  useEffect(() => {
+   209→    const cakeArea = cakeAreaRef.current;
+   210→    if (!cakeArea) return;
+   211→
+   212→    const SEGMENTS = 20; // divide cake width into segments
+   213→    cutTrackRef.current = new Array(SEGMENTS).fill(0);
+   214→
+   215→    const getProgress = () => {
+   216→      // Find the longest contiguous run of cut segments
+   217→      // A single line covering just 40%+ of the width = full cut
+   218→      let current = 0;
+   219→      let best = 0;
+   220→      for (let i = 0; i < SEGMENTS; i++) {
+   221→        if (cutTrackRef.current[i] > 0) {
+   222→          current++;
+   223→          if (current > best) best = current;
+   224→        } else {
+   225→          current = 0;
+   226→        }
+   227→      }
+   228→      return Math.min(1, (best / SEGMENTS) / 0.4);
+   229→    };
+   230→
+   231→    const handleMove = (clientX: number, clientY: number) => {
+   232→      if (!isDraggingRef.current || isCutComplete) return;
+   233→      const rect = cakeArea.getBoundingClientRect();
+   234→      const x = clientX - rect.left;
+   235→      const y = clientY - rect.top;
+   236→
+   237→      // Check if pointer is within the cut zone (covers the cake body)
+   238→      const cutZoneTop = rect.height * 0.18;
+   239→      const cutZoneBottom = rect.height * 0.90;
+   240→      if (y < cutZoneTop || y > cutZoneBottom) return;
+   241→      if (x < 0 || x > rect.width) return;
+   242→
+   243→      // Mark segment as cut
+   244→      const segIndex = Math.floor((x / rect.width) * SEGMENTS);
+   245→      if (segIndex >= 0 && segIndex < SEGMENTS) {
+   246→        cutTrackRef.current[segIndex] = 1;
+   247→      }
+   248→
+   249→      const progress = getProgress();
+   250→      setCutProgress(progress);
+   251→      setIsCutting(true);
+   252→
+   253→      if (progress >= 0.95 && !isCutComplete) {
+   254→        setCutProgress(1);
+   255→        setIsCutComplete(true);
+   256→        // Trigger the wish after a short delay for the split animation
+   257→        setTimeout(() => {
+   258→          setIsOpen(true);
+   259→          // Burst hearts and confetti inline
+   260→          const { w, h } = sizeRef.current;
+   261→          const cx = w / 2;
+   262→          for (let i = 0; i < 80; i++) {
+   263→            particlesRef.current.push(createParticle(cx, h * 0.38, { burst: true }));
+   264→          }
+   265→          window.setTimeout(() => {
+   266→            for (let i = 0; i < 60; i++) {
+   267→              particlesRef.current.push(createParticle(cx, h * 0.35, { confetti: true }));
+   268→            }
+   269→          }, 200);
+   270→        }, 800);
+   271→      }
+   272→    };
+   273→
+   274→    const onMouseDown = (e: MouseEvent) => {
+   275→      const rect = cakeArea.getBoundingClientRect();
+   276→      const y = e.clientY - rect.top;
+   277→      const cutZoneTop = rect.height * 0.25;
+   278→      const cutZoneBottom = rect.height * 0.75;
+   279→      if (y >= cutZoneTop && y <= cutZoneBottom) {
+   280→        isDraggingRef.current = true;
+   281→        handleMove(e.clientX, e.clientY);
+   282→      }
+   283→    };
+   284→
+   285→    const onMouseMove = (e: MouseEvent) => {
+   286→      handleMove(e.clientX, e.clientY);
+   287→    };
+   288→
+   289→    const onMouseUp = () => {
+   290→      isDraggingRef.current = false;
+   291→      setIsCutting(false);
+   292→    };
+   293→
+   294→    const onTouchStart = (e: TouchEvent) => {
+   295→      const touch = e.touches[0];
+   296→      const rect = cakeArea.getBoundingClientRect();
+   297→      const y = touch.clientY - rect.top;
+   298→      const cutZoneTop = rect.height * 0.25;
+   299→      const cutZoneBottom = rect.height * 0.75;
+   300→      if (y >= cutZoneTop && y <= cutZoneBottom) {
+   301→        isDraggingRef.current = true;
+   302→        handleMove(touch.clientX, touch.clientY);
+   303→      }
+   304→    };
+   305→
+   306→    const onTouchMove = (e: TouchEvent) => {
+   307→      if (!isDraggingRef.current) return;
+   308→      e.preventDefault();
+   309→      const touch = e.touches[0];
+   310→      handleMove(touch.clientX, touch.clientY);
+   311→    };
+   312→
+   313→    const onTouchEnd = () => {
+   314→      isDraggingRef.current = false;
+   315→      setIsCutting(false);
+   316→    };
+   317→
+   318→    cakeArea.addEventListener("mousedown", onMouseDown);
+   319→    window.addEventListener("mousemove", onMouseMove);
+   320→    window.addEventListener("mouseup", onMouseUp);
+   321→    cakeArea.addEventListener("touchstart", onTouchStart, { passive: true });
+   322→    cakeArea.addEventListener("touchmove", onTouchMove, { passive: false });
+   323→    cakeArea.addEventListener("touchend", onTouchEnd);
+   324→
+   325→    return () => {
+   326→      cakeArea.removeEventListener("mousedown", onMouseDown);
+   327→      window.removeEventListener("mousemove", onMouseMove);
+   328→      window.removeEventListener("mouseup", onMouseUp);
+   329→      cakeArea.removeEventListener("touchstart", onTouchStart);
+   330→      cakeArea.removeEventListener("touchmove", onTouchMove);
+   331→      cakeArea.removeEventListener("touchend", onTouchEnd);
+   332→    };
+   333→  }, [isCutComplete, showCake]);
+   334→
+   335→  useEffect(() => {
+   336→    const canvas = canvasRef.current;
+   337→    if (!canvas) return;
+   338→    const ctx = canvas.getContext("2d");
+   339→    if (!ctx) return;
+   340→
+   341→    const reducedMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+   342→    reducedRef.current = reducedMotionMQ.matches;
+   343→
+   344→    const resize = () => {
+   345→      const rawRatio = window.devicePixelRatio || 1;
+   346→      // Cap pixel ratio at 2 to save GPU on high-DPI mobile
+   347→      const ratio = Math.min(rawRatio, 2);
+   348→      const w = window.innerWidth;
+   349→      const h = window.innerHeight;
+   350→      canvas.width = Math.floor(w * ratio);
+   351→      canvas.height = Math.floor(h * ratio);
+   352→      canvas.style.width = `${w}px`;
+   353→      canvas.style.height = `${h}px`;
+   354→      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+   355→      sizeRef.current = { w, h };
+   356→    };
+   357→
+   358→    resize();
+   359→    window.addEventListener("resize", resize);
+   360→
+   361→    const animate = () => {
+   362→      const { w, h } = sizeRef.current;
+   363→      ctx.clearRect(0, 0, w, h);
+   364→
+   365→      // Ambient particles (rising from bottom) — fewer on mobile
+   366→      const isMobile = w < 768;
+   367→      const maxParticles = isMobile ? 30 : 80;
+   368→      const spawnChance = isMobile ? 0.88 : 0.62;
+   369→      if (
+   370→        !reducedRef.current &&
+   371→        particlesRef.current.length < maxParticles &&
+   372→        Math.random() > spawnChance
+   373→      ) {
+   374→        particlesRef.current.push(createParticle(Math.random() * w, h + 20));
+   375→      }
+   376→
+   377→      particlesRef.current = particlesRef.current.filter((p) => p.age < p.life);
+   378→
+   379→      for (const p of particlesRef.current) {
+   380→        p.age += 1;
+   381→        p.x += p.vx + Math.sin(p.age * p.wobbleSpeed) * p.wobble;
+   382→        p.y += p.vy;
+   383→        p.vy += p.gravity;
+   384→        p.spin += 0.02;
+   385→        drawParticle(ctx, p);
+   386→      }
+   387→
+   388→      rafRef.current = requestAnimationFrame(animate);
+   389→    };
+   390→
+   391→    animate();
+   392→
+   393→    const onMotionChange = (e: MediaQueryListEvent) => {
+   394→      reducedRef.current = e.matches;
+   395→    };
+   396→    reducedMotionMQ.addEventListener("change", onMotionChange);
+   397→
+   398→    const onMouseMove = (e: MouseEvent) => {
+   399→      mouseRef.current.x = e.clientX;
+   400→      mouseRef.current.y = e.clientY;
+   401→      if (reducedRef.current) return;
+   402→      const now = performance.now();
+   403→      if (now - mouseRef.current.last < 60) return; // throttle ~16fps for trail
+   404→      mouseRef.current.last = now;
+   405→      if (particlesRef.current.length < 120) {
+   406→        particlesRef.current.push(
+   407→          createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
+   408→        );
+   409→      }
+   410→    };
+   411→
+   412→    window.addEventListener("mousemove", onMouseMove);
+   413→
+   414→    return () => {
+   415→      window.removeEventListener("resize", resize);
+   416→      window.removeEventListener("mousemove", onMouseMove);
+   417→      reducedMotionMQ.removeEventListener("change", onMotionChange);
+   418→      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+   419→    };
+   420→  }, []);
+   421→
+   422→  const burstHearts = useCallback(() => {
+   423→    const { w, h } = sizeRef.current;
+   424→    const cx = w / 2;
+   425→    const cy = h * 0.38;
+   426→    const count = w < 768 ? 30 : 60;
+   427→    for (let i = 0; i < count; i++) {
+   428→      particlesRef.current.push(createParticle(cx, cy, { burst: true }));
+   429→    }
+   430→  }, []);
+   431→
+   432→  const burstConfetti = useCallback(() => {
+   433→    const { w, h } = sizeRef.current;
+   434→    const cx = w / 2;
+   435→    const cy = h * 0.35;
+   436→    const count = w < 768 ? 20 : 40;
+   437→    for (let i = 0; i < count; i++) {
+   438→      particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
+   439→    }
+   440→  }, []);
+   441→
+   442→  const openWish = useCallback(() => {
+   443→    setIsOpen(true);
+   444→    burstHearts();
+   445→    window.setTimeout(burstConfetti, 200);
+   446→  }, [burstHearts, burstConfetti]);
+   447→
+   448→  const closeWish = useCallback(() => setIsOpen(false), []);
+   449→
+   450→  useEffect(() => {
+   451→    const onKey = (e: KeyboardEvent) => {
+   452→      if (e.key === "Escape" && isOpen) closeWish();
+   453→    };
+   454→    window.addEventListener("keydown", onKey);
+   455→    return () => window.removeEventListener("keydown", onKey);
+   456→  }, [isOpen, closeWish]);
+   457→
+   458→  // Magical wand cursor — smooth follow with easing, velocity tilt, click sparkles.
+   459→  useEffect(() => {
+   460→    const cursor = cursorRef.current;
+   461→    if (!cursor) return;
+   462→
+   463→    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+   464→      cursor.style.display = "none";
+   465→      return;
+   466→    }
+   467→
+   468→    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   469→    const target = { x: -200, y: -200 };
+   470→    const current = { x: -200, y: -200 };
+   471→    const velocity = { x: 0, y: 0 };
+   472→    let hasMoved = false;
+   473→    let raf = 0;
+   474→
+   475→    const onMove = (e: MouseEvent) => {
+   476→      target.x = e.clientX;
+   477→      target.y = e.clientY;
+   478→      if (!hasMoved) {
+   479→        hasMoved = true;
+   480→        current.x = e.clientX;
+   481→        current.y = e.clientY;
+   482→        cursor.classList.remove("is-hidden");
+   483→      }
+   484→      const el = e.target as HTMLElement | null;
+   485→      if (el && el.closest("button, a, [role='button']")) {
+   486→        cursor.classList.add("is-active");
+   487→      } else {
+   488→        cursor.classList.remove("is-active");
+   489→      }
+   490→    };
+   491→    const onDown = () => {
+   492→      cursor.classList.add("is-pressed");
+   493→      // Emit sparkle burst on click from wand tip position
+   494→      if (!reduced) {
+   495→        const tipX = current.x;
+   496→        const tipY = current.y;
+   497→        for (let i = 0; i < 6; i++) {
+   498→          particlesRef.current.push(createParticle(tipX, tipY, { trail: true }));
+   499→        }
+   500→      }
+   501→    };
+   502→    const onUp = () => cursor.classList.remove("is-pressed");
+   503→    const onLeave = () => cursor.classList.add("is-hidden");
+   504→    const onEnter = () => {
+   505→      if (hasMoved) cursor.classList.remove("is-hidden");
+   506→    };
+   507→
+   508→    const tick = () => {
+   509→      if (reduced) {
+   510→        current.x = target.x;
+   511→        current.y = target.y;
+   512→      } else {
+   513→        const prevX = current.x;
+   514→        const prevY = current.y;
+   515→        current.x += (target.x - current.x) * 0.28;
+   516→        current.y += (target.y - current.y) * 0.28;
+   517→        velocity.x = current.x - prevX;
+   518→        velocity.y = current.y - prevY;
+   519→      }
+   520→
+   521→      // Velocity-based tilt: wand leans in direction of movement
+   522→      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+   523→      let tiltAngle = -8; // default rest angle
+   524→      if (speed > 1.5) {
+   525→        const moveAngle = Math.atan2(velocity.y, velocity.x) * (180 / Math.PI);
+   526→        // Map movement direction to wand tilt (subtle lean)
+   527→        tiltAngle = -8 + velocity.x * 0.8;
+   528→        tiltAngle = Math.max(-30, Math.min(20, tiltAngle));
+   529→      }
+   530→      cursor.style.transform = `translate3d(${current.x - 7}px, ${
+   531→        current.y - 7
+   532→      }px, 0)`;
+   533→      // Apply velocity tilt via CSS custom property
+   534→      cursor.style.setProperty("--wand-tilt", `${tiltAngle}deg`);
+   535→      raf = requestAnimationFrame(tick);
+   536→    };
+   537→
+   538→    window.addEventListener("mousemove", onMove, { passive: true });
+   539→    window.addEventListener("mousedown", onDown);
+   540→    window.addEventListener("mouseup", onUp);
+   541→    document.addEventListener("mouseleave", onLeave);
+   542→    document.addEventListener("mouseenter", onEnter);
+   543→    raf = requestAnimationFrame(tick);
+   544→
+   545→    return () => {
+   546→      window.removeEventListener("mousemove", onMove);
+   547→      window.removeEventListener("mousedown", onDown);
+   548→      window.removeEventListener("mouseup", onUp);
+   549→      document.removeEventListener("mouseleave", onLeave);
+   550→      document.removeEventListener("mouseenter", onEnter);
+   551→      cancelAnimationFrame(raf);
+   552→    };
+   553→  }, []);
+   554→
+   555→  return (
+   556→    <div className={`gift-root ${isOpen ? "wish-is-open" : ""}`}>
+   557→      <div ref={cursorRef} className="magic-cursor is-hidden" aria-hidden="true">
+   558→        <svg className="magic-wand" width="48" height="48" viewBox="0 0 90 90" fill="none">
+   559→          <defs>
+   560→            <linearGradient id="wandShaft" x1="0%" y1="0%" x2="100%" y2="100%">
+   561→              <stop offset="0%" stopColor="#d4a056" />
+   562→              <stop offset="15%" stopColor="#b8863a" />
+   563→              <stop offset="30%" stopColor="#a0722e" />
+   564→              <stop offset="50%" stopColor="#7a5420" />
+   565→              <stop offset="70%" stopColor="#5c3d14" />
+   566→              <stop offset="85%" stopColor="#3d280a" />
+   567→              <stop offset="100%" stopColor="#2a1b06" />
+   568→            </linearGradient>
+   569→            <linearGradient id="wandShaftHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+   570→              <stop offset="0%" stopColor="#e8c47a" />
+   571→              <stop offset="40%" stopColor="#c9a050" />
+   572→              <stop offset="100%" stopColor="#8b6914" />
+   573→            </linearGradient>
+   574→            <linearGradient id="wandHandle" x1="0%" y1="0%" x2="100%" y2="100%">
+   575→              <stop offset="0%" stopColor="#4a3520" />
+   576→              <stop offset="30%" stopColor="#3a2818" />
+   577→              <stop offset="60%" stopColor="#2a1c10" />
+   578→              <stop offset="100%" stopColor="#1a0f08" />
+   579→            </linearGradient>
+   580→            <linearGradient id="handleWrap" x1="0%" y1="0%" x2="100%" y2="100%">
+   581→              <stop offset="0%" stopColor="#8b6914" />
+   582→              <stop offset="50%" stopColor="#6b4f10" />
+   583→              <stop offset="100%" stopColor="#4a3520" />
+   584→            </linearGradient>
+   585→            <radialGradient id="wandTipCore" cx="50%" cy="50%" r="50%">
+   586→              <stop offset="0%" stopColor="#ffffff" />
+   587→              <stop offset="30%" stopColor="#fffbe6" />
+   588→              <stop offset="55%" stopColor="#ffe066" />
+   589→              <stop offset="75%" stopColor="#ffb347" />
+   590→              <stop offset="100%" stopColor="#ff8c72" stopOpacity="0.6" />
+   591→            </radialGradient>
+   592→            <radialGradient id="wandOuterGlow" cx="50%" cy="50%" r="50%">
+   593→              <stop offset="0%" stopColor="rgba(255,240,180,0.6)" />
+   594→              <stop offset="30%" stopColor="rgba(255,200,91,0.35)" />
+   595→              <stop offset="55%" stopColor="rgba(255,140,114,0.15)" />
+   596→              <stop offset="80%" stopColor="rgba(227,79,111,0.06)" />
+   597→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   598→            </radialGradient>
+   599→            <radialGradient id="wandAmbientGlow" cx="50%" cy="50%" r="50%">
+   600→              <stop offset="0%" stopColor="rgba(245,200,91,0.25)" />
+   601→              <stop offset="40%" stopColor="rgba(255,140,114,0.1)" />
+   602→              <stop offset="100%" stopColor="rgba(227,79,111,0)" />
+   603→            </radialGradient>
+   604→            <filter id="wandGlow" x="-100%" y="-100%" width="300%" height="300%">
+   605→              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur1" />
+   606→              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2" />
+   607→              <feMerge>
+   608→                <feMergeNode in="blur2" />
+   609→                <feMergeNode in="blur1" />
+   610→                <feMergeNode in="SourceGraphic" />
+   611→              </feMerge>
+   612→            </filter>
+   613→            <filter id="wandGlowStrong" x="-150%" y="-150%" width="400%" height="400%">
+   614→              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1" />
+   615→              <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+   616→              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur3" />
+   617→              <feMerge>
+   618→                <feMergeNode in="blur3" />
+   619→                <feMergeNode in="blur2" />
+   620→                <feMergeNode in="blur1" />
+   621→                <feMergeNode in="SourceGraphic" />
+   622→              </feMerge>
+   623→            </filter>
+   624→            <pattern id="woodGrain" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+   625→              <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(90,60,20,0.15)" strokeWidth="0.5" />
+   626→              <line x1="2" y1="0" x2="2" y2="4" stroke="rgba(60,40,10,0.1)" strokeWidth="0.3" />
+   627→            </pattern>
+   628→          </defs>
+   629→          {/* Ambient glow */}
+   630→          <circle className="wand-ambient" cx="14" cy="14" r="32" fill="url(#wandAmbientGlow)" />
+   631→          {/* Outer aura */}
+   632→          <circle className="wand-aura" cx="14" cy="14" r="20" fill="url(#wandOuterGlow)" />
+   633→          {/* Shaft shadow */}
+   634→          <line x1="16" y1="16" x2="72" y2="72" stroke="rgba(20,10,5,0.3)" strokeWidth="7" strokeLinecap="round" />
+   635→          {/* Main shaft */}
+   636→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaft)" strokeWidth="5.5" strokeLinecap="round" />
+   637→          {/* Wood grain overlay */}
+   638→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#woodGrain)" strokeWidth="5" strokeLinecap="round" />
+   639→          {/* Highlight stripe */}
+   640→          <line x1="14" y1="14" x2="70" y2="70" stroke="url(#wandShaftHighlight)" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+   641→          {/* Edge highlight */}
+   642→          <line x1="13.5" y1="13.5" x2="69" y2="69" stroke="rgba(232,196,122,0.3)" strokeWidth="1" strokeLinecap="round" />
+   643→          {/* Ferrule ring */}
+   644→          <circle cx="56" cy="56" r="4.5" fill="#5c3d14" stroke="#3d280a" strokeWidth="1" />
+   645→          <circle cx="56" cy="56" r="3" fill="#6b4f10" opacity="0.6" />
+   646→          {/* Handle shadow */}
+   647→          <line x1="62" y1="62" x2="82" y2="82" stroke="rgba(10,5,2,0.5)" strokeWidth="11" strokeLinecap="round" />
+   648→          {/* Handle */}
+   649→          <line x1="60" y1="60" x2="80" y2="80" stroke="url(#wandHandle)" strokeWidth="9" strokeLinecap="round" />
+   650→          {/* Handle texture */}
+   651→          <line x1="60" y1="60" x2="80" y2="80" stroke="rgba(100,70,30,0.3)" strokeWidth="3" strokeLinecap="round" />
+   652→          {/* Gold grip wraps */}
+   653→          <line x1="63" y1="63" x2="65" y2="65" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   654→          <line x1="68" y1="68" x2="70" y2="70" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   655→          <line x1="73" y1="73" x2="75" y2="75" stroke="url(#handleWrap)" strokeWidth="3" strokeLinecap="round" />
+   656→          {/* Pommel */}
+   657→          <circle cx="82" cy="82" r="5" fill="#2a1b06" stroke="#1a0f08" strokeWidth="1" />
+   658→          <circle cx="82" cy="82" r="3.5" fill="#3d280a" opacity="0.7" />
+   659→          <circle cx="81" cy="81" r="1.5" fill="rgba(139,105,20,0.4)" />
+   660→          {/* Inner halo */}
+   661→          <circle className="wand-halo" cx="14" cy="14" r="8" fill="url(#wandTipCore)" filter="url(#wandGlow)" />
+   662→          {/* Core point */}
+   663→          <circle className="wand-core" cx="14" cy="14" r="3" fill="white" opacity="0.95" />
+   664→          {/* Star tip */}
+   665→          <path
+   666→            className="wand-star"
+   667→            d="M 14,4 L 15.5,10.5 L 22,11 L 17,14.5 L 18.5,21 L 14,17.5 L 9.5,21 L 11,14.5 L 6,11 L 12.5,10.5 Z"
+   668→            fill="url(#wandTipCore)"
+   669→            filter="url(#wandGlowStrong)"
+   670→          />
+   671→          {/* Sparkle dots */}
+   672→          <circle className="sparkle-dot sd-1" cx="4" cy="8" r="1.2" fill="#fff7ad" />
+   673→          <circle className="sparkle-dot sd-2" cx="24" cy="6" r="0.9" fill="#ffffff" />
+   674→          <circle className="sparkle-dot sd-3" cx="6" cy="22" r="1.0" fill="#ff8c72" />
+   675→          <circle className="sparkle-dot sd-4" cx="22" cy="20" r="0.7" fill="#f5c85b" />
+   676→          <circle className="sparkle-dot sd-5" cx="14" cy="0" r="0.8" fill="#ffffff" />
+   677→          <circle className="sparkle-dot sd-6" cx="0" cy="14" r="0.6" fill="#ffe066" />
+   678→          <circle className="sparkle-dot sd-7" cx="28" cy="14" r="0.5" fill="#fff7ad" />
+   679→          <circle className="sparkle-dot sd-8" cx="8" cy="28" r="0.7" fill="#ff8c72" />
+   680→          {/* Magic rays */}
+   681→          <line className="magic-ray mr-1" x1="14" y1="14" x2="2" y2="2" stroke="rgba(255,240,180,0.3)" strokeWidth="0.5" />
+   682→          <line className="magic-ray mr-2" x1="14" y1="14" x2="26" y2="2" stroke="rgba(255,240,180,0.25)" strokeWidth="0.5" />
+   683→          <line className="magic-ray mr-3" x1="14" y1="14" x2="2" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   684→          <line className="magic-ray mr-4" x1="14" y1="14" x2="26" y2="26" stroke="rgba(255,200,91,0.2)" strokeWidth="0.5" />
+   685→          {/* Hover ring */}
+   686→          <circle className="hover-ring" cx="14" cy="14" r="16" fill="none" stroke="rgba(245,200,91,0.5)" strokeWidth="1" strokeDasharray="3 3" />
+   687→        </svg>
+   688→      </div>
+   689→
+   690→      {/* Frost blobs */}
+   691→      <div className="frost-blob frost-blob-1" aria-hidden="true" />
+   692→      <div className="frost-blob frost-blob-2" aria-hidden="true" />
+   693→      <div className="frost-blob frost-blob-3" aria-hidden="true" />
+   694→      <div className="frost-blob frost-blob-4" aria-hidden="true" />
+   695→      <div className="frost-blob frost-blob-5" aria-hidden="true" />
+   696→
+   697→      <canvas ref={canvasRef} className="sparkle-canvas" aria-hidden="true" />
+   698→
+   699→      <div className="stars-layer" aria-hidden="true">
+   700→        <span className="star star--1" />
+   701→        <span className="star star--2" />
+   702→        <span className="star star--3" />
+   703→        <span className="star star--4" />
+   704→        <span className="star star--5" />
+   705→        <span className="star star--6" />
+   706→        <span className="star star--7" />
+   707→        <span className="star star--8" />
+   708→        <span className="star star--9" />
+   709→        <span className="star star--10" />
+   710→        <span className="star star--11" />
+   711→        <span className="star star--12" />
+   712→      </div>
+   713→
+   714→      <main className="page-shell">
+   715→        {!showCake ? (
+   716→          <button
+   717→            type="button"
+   718→            className="open-button"
+   719→            onClick={() => setShowCake(true)}
+   720→            aria-haspopup="dialog"
+   721→            aria-expanded={isOpen}
+   722→            aria-controls="wishPopup"
+   723→          >
+   724→            <span className="button-glass" />
+   725→            <span className="button-light-orb orb-1" />
+   726→            <span className="button-light-orb orb-2" />
+   727→            <span className="button-light-orb orb-3" />
+   728→            <span className="button-glow-ring" />
+   729→            <span className="button-text">Tap Here</span>
+   730→          </button>
+   731→        ) : (
+   732→        <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
+   733→          <div className="cut-main-card">
+   734→            {/* Close / Exit button */}
+   735→            <button
+   736→              type="button"
+   737→              className="cut-close-button"
+   738→              onClick={() => {
+   739→                setShowCake(false);
+   740→                setCutProgress(0);
+   741→                setIsCutting(false);
+   742→                setIsCutComplete(false);
+   743→              }}
+   744→              aria-label="Close cake time"
+   745→            >
+   746→              <svg
+   747→                width="14"
+   748→                height="14"
+   749→                viewBox="0 0 14 14"
+   750→                fill="none"
+   751→                stroke="currentColor"
+   752→                strokeWidth="2"
+   753→                strokeLinecap="round"
+   754→                aria-hidden="true"
+   755→              >
+   756→                <line x1="1" y1="1" x2="13" y2="13" />
+   757→                <line x1="13" y1="1" x2="1" y2="13" />
+   758→              </svg>
+   759→            </button>
+   760→
+   761→            {/* Header */}
+   762→            <div className="cut-header">
+   763→              <h2 className="cut-header-title">Cake Time</h2>
+   764→              <p className="cut-header-subtitle">Cut the cake and make a wish</p>
+   765→            </div>
+   766→
+   767→            {/* Instructions, Cake & Progress in a rounded box */}
+   768→            <div className="cut-info-frame">
+   769→              <div className="cut-instructions">
+   770→                <span className="cut-label">DRAG HERE</span>
+   771→                <p className="cut-title">Drag across the cake to cut it</p>
+   772→                <p className="cut-subtitle">Swipe through the highlighted area to complete the cut.</p>
+   773→              </div>
+   774→
+   775→              {/* Cake area */}
+   776→              <div
+   777→                ref={cakeAreaRef}
+   778→                className={`cake-cut-area ${isCutting ? "is-cutting" : ""}`}
+   779→              >
+   780→                {/* CSS Cake (from wish card) */}
+   781→                <div className="cut-cake-visual">
+   782→                  <div className="candles">
+   783→                    <span />
+   784→                    <span />
+   785→                    <span />
+   786→                  </div>
+   787→                  <div className="cake-top" />
+   788→                  <div className="cake-mid" />
+   789→                  <div className="cake-bottom" />
+   790→                  <div className="plate" />
+   791→                </div>
+   792→
+   793→                {/* Cut zone highlight overlay */}
+   794→                <div className="cut-zone-highlight" />
+   795→              </div>
+   796→
+   797→              <div className="cut-progress-section">
+   798→                <span className="cut-progress-label">Cut Progress</span>
+   799→                <div className="cut-progress-bar">
+   800→                  <div className="cut-progress-fill" style={{ width: `${cutProgress * 100}%` }} />
+   801→                  <div className="cut-progress-shimmer" style={{ left: `${cutProgress * 100 - 15}%` }} />
+   802→                </div>
+   803→                <span className="cut-progress-status">
+   804→                  {Math.round(cutProgress * 100)}%{cutProgress > 0 && cutProgress < 0.5 && " · Keep going"}
+   805→                  {cutProgress >= 0.5 && cutProgress < 0.85 && " · Almost there"}
+   806→                  {cutProgress >= 0.85 && cutProgress < 1 && " · Nearly done!"}
+   807→                  {cutProgress >= 1 && " · Complete!"}
+   808→                </span>
+   809→              </div>
+   810→            </div>
+   811→          </div>
+   812→        </div>
+   813→        )}
+   814→      </main>
+   815→
+   816→      <section
+   817→        id="wishPopup"
+   818→        className={`wish-popup ${isOpen ? "open" : ""}`}
+   819→        aria-label="Birthday wish"
+   820→        aria-hidden={!isOpen}
+   821→        onClick={(e) => {
+   822→          if (e.target === e.currentTarget) closeWish();
+   823→        }}
+   824→      >
+   825→        <div
+   826→          className="popup-card"
+   827→          role="dialog"
+   828→          aria-modal="true"
+   829→          aria-labelledby="wishTitle"
+   830→        >
+   831→          <button
+   832→            type="button"
+   833→            className="close-button"
+   834→            onClick={closeWish}
+   835→            aria-label="Close birthday wish"
+   836→          >
+   837→            <svg
+   838→              width="14"
+   839→              height="14"
+   840→              viewBox="0 0 14 14"
+   841→              fill="none"
+   842→              stroke="currentColor"
+   843→              strokeWidth="2"
+   844→              strokeLinecap="round"
+   845→              aria-hidden="true"
+   846→            >
+   847→              <line x1="1" y1="1" x2="13" y2="13" />
+   848→              <line x1="13" y1="1" x2="1" y2="13" />
+   849→            </svg>
+   850→          </button>
+   851→
+   852→          <div className="wish-balloons-left" aria-hidden="true">
+   853→            <div className="balloon balloon-left-one" />
+   854→            <div className="balloon balloon-left-two" />
+   855→          </div>
+   856→
+   857→          <div className="wish-copy">
+   858→            <h1 id="wishTitle" className="display-title reveal reveal--2">
+   859→              <span className="title-line">Happy Birthday</span>
+   860→              <span className="name-accent">Nuha</span>
+   861→            </h1>
+   862→            <p className="wish-note reveal reveal--3">
+   863→              I hope your day feels as beautiful as the way you make my world feel.
+   864→              You are my favorite smile, my soft place, and my sweetest reason to
+   865→              believe in magic. May this new year bring you peace, confidence,
+   866→              beautiful surprises, and everything your heart has been quietly
+   867→              wishing for. I will keep cheering for you, choosing you, and loving
+   868→              you in every little way I can.
+   869→            </p>
+   870→            <p className="signature reveal reveal--5">
+   871→              I&thinsp;♥&thinsp;U
+   872→            </p>
+   873→          </div>
+   874→
+   875→          <div className="wish-balloons-right" aria-hidden="true">
+   876→            <div className="balloon balloon-right-one" />
+   877→            <div className="balloon balloon-right-two" />
+   878→          </div>
+   879→        </div>
+   880→      </section>
+   881→
+   882→      <footer className="gift-footer">
+   883→        <div className="footer-box">
+   884→          <span className="footer-ornament footer-ornament-left">✦</span>
+   885→          <span className="footer-text">Made with <span className="heart-dot">♥</span> just for you</span>
+   886→          <span className="footer-ornament footer-ornament-right">✦</span>
+   887→        </div>
+   888→      </footer>
+   889→    </div>
+   890→  );
+   891→}
+   892→
