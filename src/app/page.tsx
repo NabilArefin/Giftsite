@@ -789,13 +789,6 @@ export default function GiftPage() {
                 </div>
                 {!isCutComplete && (
                   <div className="cut-swipe-hint">
-                    <svg className="swipe-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                      <path d="M4 2v2" />
-                      <path d="M12 22a2 2 0 0 1-2-2" />
-                      <path d="M9 2v2" />
-                      <path d="M14 2v2" />
-                    </svg>
                     <span className="cut-hint-text">Drag through the highlighted area</span>
                   </div>
                 )}

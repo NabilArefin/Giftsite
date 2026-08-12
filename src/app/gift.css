@@ -526,13 +526,6 @@
   margin-bottom: 0.3rem;
 }
 
-.cut-swipe-hint .swipe-icon {
-  color: #8b1a4a;
-  opacity: 0.6;
-  animation: swipeHintBounce 2s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
 .cut-hint-text {
   font-size: clamp(0.65rem, 1.5vw, 0.78rem);
   color: #666;
@@ -547,12 +540,6 @@
 .cut-success-icon {
   font-size: 1rem;
   animation: gentlePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes swipeHintBounce {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
 }
 
 .cut-label {
