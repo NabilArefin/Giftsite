@@ -889,7 +889,7 @@ export default function GiftPage() {
             <h1 id="wishTitle" className="display-title reveal reveal--2">
               <span className="title-line">Happy Birthday</span>
               <span className="name-accent">Nuha</span>
-              <span className="title-emoji reveal reveal--4">🎂</span>
+
             </h1>
             <p className="wish-note reveal reveal--3">
               I hope your day feels as beautiful as the way you make my world feel.
