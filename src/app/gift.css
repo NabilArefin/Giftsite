@@ -522,6 +522,7 @@
 }
 
 .cut-hint-text {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
   font-size: clamp(0.65rem, 1.5vw, 0.78rem);
   color: #666;
   letter-spacing: 0.01em;
