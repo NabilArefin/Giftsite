@@ -504,7 +504,7 @@
 
 .cut-step-text {
   font-family: var(--font-ballet), "Ballet", cursive;
-  font-size: clamp(0.95rem, 3vw, 1.3rem);
+  font-size: clamp(1.3rem, 4.5vw, 2rem);
   color: #1a1a1a;
   white-space: nowrap;
   line-height: 1.2;
