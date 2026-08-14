@@ -447,7 +447,7 @@
 }
 
 .cut-header-title {
-  font-family: var(--font-germania), "Germania One", cursive;
+  font-family: var(--font-allura), "Allura", cursive;
   font-size: clamp(1.8rem, 5.5vw, 2.6rem);
   color: #8b1a4a;
   margin: 0 0 0.2rem;
@@ -503,7 +503,7 @@
 }
 
 .cut-step-text {
-  font-family: var(--font-germania), "Germania One", cursive;
+  font-family: var(--font-ballet), "Ballet", cursive;
   font-size: clamp(0.95rem, 3vw, 1.3rem);
   color: #1a1a1a;
   white-space: nowrap;

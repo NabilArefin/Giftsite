@@ -529,8 +529,8 @@ export default function GiftPage() {
       } else {
         const prevX = current.x;
         const prevY = current.y;
-        current.x += (target.x - current.x) * 0.28;
-        current.y += (target.y - current.y) * 0.28;
+        current.x += (target.x - current.x) * 0.55;
+        current.y += (target.y - current.y) * 0.55;
         velocity.x = current.x - prevX;
         velocity.y = current.y - prevY;
       }
