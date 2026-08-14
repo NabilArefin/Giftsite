@@ -567,7 +567,7 @@
   -webkit-user-select: none;
   touch-action: none;
   border-radius: 12px;
-  overflow: visible;
+  overflow: hidden;
   transition: transform 0.3s ease;
 }
 
@@ -1439,7 +1439,7 @@
   min-height: 430px;
   display: grid;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .cake-scene:before {
@@ -1460,7 +1460,7 @@
   min-height: 300px;
   display: grid;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .wish-cake-scene:before {
