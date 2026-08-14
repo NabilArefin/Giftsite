@@ -343,10 +343,12 @@ export default function GiftPage() {
     const reducedMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
     reducedRef.current = reducedMotionMQ.matches;
 
+    const isMobileDevice = window.innerWidth < 768;
+
     const resize = () => {
       const rawRatio = window.devicePixelRatio || 1;
-      // Cap pixel ratio at 2 to save GPU on high-DPI mobile
-      const ratio = Math.min(rawRatio, 2);
+      // Cap pixel ratio to save GPU — 1 on mobile, 2 on desktop
+      const ratio = isMobileDevice ? 1 : Math.min(rawRatio, 2);
       const w = window.innerWidth;
       const h = window.innerHeight;
       canvas.width = Math.floor(w * ratio);
@@ -362,8 +364,7 @@ export default function GiftPage() {
 
     // Throttle frame rate on mobile to reduce GPU load
     let lastFrameTime = 0;
-    const isMobileDevice = window.innerWidth < 768;
-    const frameInterval = isMobileDevice ? 33 : 16; // ~30fps on mobile, ~60fps on desktop
+    const frameInterval = isMobileDevice ? 50 : 16; // ~20fps on mobile, ~60fps on desktop
 
     const animate = (timestamp: number) => {
       // Frame throttling — skip frames that arrive too soon
@@ -379,8 +380,8 @@ export default function GiftPage() {
 
       // Ambient particles (rising from bottom) — fewer on mobile
       const isMobile = w < 768;
-      const maxParticles = isMobile ? 18 : 80;
-      const spawnChance = isMobile ? 0.93 : 0.62;
+      const maxParticles = isMobile ? 8 : 80;
+      const spawnChance = isMobile ? 0.97 : 0.62;
       if (
         !reducedRef.current &&
         particlesRef.current.length < maxParticles &&
@@ -415,9 +416,9 @@ export default function GiftPage() {
       mouseRef.current.y = e.clientY;
       if (reducedRef.current) return;
       const now = performance.now();
-      if (now - mouseRef.current.last < 80) return; // throttle trail particles
+      if (now - mouseRef.current.last < (isMobileDevice ? 200 : 80)) return; // throttle trail particles
       mouseRef.current.last = now;
-      const maxTrail = isMobileDevice ? 40 : 120;
+      const maxTrail = isMobileDevice ? 15 : 120;
       if (particlesRef.current.length < maxTrail) {
         particlesRef.current.push(
           createParticle(mouseRef.current.x, mouseRef.current.y, { trail: true }),
@@ -439,7 +440,7 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.38;
-    const count = w < 768 ? 18 : 60;
+    const count = w < 768 ? 10 : 60;
     for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { burst: true }));
     }
@@ -449,7 +450,7 @@ export default function GiftPage() {
     const { w, h } = sizeRef.current;
     const cx = w / 2;
     const cy = h * 0.35;
-    const count = w < 768 ? 12 : 40;
+    const count = w < 768 ? 6 : 40;
     for (let i = 0; i < count; i++) {
       particlesRef.current.push(createParticle(cx, cy, { confetti: true }));
     }
@@ -792,12 +793,7 @@ export default function GiftPage() {
                     <span className="cut-hint-text">Drag through the highlighted area</span>
                   </div>
                 )}
-                {isCutComplete && (
-                  <div className="cut-success-hint">
-                    <span className="cut-success-icon">✨</span>
-                    <span className="cut-hint-text">Making a wish...</span>
-                  </div>
-                )}
+
               </div>
 
               {/* Cake area */}
@@ -835,7 +831,7 @@ export default function GiftPage() {
                 </div>
                 {cutProgress > 0 && cutProgress < 0.5 && <span className="cut-progress-msg">Keep going — you're doing great!</span>}
                 {cutProgress >= 0.5 && cutProgress < 0.85 && <span className="cut-progress-msg">Almost there!</span>}
-                {cutProgress >= 0.85 && cutProgress < 1 && <span className="cut-progress-msg">Nearly done! ✨</span>}
+
                 {cutProgress >= 1 && <span className="cut-progress-msg cut-progress-done">Complete! 🎉</span>}
               </div>
             </div>
