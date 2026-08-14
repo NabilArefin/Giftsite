@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock, Lavishly_Yours, Allura, Ballet, Petit_Formal_Script, MonteCarlo } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock, Lavishly_Yours, Allura, Ballet, Petit_Formal_Script, MonteCarlo, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -84,6 +84,14 @@ const monteCarlo = MonteCarlo({
   display: "swap",
 });
 
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Happy Birthday Nuha",
   description: "A little wish for you \u2014 crafted with love.",
@@ -125,7 +133,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} ${lavishlyYours.variable} ${allura.variable} ${ballet.variable} ${petitFormalScript.variable} ${monteCarlo.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} ${lavishlyYours.variable} ${allura.variable} ${ballet.variable} ${petitFormalScript.variable} ${monteCarlo.variable} ${cormorantGaramond.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />

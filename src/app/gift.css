@@ -1861,6 +1861,7 @@
 }
 
 .footer-text {
+  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: #4a2f438c;
