@@ -2048,21 +2048,6 @@
   .wish-cake-svg {
     width: min(200px, 50vw);
   }
-  .balloon {
-    width: 48px;
-    height: 64px;
-  }
-  .balloon:after {
-    height: 70px;
-  }
-  .balloon-three {
-    width: 38px;
-    height: 50px;
-  }
-  .balloon-four {
-    width: 34px;
-    height: 46px;
-  }
   .wish-copy {
     padding-right: 0;
   }
@@ -2426,14 +2411,6 @@
   .star {
     animation-duration: 8s;
     box-shadow: 0 0 4px #f5c85b40;
-  }
-
-  /* Slow down balloon float, shorten strings */
-  .balloon {
-    animation-duration: 7s;
-  }
-  .balloon:after {
-    height: 44px;
   }
 
   /* Reduce canvas opacity — fewer particles rendered visually */
