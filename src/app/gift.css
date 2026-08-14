@@ -561,7 +561,7 @@
   position: relative;
   width: 100%;
   max-width: 320px;
-  aspect-ratio: 320 / 260;
+  aspect-ratio: 320 / 290;
   cursor: crosshair;
   user-select: none;
   -webkit-user-select: none;
@@ -578,7 +578,10 @@
 /* CSS Cake visual inside the cut area (reuses .cake-top, .cake-mid, .cake-bottom, .plate, .candles) */
 .cut-cake-visual {
   position: absolute;
-  inset: 0;
+  top: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
   display: flex;
   align-items: flex-end;
@@ -1638,7 +1641,7 @@
   filter: drop-shadow(0 12px 32px #3e203038);
   width: min(300px, 70vw);
   height: 270px;
-  margin-top: 92px;
+  margin-top: 100px;
   position: relative;
 }
 
