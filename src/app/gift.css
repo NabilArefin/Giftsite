@@ -456,6 +456,7 @@
 }
 
 .cut-header-subtitle {
+  font-family: var(--font-monte-carlo), "MonteCarlo", cursive;
   font-size: clamp(0.78rem, 1.8vw, 0.9rem);
   color: var(--muted);
   margin: 0;
