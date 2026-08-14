@@ -1,149 +1,182 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <!-- Box Gradients for 3D Lighting -->
-    <linearGradient id="boxTop" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fff59d" />
-      <stop offset="100%" stop-color="#fbc02d" />
+    <!-- Cake gradients -->
+    <linearGradient id="cakeTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5e0b8"/>
+      <stop offset="50%" stop-color="#e8c88a"/>
+      <stop offset="100%" stop-color="#d4a96a"/>
     </linearGradient>
-
-    <linearGradient id="boxLeft" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fbc02d" />
-      <stop offset="100%" stop-color="#f57f17" />
+    <linearGradient id="cakeMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8b6340"/>
+      <stop offset="50%" stop-color="#6b4226"/>
+      <stop offset="100%" stop-color="#4a2c1a"/>
     </linearGradient>
-
-    <linearGradient id="boxRight" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#f57f17" />
-      <stop offset="100%" stop-color="#e65100" />
+    <linearGradient id="cakeBot" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a04040"/>
+      <stop offset="50%" stop-color="#8b2e2e"/>
+      <stop offset="100%" stop-color="#6a1e1e"/>
     </linearGradient>
-
-    <!-- Drop Shadow for the entire box -->
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="15" stdDeviation="12" flood-color="#000" flood-opacity="0.25" />
+    <!-- Frosting gradient -->
+    <linearGradient id="frostTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffef8"/>
+      <stop offset="50%" stop-color="#faf2e0"/>
+      <stop offset="100%" stop-color="#f0e0c8"/>
+    </linearGradient>
+    <linearGradient id="frostChoc" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5c3317"/>
+      <stop offset="50%" stop-color="#4a2810"/>
+      <stop offset="100%" stop-color="#3a1e0a"/>
+    </linearGradient>
+    <!-- Plate gradient -->
+    <linearGradient id="plate" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8e0e4"/>
+    </linearGradient>
+    <!-- Candle gradient -->
+    <linearGradient id="candle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c8a090"/>
+      <stop offset="30%" stop-color="#f5e8e0"/>
+      <stop offset="50%" stop-color="#fff5f0"/>
+      <stop offset="70%" stop-color="#f5e8e0"/>
+      <stop offset="100%" stop-color="#c8a090"/>
+    </linearGradient>
+    <!-- Flame gradient -->
+    <radialGradient id="flame" cx="50%" cy="70%" r="50%">
+      <stop offset="0%" stop-color="#6ea8e0"/>
+      <stop offset="8%" stop-color="#8eb8e8"/>
+      <stop offset="14%" stop-color="#ffffff"/>
+      <stop offset="22%" stop-color="#fffde0"/>
+      <stop offset="32%" stop-color="#fff176"/>
+      <stop offset="48%" stop-color="#ffbf37"/>
+      <stop offset="65%" stop-color="#ff8a3c"/>
+      <stop offset="85%" stop-color="rgba(255,70,20,0.3)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <!-- Flame glow -->
+    <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,220,80,0.4)"/>
+      <stop offset="50%" stop-color="rgba(255,160,40,0.15)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <!-- Background circle gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#fff6ef"/>
+      <stop offset="40%" stop-color="#ffe6ef"/>
+      <stop offset="100%" stop-color="#eef8ff"/>
+    </radialGradient>
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#3e2040" flood-opacity="0.18"/>
     </filter>
-
-    <!-- Blur for ground and contact shadows -->
-    <filter id="blur">
-      <feGaussianBlur stdDeviation="6" />
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
-  <!-- Ground Shadow -->
-  <ellipse cx="250" cy="430" rx="140" ry="25" fill="#000" opacity="0.2" filter="url(#blur)" />
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="240" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
 
-  <!-- Main Gift Box Group -->
+  <!-- Cake group with shadow -->
   <g filter="url(#shadow)">
 
-    <!-- ================= BOX BODY ================= -->
-    <!-- Left Face -->
-    <polygon points="145,245 145,355 250,417 250,307" fill="url(#boxLeft)" />
-    <!-- Right Face -->
-    <polygon points="250,307 250,417 355,355 355,245" fill="url(#boxRight)" />
+    <!-- ===== PLATE ===== -->
+    <ellipse cx="256" cy="400" rx="165" ry="22" fill="url(#plate)"/>
+    <ellipse cx="256" cy="398" rx="160" ry="18" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1"/>
+    <ellipse cx="256" cy="400" rx="165" ry="22" fill="none" stroke="rgba(200,180,190,0.3)" stroke-width="1"/>
 
-    <!-- ================= LID ================= -->
-    <!-- Lid Top Face -->
-    <polygon points="250,160 140,225 250,290 360,225" fill="url(#boxTop)" />
-    <!-- Lid Left Overhang -->
-    <polygon points="140,225 140,240 250,305 250,290" fill="#fbc02d" />
-    <!-- Lid Right Overhang -->
-    <polygon points="250,290 250,305 360,240 360,225" fill="#f57f17" />
+    <!-- ===== BOTTOM TIER — Red Velvet ===== -->
+    <rect x="105" y="332" width="302" height="68" rx="8" fill="url(#cakeBot)"/>
+    <!-- Bottom tier highlight -->
+    <rect x="105" y="332" width="302" height="8" rx="8" fill="rgba(255,255,255,0.12)"/>
+    <!-- Bottom tier right shadow -->
+    <rect x="380" y="332" width="27" height="68" rx="0" fill="rgba(0,0,0,0.07)"/>
 
-    <!-- ================= RIBBONS (BASE LAYER) ================= -->
-    <!-- Base Ribbon Color (Rich Satin Red) -->
-    <g fill="#d32f2f">
-      <!-- Top Face Ribbons (Cross) -->
-      <!-- Strip 1 (Top-Left to Bottom-Right) -->
-      <polygon points="195,192.5 305,257.5 315,251.5 205,186.5" />
-      <!-- Strip 2 (Top-Right to Bottom-Left) -->
-      <polygon points="305,192.5 195,257.5 185,251.5 295,186.5" />
+    <!-- Cream cheese frosting — bottom -->
+    <rect x="100" y="324" width="312" height="16" rx="10" fill="url(#frostTop)"/>
+    <rect x="100" y="324" width="312" height="4" rx="10" fill="rgba(255,255,255,0.7)"/>
+    <!-- Cream cheese drips — bottom tier -->
+    <ellipse cx="145" cy="340" rx="8" ry="18" fill="#faf2e0"/>
+    <ellipse cx="210" cy="340" rx="10" ry="24" fill="#faf2e0"/>
+    <ellipse cx="280" cy="340" rx="7" ry="14" fill="#faf2e0"/>
+    <ellipse cx="340" cy="340" rx="9" ry="20" fill="#faf2e0"/>
+    <ellipse cx="385" cy="340" rx="8" ry="16" fill="#faf2e0"/>
 
-      <!-- Vertical Ribbon on Left Face -->
-      <polygon points="185,266.6 195,272.5 195,384.5 185,378.6" />
-      <!-- Vertical Ribbon on Right Face -->
-      <polygon points="295,278.4 305,272.5 305,384.5 295,390.4" />
-    </g>
+    <!-- ===== MIDDLE TIER — Chocolate ===== -->
+    <rect x="140" y="252" width="232" height="72" rx="8" fill="url(#cakeMid)"/>
+    <rect x="140" y="252" width="232" height="8" rx="8" fill="rgba(255,255,255,0.1)"/>
+    <rect x="345" y="252" width="27" height="72" rx="0" fill="rgba(0,0,0,0.08)"/>
 
-    <!-- ================= RIBBONS (HIGHLIGHTS & SHADOWS) ================= -->
-    <!-- Satin Highlights (White with opacity) -->
-    <g fill="#ffffff" opacity="0.35">
-      <!-- Top Strip 1 Highlight -->
-      <polygon points="200,191 310,256 312,254.5 202,189.5" />
-      <!-- Top Strip 2 Highlight -->
-      <polygon points="300,191 190,256 188,254.5 298,189.5" />
-      <!-- Left Vertical Highlight -->
-      <polygon points="188,268 190,269 190,381 188,380" />
-      <!-- Right Vertical Highlight -->
-      <polygon points="300,275 302,274 302,386 300,387" />
-    </g>
+    <!-- Chocolate ganache frosting — mid -->
+    <rect x="135" y="244" width="242" height="16" rx="10" fill="url(#frostChoc)"/>
+    <rect x="135" y="244" width="242" height="4" rx="10" fill="rgba(255,255,255,0.1)"/>
+    <!-- Chocolate drips — mid tier -->
+    <ellipse cx="175" cy="260" rx="8" ry="18" fill="#4a2810"/>
+    <ellipse cx="230" cy="260" rx="9" ry="22" fill="#4a2810"/>
+    <ellipse cx="290" cy="260" rx="7" ry="14" fill="#4a2810"/>
+    <ellipse cx="340" cy="260" rx="8" ry="18" fill="#4a2810"/>
+    <ellipse cx="365" cy="260" rx="7" ry="14" fill="#4a2810"/>
 
-    <!-- Satin Shadows (Black with opacity) -->
-    <g fill="#000000" opacity="0.2">
-      <!-- Top Strip 1 Edges -->
-      <polygon points="195,192.5 200,191 205,186.5 198,188" />
-      <polygon points="310,256 315,251.5 312,254.5 308,257" />
-      <!-- Top Strip 2 Edges -->
-      <polygon points="305,192.5 300,191 295,186.5 302,188" />
-      <polygon points="190,256 185,251.5 188,254.5 192,257" />
-    </g>
+    <!-- ===== TOP TIER — Vanilla ===== -->
+    <rect x="175" y="188" width="162" height="56" rx="8" fill="url(#cakeTop)"/>
+    <rect x="175" y="188" width="162" height="8" rx="8" fill="rgba(255,255,255,0.2)"/>
+    <rect x="310" y="188" width="27" height="56" rx="0" fill="rgba(0,0,0,0.06)"/>
 
-    <!-- ================= BOX EDGE HIGHLIGHTS ================= -->
-    <!-- Enhances the 3D crispness -->
-    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <!-- Lid Top Edges -->
-      <polyline points="140,225 250,160 360,225" stroke="#ffffff" stroke-width="2" opacity="0.6" />
-      <!-- Lid Front Edges -->
-      <polyline points="140,225 250,290 360,225" stroke="#ffffff" stroke-width="1.5" opacity="0.4" />
-      <!-- Box Body Left Edge -->
-      <line x1="145" y1="245" x2="145" y2="355" stroke="#ffffff" stroke-width="1.5" opacity="0.3" />
-      <!-- Box Body Center Edge -->
-      <line x1="250" y1="307" x2="250" y2="417" stroke="#000000" stroke-width="1.5" opacity="0.15" />
-      <!-- Box Body Right Edge -->
-      <line x1="355" y1="245" x2="355" y2="355" stroke="#000000" stroke-width="1.5" opacity="0.2" />
-    </g>
+    <!-- Buttercream frosting — top -->
+    <rect x="170" y="180" width="172" height="16" rx="10" fill="url(#frostTop)"/>
+    <rect x="170" y="180" width="172" height="4" rx="10" fill="rgba(255,255,255,0.8)"/>
+    <!-- Buttercream drips — top tier -->
+    <ellipse cx="200" cy="196" rx="6" ry="14" fill="#faf0e0"/>
+    <ellipse cx="250" cy="196" rx="8" ry="18" fill="#faf0e0"/>
+    <ellipse cx="305" cy="196" rx="6" ry="12" fill="#faf0e0"/>
+    <ellipse cx="330" cy="196" rx="7" ry="16" fill="#faf0e0"/>
+
+    <!-- ===== CANDLES ===== -->
+    <!-- Candle 1 (left) -->
+    <rect x="220" y="136" width="12" height="44" rx="3" fill="url(#candle)"/>
+    <!-- Wick -->
+    <rect x="225" y="130" width="2" height="7" rx="1" fill="#3a2a1a"/>
+    <!-- Wax drip -->
+    <rect x="218" y="148" width="5" height="12" rx="2" fill="#f5e8e0"/>
+
+    <!-- Candle 2 (center) -->
+    <rect x="250" y="136" width="12" height="44" rx="3" fill="url(#candle)"/>
+    <!-- Wick -->
+    <rect x="255" y="130" width="2" height="7" rx="1" fill="#3a2a1a"/>
+    <!-- Wax drip -->
+    <rect x="248" y="144" width="5" height="14" rx="2" fill="#f5e8e0"/>
+
+    <!-- Candle 3 (right) -->
+    <rect x="280" y="136" width="12" height="44" rx="3" fill="url(#candle)"/>
+    <!-- Wick -->
+    <rect x="285" y="130" width="2" height="7" rx="1" fill="#3a2a1a"/>
+    <!-- Wax drip -->
+    <rect x="278" y="150" width="5" height="10" rx="2" fill="#f5e8e0"/>
+
+    <!-- ===== FLAMES ===== -->
+    <!-- Flame glow backgrounds -->
+    <ellipse cx="226" cy="118" rx="22" ry="22" fill="url(#flameGlow)"/>
+    <ellipse cx="256" cy="118" rx="22" ry="22" fill="url(#flameGlow)"/>
+    <ellipse cx="286" cy="118" rx="22" ry="22" fill="url(#flameGlow)"/>
+
+    <!-- Flame 1 -->
+    <ellipse cx="226" cy="114" rx="7" ry="12" fill="url(#flame)" filter="url(#softGlow)"/>
+    <!-- Flame 2 -->
+    <ellipse cx="256" cy="114" rx="7" ry="12" fill="url(#flame)" filter="url(#softGlow)"/>
+    <!-- Flame 3 -->
+    <ellipse cx="286" cy="114" rx="7" ry="12" fill="url(#flame)" filter="url(#softGlow)"/>
+
   </g>
 
-  <!-- ================= BOW SHADOW ================= -->
-  <!-- Cast by the bow onto the lid -->
-  <ellipse cx="250" cy="180" rx="45" ry="18" fill="#000" opacity="0.3" filter="url(#blur)" />
-
-  <!-- ================= BOW ================= -->
-  <g>
-    <!-- Left Loop -->
-    <path d="M 245 170 C 170 180, 120 130, 140 80 C 160 30, 230 110, 245 170 Z" fill="#d32f2f" />
-    <!-- Left Loop Inner Shadow (Depth) -->
-    <path d="M 245 170 C 190 160, 160 120, 150 90 C 170 110, 210 140, 245 170 Z" fill="#8e0000" opacity="0.5" />
-    <!-- Left Loop Fold Line -->
-    <path d="M 245 170 C 190 160, 160 120, 150 90" fill="none" stroke="#8e0000" stroke-width="2" opacity="0.6" stroke-linecap="round" />
-    <!-- Left Loop Highlight -->
-    <path d="M 235 160 C 175 165, 135 120, 145 85 C 148 75, 160 60, 175 65 C 150 80, 160 130, 235 150 Z" fill="#ffffff" opacity="0.25" />
-
-    <!-- Right Loop -->
-    <path d="M 255 170 C 330 180, 380 130, 360 80 C 340 30, 270 110, 255 170 Z" fill="#d32f2f" />
-    <!-- Right Loop Inner Shadow (Depth) -->
-    <path d="M 255 170 C 310 160, 340 120, 350 90 C 330 110, 290 140, 255 170 Z" fill="#8e0000" opacity="0.5" />
-    <!-- Right Loop Fold Line -->
-    <path d="M 255 170 C 310 160, 340 120, 350 90" fill="none" stroke="#8e0000" stroke-width="2" opacity="0.6" stroke-linecap="round" />
-    <!-- Right Loop Highlight -->
-    <path d="M 265 160 C 325 165, 365 120, 355 85 C 352 75, 340 60, 325 65 C 350 80, 340 130, 265 150 Z" fill="#ffffff" opacity="0.25" />
-
-    <!-- Left Tail -->
-    <path d="M 240 175 Q 190 240 160 300 L 175 307 L 190 315 Q 220 250 250 180 Z" fill="#d32f2f" />
-    <!-- Left Tail Highlight -->
-    <path d="M 235 180 Q 188 240 162 298 L 166 300 Q 192 242 238 182 Z" fill="#ffffff" opacity="0.3" />
-    <!-- Left Tail Shadow -->
-    <path d="M 245 180 Q 215 245 188 313 L 190 315 Q 220 250 250 180 Z" fill="#000000" opacity="0.2" />
-
-    <!-- Right Tail -->
-    <path d="M 260 175 Q 310 240 340 300 L 325 307 L 310 315 Q 280 250 250 180 Z" fill="#d32f2f" />
-    <!-- Right Tail Highlight -->
-    <path d="M 265 180 Q 312 240 338 298 L 334 300 Q 308 242 262 182 Z" fill="#ffffff" opacity="0.3" />
-    <!-- Right Tail Shadow -->
-    <path d="M 255 180 Q 285 245 312 313 L 310 315 Q 280 250 250 180 Z" fill="#000000" opacity="0.2" />
-
-    <!-- Center Knot -->
-    <path d="M 238 155 L 262 155 C 268 155, 270 160, 270 165 L 270 175 C 270 180, 268 185, 262 185 L 238 185 C 232 185, 230 180, 230 175 L 230 165 C 230 160, 232 155, 238 155 Z" fill="#d32f2f" />
-    <!-- Knot Crease -->
-    <path d="M 250 155 Q 247 170 250 185" fill="none" stroke="#8e0000" stroke-width="2" opacity="0.6" stroke-linecap="round" />
-    <!-- Knot Highlight -->
-    <ellipse cx="242" cy="162" rx="6" ry="3" fill="#ffffff" opacity="0.4" transform="rotate(-15 242 162)" />
-  </g>
+  <!-- Sparkle dots around the cake -->
+  <circle cx="100" cy="160" r="3" fill="#f5c85b" opacity="0.7"/>
+  <circle cx="412" cy="200" r="2.5" fill="#e34f6f" opacity="0.6"/>
+  <circle cx="80" cy="280" r="2" fill="#7b61ff" opacity="0.5"/>
+  <circle cx="430" cy="310" r="2.5" fill="#9ed7c1" opacity="0.6"/>
+  <circle cx="120" cy="380" r="2" fill="#ff8c72" opacity="0.5"/>
+  <circle cx="400" cy="130" r="2" fill="#f5c85b" opacity="0.5"/>
 </svg>
