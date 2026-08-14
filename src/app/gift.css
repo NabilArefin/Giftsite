@@ -1309,7 +1309,7 @@
 }
 
 .display-title {
-  font-family: var(--font-germania), "Germania One", cursive;
+  font-family: var(--font-petit-formal), "Petit Formal Script", cursive;
   text-align: center;
   letter-spacing: .02em;
   margin: 0 0 .7rem;

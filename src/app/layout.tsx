@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock, Lavishly_Yours, Allura, Ballet } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Inter, Germania_One, Sacramento, Updock, Lavishly_Yours, Allura, Ballet, Petit_Formal_Script } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -70,6 +70,13 @@ const ballet = Ballet({
   display: "swap",
 });
 
+const petitFormalScript = Petit_Formal_Script({
+  variable: "--font-petit-formal",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Happy Birthday Nuha",
   description: "A little wish for you \u2014 crafted with love.",
@@ -111,7 +118,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} ${lavishlyYours.variable} ${allura.variable} ${ballet.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} ${germaniaOne.variable} ${sacramento.variable} ${updock.variable} ${lavishlyYours.variable} ${allura.variable} ${ballet.variable} ${petitFormalScript.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />
