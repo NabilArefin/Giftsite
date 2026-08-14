@@ -1352,8 +1352,15 @@
 
 
 
-.lead,
+.lead {
+  color: var(--muted);
+  font-size: clamp(.88rem, 1.55vw, 1rem);
+  line-height: 1.5;
+}
+
 .wish-note {
+  font-family: var(--font-display), "Playfair Display", serif;
+  font-style: italic;
   color: var(--muted);
   font-size: clamp(.88rem, 1.55vw, 1rem);
   line-height: 1.5;
