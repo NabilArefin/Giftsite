@@ -1,0 +1,26 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/src/app/_not-found/page": [
+      "static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2",
+      "static/media/70e3db2de7f94926-s.p.39pl-v7c3qrze.woff2",
+      "static/media/2a65768255d6b625-s.p.3u4lli0-axodc.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/631ff73242e4a0d3-s.p.36pzpu-wo1bzq.woff2",
+      "static/media/6e57f7ddb1f455cd-s.p.3_35t1map2ofm.woff2",
+      "static/media/798609a2e2b522d2-s.p.0mwg-04-bcp1m.woff2",
+      "static/media/4967e79a86934e2f-s.p.1_-_j0trqjoam.woff2",
+      "static/media/09fd331868a74310-s.p.1hjf3jqny6u66.woff2",
+      "static/media/e6de1251430617f5-s.p.2-fl5uzkwwovh.woff2",
+      "static/media/28b509d3421c55f0-s.p.3mhro0g6zl0nm.woff2",
+      "static/media/ba70587c490e6c76-s.p.1kev6nlbscw37.woff2",
+      "static/media/8bd76523131fa0fc-s.p.1pvupmngxrt5z.woff2",
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/a3264cb69f626630-s.p.2w0lnotpt__ns.woff2",
+      "static/media/e8f2fbee2754df70-s.p.1dqa_6e_ad4sj.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}

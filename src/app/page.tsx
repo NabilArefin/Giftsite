@@ -458,6 +458,7 @@ export default function GiftPage() {
 
   const openWish = useCallback(() => {
     setIsOpen(true);
+    setShowCake(false);
     burstHearts();
     window.setTimeout(burstConfetti, 200);
   }, [burstHearts, burstConfetti]);
@@ -744,7 +745,6 @@ export default function GiftPage() {
             <span className="button-light-orb orb-3" />
             <span className="button-glow-ring" />
             <span className="button-text">Tap Here</span>
-
           </button>
         ) : (
         <div className={`cut-section ${isCutComplete ? "cut-complete" : ""}`}>
@@ -793,7 +793,6 @@ export default function GiftPage() {
                     <span className="cut-hint-text">Drag through the highlighted area</span>
                   </div>
                 )}
-
               </div>
 
               {/* Cake area */}
@@ -831,7 +830,6 @@ export default function GiftPage() {
                 </div>
                 {cutProgress > 0 && cutProgress < 0.5 && <span className="cut-progress-msg">Keep going — you're doing great!</span>}
                 {cutProgress >= 0.5 && cutProgress < 0.85 && <span className="cut-progress-msg">Almost there!</span>}
-
                 {cutProgress >= 1 && <span className="cut-progress-msg cut-progress-done">Complete! 🎉</span>}
               </div>
             </div>
