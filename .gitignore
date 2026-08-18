@@ -1,8 +1,8 @@
 ```
-# Next.js build output
+# Next.js build outputs
 .next/
 
-# Dependencies
+# Node.js dependencies
 node_modules/
 
 # Environment variables
@@ -17,7 +17,7 @@ node_modules/
 *.tmp
 *.swp
 
-# Editor directories
+# IDE specific
 .vscode/
 .idea/
 
