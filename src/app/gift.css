@@ -1065,6 +1065,7 @@
   font-family: var(--font-updock), "Updock", cursive;
   letter-spacing: .04em;
   color: #fff;
+  mix-blend-mode: difference;
   transition: color 0.12s ease;
   position: relative;
   display: block;
